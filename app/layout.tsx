@@ -4,6 +4,7 @@ import './globals.css'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ToasterProvider } from '@/components/providers/toaster-provider'
+import { SessionTimeoutProvider } from '@/components/providers/session-timeout-provider'
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants'
 
 const dmSans = DM_Sans({
@@ -35,7 +36,9 @@ export default function RootLayout({
       >
         <QueryProvider>
           <ThemeProvider>
-            {children}
+            <SessionTimeoutProvider>
+              {children}
+            </SessionTimeoutProvider>
             <ToasterProvider />
           </ThemeProvider>
         </QueryProvider>

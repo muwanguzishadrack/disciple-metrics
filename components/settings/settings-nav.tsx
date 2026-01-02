@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { User, Lock, Shield, Palette } from 'lucide-react'
+import { User, Lock, Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ROUTES } from '@/lib/constants'
 
@@ -18,12 +18,6 @@ const settingsLinks = [
     href: ROUTES.SETTINGS_PASSWORD,
     icon: Lock,
     description: 'Update your password',
-  },
-  {
-    title: 'Two-Factor Auth',
-    href: ROUTES.SETTINGS_TWO_FACTOR,
-    icon: Shield,
-    description: 'Add extra security to your account',
   },
   {
     title: 'Appearance',

@@ -12,7 +12,6 @@ export const ROUTES = {
   SETTINGS: '/settings',
   SETTINGS_PROFILE: '/settings/profile',
   SETTINGS_PASSWORD: '/settings/password',
-  SETTINGS_TWO_FACTOR: '/settings/two-factor-auth',
   SETTINGS_APPEARANCE: '/settings/appearance',
 } as const
 

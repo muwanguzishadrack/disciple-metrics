@@ -12,17 +12,24 @@ import {
 } from '@/lib/validations/auth'
 
 export function useLogin() {
-  const supabase = createClient()
   const router = useRouter()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (data: LoginFormData) => {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       })
-      if (error) throw error
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Login failed')
+      }
+
+      return result
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user'] })
@@ -34,23 +41,23 @@ export function useLogin() {
 }
 
 export function useSignup() {
-  const supabase = createClient()
   const router = useRouter()
 
   return useMutation({
     mutationFn: async (data: SignupFormData) => {
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
-          data: {
-            first_name: data.firstName,
-            last_name: data.lastName,
-          },
-        },
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       })
-      if (error) throw error
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Signup failed')
+      }
+
+      return result
     },
     onSuccess: () => {
       router.push(ROUTES.VERIFY_EMAIL)
@@ -59,14 +66,21 @@ export function useSignup() {
 }
 
 export function useForgotPassword() {
-  const supabase = createClient()
-
   return useMutation({
     mutationFn: async (data: ForgotPasswordFormData) => {
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=/reset-password`,
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       })
-      if (error) throw error
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send reset email')
+      }
+
+      return result
     },
   })
 }
