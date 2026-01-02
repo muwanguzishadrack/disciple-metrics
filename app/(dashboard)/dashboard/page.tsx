@@ -163,7 +163,7 @@ export default function DashboardPage() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
+                <CheckCircle2 className="h-5 w-5 text-accent" />
                 Getting Started
               </CardTitle>
               <CardDescription>

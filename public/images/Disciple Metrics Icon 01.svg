@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="BACKGROUND" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke: #008cff;
+      }
+
+      .cls-1, .cls-2 {
+        fill: none;
+        stroke-miterlimit: 10;
+        stroke-width: 12px;
+      }
+
+      .cls-3 {
+        fill: #0f1127;
+      }
+
+      .cls-4 {
+        fill: #008cff;
+      }
+
+      .cls-2 {
+        stroke: #0f1127;
+      }
+    </style>
+  </defs>
+  <rect class="cls-3" x="30.96" y="30.49" width="60.14" height="60.14"/>
+  <rect class="cls-4" x="30.96" y="409.37" width="60.14" height="60.14"/>
+  <rect class="cls-3" x="408.9" y="409.37" width="60.14" height="60.14"/>
+  <rect class="cls-4" x="408.9" y="30.49" width="60.14" height="60.14"/>
+  <rect class="cls-3" x="20.12" y="215.65" width="81.81" height="81.81"/>
+  <rect class="cls-3" x="208.62" y="19.65" width="81.81" height="81.81"/>
+  <rect class="cls-3" x="208.62" y="398.53" width="81.81" height="81.81"/>
+  <rect class="cls-3" x="398.06" y="215.65" width="81.81" height="81.81"/>
+  <rect class="cls-4" x="181.68" y="190.71" width="131.7" height="131.7"/>
+  <line class="cls-2" x1="61.03" y1="256.56" x2="249.53" y2="60.56"/>
+  <line class="cls-1" x1="61.03" y1="439.44" x2="438.97" y2="60.56"/>
+  <line class="cls-2" x1="249.53" y1="439.44" x2="438.97" y2="256.56"/>
+</svg>

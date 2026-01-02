@@ -1,8 +1,7 @@
 'use client'
 
+import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { APP_NAME } from '@/lib/constants'
 
 interface AuthCardProps {
   title: string
@@ -17,21 +16,38 @@ export function AuthCard({ title, description, children, footer }: AuthCardProps
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-md"
+      className="w-full"
     >
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">{APP_NAME}</h1>
+      {/* Logo */}
+      <div className="mb-8">
+        <Image
+          src="/images/Disciple Metrics Logo 02.svg"
+          alt="Disciple Metrics"
+          width={200}
+          height={48}
+          className="dark:hidden"
+          priority
+        />
+        <Image
+          src="/images/Disciple Metrics Logo 01.svg"
+          alt="Disciple Metrics"
+          width={200}
+          height={48}
+          className="hidden dark:block"
+          priority
+        />
       </div>
-      <Card>
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl">{title}</CardTitle>
-          {description && <CardDescription>{description}</CardDescription>}
-        </CardHeader>
-        <CardContent>
+
+      <div>
+        <div className="space-y-1 mb-6">
+          <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+        </div>
+        <div>
           {children}
-          {footer && <div className="mt-6 text-center text-sm">{footer}</div>}
-        </CardContent>
-      </Card>
+          {footer && <div className="mt-6 text-center text-sm text-muted-foreground">{footer}</div>}
+        </div>
+      </div>
     </motion.div>
   )
 }
