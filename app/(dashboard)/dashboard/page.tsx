@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
@@ -13,6 +13,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Combobox } from '@/components/ui/combobox'
@@ -32,9 +42,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/layout/page-header'
 import { useProfile } from '@/hooks/use-user'
+import { usePgaReports, useFobs, useLocations, useCreatePgaEntry, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
+import { useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
 
 const dateFilterOptions = [
   { value: 'this-week', label: 'This Week' },
@@ -44,45 +63,49 @@ const dateFilterOptions = [
   { value: 'past-3-months', label: 'Past 3 Months' },
 ]
 
-const fobOptions = [
-  { value: 'fob-1', label: 'FOB 1' },
-  { value: 'fob-2', label: 'FOB 2' },
-  { value: 'fob-3', label: 'FOB 3' },
-  { value: 'fob-4', label: 'FOB 4' },
-  { value: 'fob-5', label: 'FOB 5' },
-]
+function getDateRange(filter: string): { start: Date; end: Date } {
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-const locationOptions = [
-  { value: 'location-1', label: 'Location 1' },
-  { value: 'location-2', label: 'Location 2' },
-  { value: 'location-3', label: 'Location 3' },
-  { value: 'location-4', label: 'Location 4' },
-  { value: 'location-5', label: 'Location 5' },
-]
+  switch (filter) {
+    case 'this-week': {
+      const dayOfWeek = today.getDay()
+      const start = new Date(today)
+      start.setDate(today.getDate() - dayOfWeek) // Sunday
+      const end = new Date(start)
+      end.setDate(start.getDate() + 6) // Saturday
+      return { start, end }
+    }
+    case 'last-week': {
+      const dayOfWeek = today.getDay()
+      const thisWeekStart = new Date(today)
+      thisWeekStart.setDate(today.getDate() - dayOfWeek)
+      const start = new Date(thisWeekStart)
+      start.setDate(thisWeekStart.getDate() - 7)
+      const end = new Date(start)
+      end.setDate(start.getDate() + 6)
+      return { start, end }
+    }
+    case 'this-month': {
+      const start = new Date(today.getFullYear(), today.getMonth(), 1)
+      const end = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+      return { start, end }
+    }
+    case 'last-month': {
+      const start = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+      const end = new Date(today.getFullYear(), today.getMonth(), 0)
+      return { start, end }
+    }
+    case 'past-3-months': {
+      const start = new Date(today.getFullYear(), today.getMonth() - 3, today.getDate())
+      const end = today
+      return { start, end }
+    }
+    default:
+      return { start: today, end: today }
+  }
+}
 
-const stats = [
-  { title: '1st Service', value: '0', icon: Clock },
-  { title: '2nd Service', value: '0', icon: Clock },
-  { title: 'YXP', value: '0', icon: Sparkles },
-  { title: 'Kids', value: '0', icon: Baby },
-  { title: 'Local', value: '0', icon: Globe },
-  { title: 'Hosting Center 1', value: '0', icon: Building },
-  { title: 'Hosting Center 2', value: '0', icon: Building },
-  { title: 'Overall', value: '0', icon: TrendingUp },
-]
-
-const recentReports: {
-  id: string
-  date: string
-  sv1: number
-  sv2: number
-  yxp: number
-  kids: number
-  local: number
-  hc1: number
-  hc2: number
-  total: number
-}[] = []
 
 const container = {
   hidden: { opacity: 0 },
@@ -100,13 +123,23 @@ const item = {
 }
 
 export default function DashboardPage() {
-  const { data: profile, isLoading } = useProfile()
+  const router = useRouter()
+  const { toast } = useToast()
+  const { data: profile, isLoading: isProfileLoading } = useProfile()
+  const { data: pgaReports = [], isLoading: isReportsLoading } = usePgaReports()
+  const { data: fobs = [] } = useFobs()
+  const { data: locations = [] } = useLocations()
+  const createPgaEntry = useCreatePgaEntry()
+  const deletePgaReport = useDeletePgaReport()
+
   const [dateFilter, setDateFilter] = useState('this-week')
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(5)
 
   // Record PGA Dialog state
   const [dialogOpen, setDialogOpen] = useState(false)
+  // Delete confirmation state
+  const [deleteTarget, setDeleteTarget] = useState<PgaReportWithTotals | null>(null)
   const [pgaDate, setPgaDate] = useState('')
   const [pgaFob, setPgaFob] = useState('')
   const [pgaLocation, setPgaLocation] = useState('')
@@ -118,9 +151,62 @@ export default function DashboardPage() {
   const [pgaHc1, setPgaHc1] = useState(0)
   const [pgaHc2, setPgaHc2] = useState(0)
 
+  // Build FOB and Location options from database
+  const fobOptions = useMemo(() => {
+    return fobs.map((fob) => ({ value: fob.id, label: fob.name }))
+  }, [fobs])
+
+  const locationOptions = useMemo(() => {
+    // Filter locations by selected FOB
+    const filtered = pgaFob
+      ? locations.filter((loc) => loc.fob_id === pgaFob)
+      : locations
+    return filtered.map((loc) => ({ value: loc.id, label: loc.name }))
+  }, [locations, pgaFob])
+
   const pgaTotal = useMemo(() => {
     return pgaSv1 + pgaSv2 + pgaYxp + pgaKids + pgaLocal + pgaHc1 + pgaHc2
   }, [pgaSv1, pgaSv2, pgaYxp, pgaKids, pgaLocal, pgaHc1, pgaHc2])
+
+  // Filter reports by date range
+  const filteredReports = useMemo(() => {
+    const { start, end } = getDateRange(dateFilter)
+    return pgaReports.filter((report) => {
+      // Parse date as local time to avoid timezone issues
+      const [year, month, day] = report.date.split('-').map(Number)
+      const reportDate = new Date(year, month - 1, day)
+      return reportDate >= start && reportDate <= end
+    })
+  }, [pgaReports, dateFilter])
+
+  // Calculate totals from filtered reports
+  const calculatedTotals = useMemo(() => {
+    return filteredReports.reduce(
+      (acc, report) => ({
+        sv1: acc.sv1 + report.totals.sv1,
+        sv2: acc.sv2 + report.totals.sv2,
+        yxp: acc.yxp + report.totals.yxp,
+        kids: acc.kids + report.totals.kids,
+        local: acc.local + report.totals.local,
+        hc1: acc.hc1 + report.totals.hc1,
+        hc2: acc.hc2 + report.totals.hc2,
+        total: acc.total + report.totals.total,
+      }),
+      { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0 }
+    )
+  }, [filteredReports])
+
+  // Build stats array with calculated values
+  const stats = useMemo(() => [
+    { title: '1st Service', value: calculatedTotals.sv1.toLocaleString(), icon: Clock },
+    { title: '2nd Service', value: calculatedTotals.sv2.toLocaleString(), icon: Clock },
+    { title: 'YXP', value: calculatedTotals.yxp.toLocaleString(), icon: Sparkles },
+    { title: 'Kids', value: calculatedTotals.kids.toLocaleString(), icon: Baby },
+    { title: 'Local', value: calculatedTotals.local.toLocaleString(), icon: Globe },
+    { title: 'Hosting Center 1', value: calculatedTotals.hc1.toLocaleString(), icon: Building },
+    { title: 'Hosting Center 2', value: calculatedTotals.hc2.toLocaleString(), icon: Building },
+    { title: 'Overall', value: calculatedTotals.total.toLocaleString(), icon: TrendingUp },
+  ], [calculatedTotals])
 
   const resetPgaForm = () => {
     setPgaDate('')
@@ -142,14 +228,51 @@ export default function DashboardPage() {
     }
   }
 
+  const handleSubmitPga = async () => {
+    if (!pgaDate || !pgaLocation) {
+      toast({
+        title: 'Missing fields',
+        description: 'Please select a date and location',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    try {
+      await createPgaEntry.mutateAsync({
+        date: pgaDate,
+        locationId: pgaLocation,
+        sv1: pgaSv1,
+        sv2: pgaSv2,
+        yxp: pgaYxp,
+        kids: pgaKids,
+        local: pgaLocal,
+        hc1: pgaHc1,
+        hc2: pgaHc2,
+      })
+      toast({
+        title: 'Success',
+        description: 'PGA entry recorded successfully',
+      })
+      setDialogOpen(false)
+      resetPgaForm()
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to record PGA entry',
+        variant: 'destructive',
+      })
+    }
+  }
+
   const firstName = profile?.first_name || 'there'
 
   // Pagination calculations
-  const totalRows = recentReports.length
+  const totalRows = pgaReports.length
   const totalPages = Math.ceil(totalRows / rowsPerPage)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  const paginatedReports = recentReports.slice(startIndex, endIndex)
+  const paginatedReports = pgaReports.slice(startIndex, endIndex)
 
   const goToFirstPage = () => setCurrentPage(1)
   const goToLastPage = () => setCurrentPage(totalPages)
@@ -161,11 +284,30 @@ export default function DashboardPage() {
     setCurrentPage(1)
   }
 
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      await deletePgaReport.mutateAsync(deleteTarget.id)
+      toast({
+        title: 'Success',
+        description: 'Report deleted successfully',
+      })
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete report',
+        variant: 'destructive',
+      })
+    } finally {
+      setDeleteTarget(null)
+    }
+  }
+
   return (
     <>
       <PageHeader
         title={
-          isLoading ? (
+          isProfileLoading ? (
             <Skeleton className="h-8 w-48 bg-primary-foreground/20" />
           ) : (
             `Welcome back, ${firstName}!`
@@ -330,8 +472,8 @@ export default function DashboardPage() {
                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={() => setDialogOpen(false)}>
-                    Save
+                  <Button onClick={handleSubmitPga} disabled={createPgaEntry.isPending}>
+                    {createPgaEntry.isPending ? 'Saving...' : 'Save'}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -388,29 +530,54 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedReports.length > 0 ? (
-                  paginatedReports.map((report) => (
+                {isReportsLoading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 10 }).map((_, j) => (
+                        <TableCell key={j}>
+                          <Skeleton className="h-4 w-12" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : paginatedReports.length > 0 ? (
+                  paginatedReports.map((report: PgaReportWithTotals) => (
                     <TableRow key={report.id}>
                       <TableCell>{report.date}</TableCell>
-                      <TableCell>{report.sv1}</TableCell>
-                      <TableCell>{report.sv2}</TableCell>
-                      <TableCell>{report.yxp}</TableCell>
-                      <TableCell>{report.kids}</TableCell>
-                      <TableCell>{report.local}</TableCell>
-                      <TableCell>{report.hc1}</TableCell>
-                      <TableCell>{report.hc2}</TableCell>
-                      <TableCell className="font-medium">{report.total}</TableCell>
+                      <TableCell>{report.totals.sv1}</TableCell>
+                      <TableCell>{report.totals.sv2}</TableCell>
+                      <TableCell>{report.totals.yxp}</TableCell>
+                      <TableCell>{report.totals.kids}</TableCell>
+                      <TableCell>{report.totals.local}</TableCell>
+                      <TableCell>{report.totals.hc1}</TableCell>
+                      <TableCell>{report.totals.hc2}</TableCell>
+                      <TableCell className="font-medium">{report.totals.total}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => router.push(`/reports/${report.date}`)}>
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setDeleteTarget(report)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
-                      No reports yet
+                      No reports yet. Click &quot;Record PGA&quot; to add your first report.
                     </TableCell>
                   </TableRow>
                 )}
@@ -479,6 +646,27 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Report</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the report for {deleteTarget?.date}? This will also delete all entries associated with this report. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

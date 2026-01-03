@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -20,7 +20,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
+import { usePgaReports, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
+import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 const dateFilterOptions = [
   { value: 'all-time', label: 'All Time' },
@@ -30,32 +50,24 @@ const dateFilterOptions = [
   { value: 'custom', label: 'Custom' },
 ]
 
-const reports: {
-  id: string
-  date: string
-  sv1: number
-  sv2: number
-  yxp: number
-  kids: number
-  local: number
-  hc1: number
-  hc2: number
-  total: number
-}[] = []
-
 export default function ReportsPage() {
+  const router = useRouter()
+  const { toast } = useToast()
+  const { data: pgaReports = [], isLoading } = usePgaReports()
+  const deletePgaReport = useDeletePgaReport()
   const [dateFilter, setDateFilter] = useState('all-time')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [deleteTarget, setDeleteTarget] = useState<PgaReportWithTotals | null>(null)
 
   // Pagination calculations
-  const totalRows = reports.length
+  const totalRows = pgaReports.length
   const totalPages = Math.ceil(totalRows / rowsPerPage)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  const paginatedReports = reports.slice(startIndex, endIndex)
+  const paginatedReports = pgaReports.slice(startIndex, endIndex)
 
   const goToFirstPage = () => setCurrentPage(1)
   const goToLastPage = () => setCurrentPage(totalPages)
@@ -65,6 +77,25 @@ export default function ReportsPage() {
   const handleRowsPerPageChange = (value: string) => {
     setRowsPerPage(Number(value))
     setCurrentPage(1)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return
+    try {
+      await deletePgaReport.mutateAsync(deleteTarget.id)
+      toast({
+        title: 'Success',
+        description: 'Report deleted successfully',
+      })
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete report',
+        variant: 'destructive',
+      })
+    } finally {
+      setDeleteTarget(null)
+    }
   }
 
   return (
@@ -127,29 +158,54 @@ export default function ReportsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedReports.length > 0 ? (
-                  paginatedReports.map((report) => (
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {Array.from({ length: 10 }).map((_, j) => (
+                        <TableCell key={j}>
+                          <Skeleton className="h-4 w-12" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : paginatedReports.length > 0 ? (
+                  paginatedReports.map((report: PgaReportWithTotals) => (
                     <TableRow key={report.id}>
                       <TableCell>{report.date}</TableCell>
-                      <TableCell>{report.sv1}</TableCell>
-                      <TableCell>{report.sv2}</TableCell>
-                      <TableCell>{report.yxp}</TableCell>
-                      <TableCell>{report.kids}</TableCell>
-                      <TableCell>{report.local}</TableCell>
-                      <TableCell>{report.hc1}</TableCell>
-                      <TableCell>{report.hc2}</TableCell>
-                      <TableCell className="font-medium">{report.total}</TableCell>
+                      <TableCell>{report.totals.sv1}</TableCell>
+                      <TableCell>{report.totals.sv2}</TableCell>
+                      <TableCell>{report.totals.yxp}</TableCell>
+                      <TableCell>{report.totals.kids}</TableCell>
+                      <TableCell>{report.totals.local}</TableCell>
+                      <TableCell>{report.totals.hc1}</TableCell>
+                      <TableCell>{report.totals.hc2}</TableCell>
+                      <TableCell className="font-medium">{report.totals.total}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => router.push(`/reports/${report.date}`)}>
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => setDeleteTarget(report)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
-                      No reports yet
+                      No reports yet. Go to the Dashboard to record your first PGA.
                     </TableCell>
                   </TableRow>
                 )}
@@ -218,6 +274,27 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Report</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the report for {deleteTarget?.date}? This will also delete all entries associated with this report. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

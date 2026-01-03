@@ -9,43 +9,300 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: {
+      audit_logs: {
         Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
           id: string
-          email: string | null
-          first_name: string | null
-          last_name: string | null
-          theme: string | null
-          two_factor_enabled: boolean
-          created_at: string
-          updated_at: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
         }
         Insert: {
-          id: string
-          email?: string | null
-          first_name?: string | null
-          last_name?: string | null
-          theme?: string | null
-          two_factor_enabled?: boolean
-          created_at?: string
-          updated_at?: string
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
         }
         Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
           id?: string
-          email?: string | null
-          first_name?: string | null
-          last_name?: string | null
-          theme?: string | null
-          two_factor_enabled?: boolean
-          created_at?: string
-          updated_at?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      fobs: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      locations: {
+        Row: {
+          created_at: string | null
+          fob_id: string
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          fob_id: string
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          fob_id?: string
+          id?: string
+          name?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'profiles_id_fkey'
-            columns: ['id']
+            foreignKeyName: 'locations_fob_id_fkey'
+            columns: ['fob_id']
+            isOneToOne: false
+            referencedRelation: 'fobs'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      pga_entries: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          hc1: number | null
+          hc2: number | null
+          id: string
+          kids: number | null
+          local: number | null
+          location_id: string
+          report_id: string
+          sv1: number | null
+          sv2: number | null
+          updated_at: string | null
+          yxp: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          hc1?: number | null
+          hc2?: number | null
+          id?: string
+          kids?: number | null
+          local?: number | null
+          location_id: string
+          report_id: string
+          sv1?: number | null
+          sv2?: number | null
+          updated_at?: string | null
+          yxp?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          hc1?: number | null
+          hc2?: number | null
+          id?: string
+          kids?: number | null
+          local?: number | null
+          location_id?: string
+          report_id?: string
+          sv1?: number | null
+          sv2?: number | null
+          updated_at?: string | null
+          yxp?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'pga_entries_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'pga_entries_location_id_fkey'
+            columns: ['location_id']
+            isOneToOne: false
+            referencedRelation: 'locations'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'pga_entries_report_id_fkey'
+            columns: ['report_id']
+            isOneToOne: false
+            referencedRelation: 'pga_reports'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      pga_reports: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          date: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          date: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          date?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'pga_reports_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          theme: string | null
+          two_factor_enabled: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          theme?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          theme?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      roles: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      user_assignments: {
+        Row: {
+          created_at: string | null
+          fob_id: string | null
+          id: string
+          location_id: string | null
+          role_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          fob_id?: string | null
+          id?: string
+          location_id?: string | null
+          role_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          fob_id?: string | null
+          id?: string
+          location_id?: string | null
+          role_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_assignments_fob_id_fkey'
+            columns: ['fob_id']
+            isOneToOne: false
+            referencedRelation: 'fobs'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_assignments_location_id_fkey'
+            columns: ['location_id']
+            isOneToOne: false
+            referencedRelation: 'locations'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_assignments_role_id_fkey'
+            columns: ['role_id']
+            isOneToOne: false
+            referencedRelation: 'roles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_assignments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: 'users'
+            referencedRelation: 'profiles'
             referencedColumns: ['id']
           },
         ]
@@ -55,7 +312,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_access_location: {
+        Args: { p_location_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      get_user_fob_id: { Args: { p_user_id: string }; Returns: string }
+      get_user_location_id: { Args: { p_user_id: string }; Returns: string }
+      get_user_role: { Args: { p_user_id: string }; Returns: string }
+      is_admin: { Args: { p_user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
@@ -145,3 +409,11 @@ export type Enums<
   : PublicEnumNameOrOptions extends keyof Database['public']['Enums']
     ? Database['public']['Enums'][PublicEnumNameOrOptions]
     : never
+
+// Convenience type aliases for PGA tables
+export type Role = Tables<'roles'>
+export type Fob = Tables<'fobs'>
+export type Location = Tables<'locations'>
+export type UserAssignment = Tables<'user_assignments'>
+export type PgaReport = Tables<'pga_reports'>
+export type PgaEntry = Tables<'pga_entries'>
