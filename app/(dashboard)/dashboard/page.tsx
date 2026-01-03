@@ -171,7 +171,7 @@ export default function DashboardPage() {
   // Filter reports by date range
   const filteredReports = useMemo(() => {
     const { start, end } = getDateRange(dateFilter)
-    return pgaReports.filter((report) => {
+    return pgaReports.filter((report: { date: string }) => {
       // Parse date as local time to avoid timezone issues
       const [year, month, day] = report.date.split('-').map(Number)
       const reportDate = new Date(year, month - 1, day)
@@ -180,9 +180,10 @@ export default function DashboardPage() {
   }, [pgaReports, dateFilter])
 
   // Calculate totals from filtered reports
+  type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number }
   const calculatedTotals = useMemo(() => {
     return filteredReports.reduce(
-      (acc, report) => ({
+      (acc: Totals, report: { totals: Totals }) => ({
         sv1: acc.sv1 + report.totals.sv1,
         sv2: acc.sv2 + report.totals.sv2,
         yxp: acc.yxp + report.totals.yxp,
