@@ -40,9 +40,9 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-9 w-9 rounded-full bg-primary text-primary-foreground"
+          className="h-8 w-8 rounded-md border border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
         >
-          <span className="text-sm font-medium">{initials}</span>
+          <span className="text-xs font-medium">{initials}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

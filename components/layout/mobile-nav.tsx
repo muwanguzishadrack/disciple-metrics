@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, LayoutDashboard, Settings } from 'lucide-react'
+import { Menu, X, LayoutDashboard, Users, MapPin, FileText, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebarStore } from '@/stores/use-sidebar-store'
@@ -14,6 +14,21 @@ const mobileLinks = [
     title: 'Dashboard',
     href: ROUTES.DASHBOARD,
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Reports',
+    href: ROUTES.REPORTS,
+    icon: FileText,
+  },
+  {
+    title: 'Locations',
+    href: ROUTES.LOCATIONS,
+    icon: MapPin,
+  },
+  {
+    title: 'Team',
+    href: ROUTES.TEAM,
+    icon: Users,
   },
   {
     title: 'Settings',
@@ -31,7 +46,7 @@ export function MobileNav() {
       <Button
         variant="ghost"
         size="icon"
-        className="md:hidden"
+        className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground md:hidden"
         onClick={toggle}
       >
         <Menu className="h-5 w-5" />

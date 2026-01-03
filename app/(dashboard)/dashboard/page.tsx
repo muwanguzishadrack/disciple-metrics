@@ -1,91 +1,88 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  Users,
-  TrendingUp,
-  Calendar,
-  CheckCircle2,
-  Circle,
-  ArrowRight,
-  Activity,
-} from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Combobox } from '@/components/ui/combobox'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PageHeader } from '@/components/layout/page-header'
 import { useProfile } from '@/hooks/use-user'
-import { cn } from '@/lib/utils'
-import Link from 'next/link'
-import { ROUTES } from '@/lib/constants'
+
+const dateFilterOptions = [
+  { value: 'this-week', label: 'This Week' },
+  { value: 'last-week', label: 'Last Week' },
+  { value: 'this-month', label: 'This Month' },
+  { value: 'last-month', label: 'Last Month' },
+  { value: 'past-3-months', label: 'Past 3 Months' },
+]
+
+const fobOptions = [
+  { value: 'fob-1', label: 'FOB 1' },
+  { value: 'fob-2', label: 'FOB 2' },
+  { value: 'fob-3', label: 'FOB 3' },
+  { value: 'fob-4', label: 'FOB 4' },
+  { value: 'fob-5', label: 'FOB 5' },
+]
+
+const locationOptions = [
+  { value: 'location-1', label: 'Location 1' },
+  { value: 'location-2', label: 'Location 2' },
+  { value: 'location-3', label: 'Location 3' },
+  { value: 'location-4', label: 'Location 4' },
+  { value: 'location-5', label: 'Location 5' },
+]
 
 const stats = [
-  {
-    title: 'Total Disciples',
-    value: '0',
-    description: 'Start tracking your discipleship',
-    icon: Users,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
-  },
-  {
-    title: 'Growth Rate',
-    value: '0%',
-    description: 'This month',
-    icon: TrendingUp,
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
-  },
-  {
-    title: 'Sessions',
-    value: '0',
-    description: 'This week',
-    icon: Calendar,
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500/10',
-  },
-  {
-    title: 'Completed',
-    value: '0',
-    description: 'Milestones achieved',
-    icon: CheckCircle2,
-    color: 'text-orange-500',
-    bgColor: 'bg-orange-500/10',
-  },
+  { title: '1st Service', value: '0', icon: Clock },
+  { title: '2nd Service', value: '0', icon: Clock },
+  { title: 'YXP', value: '0', icon: Sparkles },
+  { title: 'Kids', value: '0', icon: Baby },
+  { title: 'Local', value: '0', icon: Globe },
+  { title: 'Hosting Center 1', value: '0', icon: Building },
+  { title: 'Hosting Center 2', value: '0', icon: Building },
+  { title: 'Overall', value: '0', icon: TrendingUp },
 ]
 
-const gettingStarted = [
-  {
-    title: 'Complete your profile',
-    description: 'Add your name and profile information',
-    completed: false,
-    href: ROUTES.SETTINGS_PROFILE,
-  },
-  {
-    title: 'Set up your password',
-    description: 'Ensure your account is secure',
-    completed: false,
-    href: ROUTES.SETTINGS_PASSWORD,
-  },
-  {
-    title: 'Choose your theme',
-    description: 'Customize the app appearance',
-    completed: false,
-    href: ROUTES.SETTINGS_APPEARANCE,
-  },
-  {
-    title: 'Add your first disciple',
-    description: 'Start tracking discipleship journeys',
-    completed: false,
-    href: ROUTES.DASHBOARD,
-  },
-]
-
-const recentActivity = [
-  {
-    title: 'Account created',
-    description: 'Welcome to Disciple Metrics!',
-    time: 'Just now',
-  },
-]
+const recentReports: {
+  id: string
+  date: string
+  sv1: number
+  sv2: number
+  yxp: number
+  kids: number
+  local: number
+  hc1: number
+  hc2: number
+  total: number
+}[] = []
 
 const container = {
   hidden: { opacity: 0 },
@@ -104,29 +101,247 @@ const item = {
 
 export default function DashboardPage() {
   const { data: profile, isLoading } = useProfile()
+  const [dateFilter, setDateFilter] = useState('this-week')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+
+  // Record PGA Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [pgaDate, setPgaDate] = useState('')
+  const [pgaFob, setPgaFob] = useState('')
+  const [pgaLocation, setPgaLocation] = useState('')
+  const [pgaSv1, setPgaSv1] = useState(0)
+  const [pgaSv2, setPgaSv2] = useState(0)
+  const [pgaYxp, setPgaYxp] = useState(0)
+  const [pgaKids, setPgaKids] = useState(0)
+  const [pgaLocal, setPgaLocal] = useState(0)
+  const [pgaHc1, setPgaHc1] = useState(0)
+  const [pgaHc2, setPgaHc2] = useState(0)
+
+  const pgaTotal = useMemo(() => {
+    return pgaSv1 + pgaSv2 + pgaYxp + pgaKids + pgaLocal + pgaHc1 + pgaHc2
+  }, [pgaSv1, pgaSv2, pgaYxp, pgaKids, pgaLocal, pgaHc1, pgaHc2])
+
+  const resetPgaForm = () => {
+    setPgaDate('')
+    setPgaFob('')
+    setPgaLocation('')
+    setPgaSv1(0)
+    setPgaSv2(0)
+    setPgaYxp(0)
+    setPgaKids(0)
+    setPgaLocal(0)
+    setPgaHc1(0)
+    setPgaHc2(0)
+  }
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setDialogOpen(open)
+    if (!open) {
+      resetPgaForm()
+    }
+  }
 
   const firstName = profile?.first_name || 'there'
 
+  // Pagination calculations
+  const totalRows = recentReports.length
+  const totalPages = Math.ceil(totalRows / rowsPerPage)
+  const startIndex = (currentPage - 1) * rowsPerPage
+  const endIndex = startIndex + rowsPerPage
+  const paginatedReports = recentReports.slice(startIndex, endIndex)
+
+  const goToFirstPage = () => setCurrentPage(1)
+  const goToLastPage = () => setCurrentPage(totalPages)
+  const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1))
+  const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+
+  const handleRowsPerPageChange = (value: string) => {
+    setRowsPerPage(Number(value))
+    setCurrentPage(1)
+  }
+
   return (
-    <div className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col gap-2"
-      >
-        <h1 className="text-2xl font-bold tracking-tight">
-          {isLoading ? (
-            <Skeleton className="h-8 w-48" />
+    <>
+      <PageHeader
+        title={
+          isLoading ? (
+            <Skeleton className="h-8 w-48 bg-primary-foreground/20" />
           ) : (
             `Welcome back, ${firstName}!`
-          )}
-        </h1>
-        <p className="text-muted-foreground">
-          Here&apos;s an overview of your discipleship metrics.
-        </p>
-      </motion.div>
+          )
+        }
+        description="Here's an overview of your discipleship metrics."
+        actions={
+          <>
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-40 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {dateFilterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+                  Record PGA
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Record PGA</DialogTitle>
+                  <DialogDescription>
+                    Enter the attendance data for this service.
+                  </DialogDescription>
+                </DialogHeader>
 
-      <motion.div
+                <div className="grid gap-4 py-4">
+                  {/* Date */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="pga-date">Date</Label>
+                    <Input
+                      id="pga-date"
+                      type="date"
+                      value={pgaDate}
+                      onChange={(e) => setPgaDate(e.target.value)}
+                    />
+                  </div>
+
+                  {/* FOB and Location */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label>FOB</Label>
+                      <Combobox
+                        options={fobOptions}
+                        value={pgaFob}
+                        onValueChange={setPgaFob}
+                        placeholder="Select FOB..."
+                        searchPlaceholder="Search FOB..."
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Location</Label>
+                      <Combobox
+                        options={locationOptions}
+                        value={pgaLocation}
+                        onValueChange={setPgaLocation}
+                        placeholder="Select location..."
+                        searchPlaceholder="Search location..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Attendance Numbers */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="pga-sv1">1st Service (1SV)</Label>
+                      <Input
+                        id="pga-sv1"
+                        type="number"
+                        min="0"
+                        value={pgaSv1}
+                        onChange={(e) => setPgaSv1(Number(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="pga-sv2">2nd Service (2SV)</Label>
+                      <Input
+                        id="pga-sv2"
+                        type="number"
+                        min="0"
+                        value={pgaSv2}
+                        onChange={(e) => setPgaSv2(Number(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="pga-yxp">YXP</Label>
+                      <Input
+                        id="pga-yxp"
+                        type="number"
+                        min="0"
+                        value={pgaYxp}
+                        onChange={(e) => setPgaYxp(Number(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="pga-kids">Kids</Label>
+                      <Input
+                        id="pga-kids"
+                        type="number"
+                        min="0"
+                        value={pgaKids}
+                        onChange={(e) => setPgaKids(Number(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="pga-local">Local</Label>
+                      <Input
+                        id="pga-local"
+                        type="number"
+                        min="0"
+                        value={pgaLocal}
+                        onChange={(e) => setPgaLocal(Number(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="pga-hc1">Hosting Center 1 (HC1)</Label>
+                      <Input
+                        id="pga-hc1"
+                        type="number"
+                        min="0"
+                        value={pgaHc1}
+                        onChange={(e) => setPgaHc1(Number(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="pga-hc2">Hosting Center 2 (HC2)</Label>
+                      <Input
+                        id="pga-hc2"
+                        type="number"
+                        min="0"
+                        value={pgaHc2}
+                        onChange={(e) => setPgaHc2(Number(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Total</Label>
+                      <div className="flex h-10 items-center rounded-md border bg-muted px-3 font-medium">
+                        {pgaTotal}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => setDialogOpen(false)}>
+                    Save
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
+        }
+      />
+
+      <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-6">
+        <motion.div
         variants={container}
         initial="hidden"
         animate="show"
@@ -134,122 +349,136 @@ export default function DashboardPage() {
       >
         {stats.map((stat) => (
           <motion.div key={stat.title} variants={item}>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <div className={cn('p-2 rounded-lg', stat.bgColor)}>
-                  <stat.icon className={cn('h-4 w-4', stat.color)} />
+            <Card className="rounded-lg">
+              <div className="flex items-stretch p-4">
+                <div className="flex-1 flex flex-col justify-center">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </CardTitle>
+                  <div className="text-xl font-medium">{stat.value}</div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">
-                  {stat.description}
-                </p>
-              </CardContent>
+                <div className="flex items-center justify-center rounded-lg h-12 w-12 bg-[#008cff]/10">
+                  <stat.icon className="h-6 w-6 text-[#008cff] stroke-[1.5]" />
+                </div>
+              </div>
             </Card>
           </motion.div>
         ))}
       </motion.div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-accent" />
-                Getting Started
-              </CardTitle>
-              <CardDescription>
-                Complete these steps to get the most out of Disciple Metrics
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {gettingStarted.map((step, index) => (
-                  <Link
-                    key={index}
-                    href={step.href}
-                    className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors group"
-                  >
-                    {step.completed ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    ) : (
-                      <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={cn(
-                          'text-sm font-medium',
-                          step.completed && 'line-through text-muted-foreground'
-                        )}
-                      >
-                        {step.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {step.description}
-                      </p>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                  </Link>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Recent PGA Reports Table */}
+        <Card className="rounded-lg">
+          <CardHeader>
+            <CardTitle className="text-xl font-medium">Recent PGA Reports</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>1SV</TableHead>
+                  <TableHead>2SV</TableHead>
+                  <TableHead>YXP</TableHead>
+                  <TableHead>Kids</TableHead>
+                  <TableHead>Local</TableHead>
+                  <TableHead>HC1</TableHead>
+                  <TableHead>HC2</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedReports.length > 0 ? (
+                  paginatedReports.map((report) => (
+                    <TableRow key={report.id}>
+                      <TableCell>{report.date}</TableCell>
+                      <TableCell>{report.sv1}</TableCell>
+                      <TableCell>{report.sv2}</TableCell>
+                      <TableCell>{report.yxp}</TableCell>
+                      <TableCell>{report.kids}</TableCell>
+                      <TableCell>{report.local}</TableCell>
+                      <TableCell>{report.hc1}</TableCell>
+                      <TableCell>{report.hc2}</TableCell>
+                      <TableCell className="font-medium">{report.total}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
+                      No reports yet
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
-                Recent Activity
-              </CardTitle>
-              <CardDescription>
-                Your latest actions and updates
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {recentActivity.length > 0 ? (
-                <div className="space-y-4">
-                  {recentActivity.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-start gap-3 p-3 rounded-lg bg-muted/50"
-                    >
-                      <div className="h-2 w-2 rounded-full bg-primary mt-2" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{activity.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {activity.description}
-                        </p>
-                      </div>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        {activity.time}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Activity className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm">No recent activity</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+            {/* Pagination */}
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Rows per page:</span>
+                <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>
+                  <SelectTrigger className="w-16 h-8 focus:ring-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-muted-foreground mr-2">
+                  {totalRows > 0 ? `${startIndex + 1}-${Math.min(endIndex, totalRows)} of ${totalRows}` : '0 of 0'}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={goToFirstPage}
+                  disabled={currentPage === 1 || totalRows === 0}
+                >
+                  <ChevronFirst className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1 || totalRows === 0}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages || totalRows === 0}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={goToLastPage}
+                  disabled={currentPage === totalPages || totalRows === 0}
+                >
+                  <ChevronLast className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </>
   )
 }
