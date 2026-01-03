@@ -36,7 +36,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Input } from '@/components/ui/input'
+import { format } from 'date-fns'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Skeleton } from '@/components/ui/skeleton'
 import { usePgaReports, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
 import { useToast } from '@/hooks/use-toast'
@@ -119,20 +120,22 @@ export default function ReportsPage() {
             </Select>
             {dateFilter === 'custom' && (
               <>
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-36 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground"
+                <DatePicker
+                  value={startDate ? new Date(startDate) : undefined}
+                  onChange={(date) =>
+                    setStartDate(date ? format(date, 'yyyy-MM-dd') : '')
+                  }
                   placeholder="Start date"
+                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20"
                 />
                 <span className="text-primary-foreground">to</span>
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-36 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground"
+                <DatePicker
+                  value={endDate ? new Date(endDate) : undefined}
+                  onChange={(date) =>
+                    setEndDate(date ? format(date, 'yyyy-MM-dd') : '')
+                  }
                   placeholder="End date"
+                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20"
                 />
               </>
             )}

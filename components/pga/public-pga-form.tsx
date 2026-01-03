@@ -4,7 +4,9 @@ import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
+import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Combobox } from '@/components/ui/combobox'
@@ -135,7 +137,13 @@ export function PublicPgaForm({ onSuccess }: PublicPgaFormProps) {
                 <FormItem>
                   <FormLabel>Date</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <DatePicker
+                      value={field.value ? new Date(field.value) : undefined}
+                      onChange={(date) =>
+                        field.onChange(date ? format(date, 'yyyy-MM-dd') : '')
+                      }
+                      placeholder="Select date"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

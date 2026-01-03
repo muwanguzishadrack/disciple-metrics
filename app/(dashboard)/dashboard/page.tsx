@@ -23,6 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { format } from 'date-fns'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Combobox } from '@/components/ui/combobox'
@@ -347,11 +349,12 @@ export default function DashboardPage() {
                   {/* Date */}
                   <div className="grid gap-2">
                     <Label htmlFor="pga-date">Date</Label>
-                    <Input
-                      id="pga-date"
-                      type="date"
-                      value={pgaDate}
-                      onChange={(e) => setPgaDate(e.target.value)}
+                    <DatePicker
+                      value={pgaDate ? new Date(pgaDate) : undefined}
+                      onChange={(date) =>
+                        setPgaDate(date ? format(date, 'yyyy-MM-dd') : '')
+                      }
+                      placeholder="Select date"
                     />
                   </div>
 
