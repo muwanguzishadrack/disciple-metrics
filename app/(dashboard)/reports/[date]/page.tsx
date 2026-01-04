@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical, Search } from 'lucide-react'
+import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
@@ -52,6 +52,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { usePgaReportByDate, useFobs, useUpdatePgaEntry, useDeletePgaEntry, type LocationEntry } from '@/hooks/use-pga'
 import { useToast } from '@/hooks/use-toast'
 import { useUserRole } from '@/hooks/use-user'
+import { exportToExcel } from '@/lib/export'
 
 const container = {
   hidden: { opacity: 0 },
@@ -201,6 +202,27 @@ export default function SingleReportPage() {
     setCurrentPage(1)
   }
 
+  const handleExportLocations = () => {
+    exportToExcel<LocationEntry>({
+      data: filteredLocations,
+      columns: [
+        { header: 'Location', accessor: 'location' },
+        { header: 'FOB', accessor: 'fob' },
+        { header: '1SV', accessor: 'sv1' },
+        { header: '2SV', accessor: 'sv2' },
+        { header: 'YXP', accessor: 'yxp' },
+        { header: 'Kids', accessor: 'kids' },
+        { header: 'Local', accessor: 'local' },
+        { header: 'HC1', accessor: 'hc1' },
+        { header: 'HC2', accessor: 'hc2' },
+        { header: 'Total', accessor: 'total' },
+      ],
+      sheetName: 'Location Report',
+      fileName: `pga_report_${reportDate}`,
+      includeTotals: true,
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -287,22 +309,22 @@ export default function SingleReportPage() {
         <Card className="rounded-lg">
           <CardContent className="pt-6">
             {/* Search and Filter Bar */}
-            {(canSearchLocations || canFilterByFob) && (
-              <div className="flex items-center justify-between mb-4">
-                {canSearchLocations && (
-                  <div className="relative w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search location..."
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value)
-                        setCurrentPage(1)
-                      }}
-                      className="pl-9"
-                    />
-                  </div>
-                )}
+            <div className="flex items-center justify-between mb-4">
+              {canSearchLocations && (
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search location..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value)
+                      setCurrentPage(1)
+                    }}
+                    className="pl-9"
+                  />
+                </div>
+              )}
+              <div className="flex items-center gap-2">
                 {canFilterByFob && (
                   <Select value={fobFilter} onValueChange={(value) => {
                     setFobFilter(value)
@@ -321,8 +343,16 @@ export default function SingleReportPage() {
                     </SelectContent>
                   </Select>
                 )}
+                <Button
+                  variant="outline"
+                  onClick={handleExportLocations}
+                  disabled={filteredLocations.length === 0}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                </Button>
               </div>
-            )}
+            </div>
 
             <Table>
               <TableHeader>

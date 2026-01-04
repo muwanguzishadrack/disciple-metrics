@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react'
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical } from 'lucide-react'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -43,6 +43,7 @@ import { usePgaReports, useDeletePgaReport, type PgaReportWithTotals } from '@/h
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { useUserRole } from '@/hooks/use-user'
+import { exportToExcel } from '@/lib/export'
 
 const dateFilterOptions = [
   { value: 'all-time', label: 'All Time' },
@@ -102,7 +103,7 @@ export default function ReportsPage() {
   }
 
   // Filter reports by date
-  const filteredReports = pgaReports.filter((report) => {
+  const filteredReports = pgaReports.filter((report: PgaReportWithTotals) => {
     const range = getDateRange(dateFilter)
     if (!range) return true // all-time or invalid custom range
 
@@ -126,6 +127,26 @@ export default function ReportsPage() {
   const handleRowsPerPageChange = (value: string) => {
     setRowsPerPage(Number(value))
     setCurrentPage(1)
+  }
+
+  const handleExportReports = () => {
+    exportToExcel<PgaReportWithTotals>({
+      data: filteredReports,
+      columns: [
+        { header: 'Date', accessor: 'date' },
+        { header: '1SV', accessor: (r) => r.totals.sv1 },
+        { header: '2SV', accessor: (r) => r.totals.sv2 },
+        { header: 'YXP', accessor: (r) => r.totals.yxp },
+        { header: 'Kids', accessor: (r) => r.totals.kids },
+        { header: 'Local', accessor: (r) => r.totals.local },
+        { header: 'HC1', accessor: (r) => r.totals.hc1 },
+        { header: 'HC2', accessor: (r) => r.totals.hc2 },
+        { header: 'Total', accessor: (r) => r.totals.total },
+      ],
+      sheetName: 'PGA Reports',
+      fileName: 'pga_reports',
+      includeTotals: true,
+    })
   }
 
   const handleConfirmDelete = async () => {
@@ -154,6 +175,15 @@ export default function ReportsPage() {
         description="View and manage PGA attendance reports"
         actions={
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={handleExportReports}
+              disabled={filteredReports.length === 0}
+              className="border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export
+            </Button>
             <Select value={dateFilter} onValueChange={setDateFilter}>
               <SelectTrigger className="w-40 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground">
                 <SelectValue />
