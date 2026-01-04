@@ -102,6 +102,27 @@ export function useResetPassword() {
   })
 }
 
+export function useSetPassword() {
+  const supabase = createClient()
+  const router = useRouter()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: ResetPasswordFormData) => {
+      const { error } = await supabase.auth.updateUser({
+        password: data.password,
+      })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+      router.push(ROUTES.DASHBOARD)
+      router.refresh()
+    },
+  })
+}
+
 export function useLogout() {
   const supabase = createClient()
   const router = useRouter()

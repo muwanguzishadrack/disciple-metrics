@@ -29,6 +29,7 @@ export const RATE_LIMIT_CONFIGS = {
   signup: { maxAttempts: 3, windowMs: 60 * 60 * 1000 }, // 3 attempts per hour
   forgotPassword: { maxAttempts: 3, windowMs: 60 * 60 * 1000 }, // 3 attempts per hour
   resetPassword: { maxAttempts: 5, windowMs: 15 * 60 * 1000 }, // 5 attempts per 15 minutes
+  invite: { maxAttempts: 10, windowMs: 60 * 60 * 1000 }, // 10 invites per hour
 } as const
 
 export type RateLimitAction = keyof typeof RATE_LIMIT_CONFIGS

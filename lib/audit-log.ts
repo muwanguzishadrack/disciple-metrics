@@ -15,6 +15,12 @@ export type AuditAction =
   | 'EMAIL_VERIFIED'
   | 'ACCOUNT_DELETED'
   | 'SESSION_EXPIRED'
+  | 'TEAM_INVITE_SENT'
+  | 'TEAM_INVITE_RESENT'
+  | 'TEAM_INVITE_CANCELLED'
+  | 'TEAM_INVITE_ACCEPTED'
+  | 'TEAM_MEMBER_UPDATED'
+  | 'TEAM_MEMBER_REMOVED'
 
 export interface AuditLogEntry {
   action: AuditAction
