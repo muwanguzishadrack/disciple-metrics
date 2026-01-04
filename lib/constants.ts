@@ -8,7 +8,6 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
   VERIFY_EMAIL: '/verify-email',
-  SUBMIT_PGA: '/whm-submit-pga',
   DASHBOARD: '/dashboard',
   TEAM: '/team',
   LOCATIONS: '/locations',
