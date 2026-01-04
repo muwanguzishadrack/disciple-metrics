@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent } from '@/components/ui/card'
@@ -66,12 +66,57 @@ export default function ReportsPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [deleteTarget, setDeleteTarget] = useState<PgaReportWithTotals | null>(null)
 
+  // Reset to first page when filter changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [dateFilter, startDate, endDate])
+
+  // Date range helper
+  const getDateRange = (filter: string): { start: Date; end: Date } | null => {
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+    switch (filter) {
+      case 'this-month': {
+        const start = new Date(today.getFullYear(), today.getMonth(), 1)
+        const end = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        return { start, end }
+      }
+      case 'last-month': {
+        const start = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+        const end = new Date(today.getFullYear(), today.getMonth(), 0)
+        return { start, end }
+      }
+      case 'past-3-months': {
+        const start = new Date(today.getFullYear(), today.getMonth() - 3, today.getDate())
+        const end = today
+        return { start, end }
+      }
+      case 'custom': {
+        if (!startDate || !endDate) return null
+        return { start: new Date(startDate), end: new Date(endDate) }
+      }
+      default:
+        return null // 'all-time' - no filtering
+    }
+  }
+
+  // Filter reports by date
+  const filteredReports = pgaReports.filter((report) => {
+    const range = getDateRange(dateFilter)
+    if (!range) return true // all-time or invalid custom range
+
+    const [year, month, day] = report.date.split('-').map(Number)
+    const reportDate = new Date(year, month - 1, day)
+    return reportDate >= range.start && reportDate <= range.end
+  })
+
   // Pagination calculations
-  const totalRows = pgaReports.length
+  const totalRows = filteredReports.length
   const totalPages = Math.ceil(totalRows / rowsPerPage)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
-  const paginatedReports = pgaReports.slice(startIndex, endIndex)
+  const paginatedReports = filteredReports.slice(startIndex, endIndex)
 
   const goToFirstPage = () => setCurrentPage(1)
   const goToLastPage = () => setCurrentPage(totalPages)
@@ -129,7 +174,7 @@ export default function ReportsPage() {
                     setStartDate(date ? format(date, 'yyyy-MM-dd') : '')
                   }
                   placeholder="Start date"
-                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20"
+                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-transparent hover:text-primary-foreground"
                 />
                 <span className="text-primary-foreground">to</span>
                 <DatePicker
@@ -138,7 +183,7 @@ export default function ReportsPage() {
                     setEndDate(date ? format(date, 'yyyy-MM-dd') : '')
                   }
                   placeholder="End date"
-                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20"
+                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-transparent hover:text-primary-foreground"
                 />
               </>
             )}
