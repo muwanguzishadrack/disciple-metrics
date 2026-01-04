@@ -449,11 +449,11 @@ export default function SingleReportPage() {
         </Card>
       </div>
 
-      {/* Edit Location Dialog */}
+      {/* Edit PGA Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Edit Location</DialogTitle>
+            <DialogTitle>Edit PGA</DialogTitle>
             <DialogDescription>
               Update the attendance data for {editingLocation?.location}.
             </DialogDescription>
