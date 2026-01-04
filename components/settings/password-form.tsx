@@ -148,7 +148,7 @@ export function PasswordForm() {
               <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
                 <div
                   className={cn('h-full transition-all', passwordStrength.color)}
-                  style={{ width: `${(passwordStrength.score / 6) * 100}%` }}
+                  style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
                 />
               </div>
               <span className="text-xs font-medium">{passwordStrength.label}</span>
