@@ -3,13 +3,21 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, LayoutDashboard, Users, MapPin, FileText, Settings } from 'lucide-react'
+import { Menu, X, LayoutDashboard, Users, MapPin, FileText, Settings, LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebarStore } from '@/stores/use-sidebar-store'
 import { ROUTES, APP_NAME } from '@/lib/constants'
+import { type RoleName } from '@/hooks/use-user'
 
-const mobileLinks = [
+type MobileLink = {
+  title: string
+  href: string
+  icon: LucideIcon
+  roles?: RoleName[] // If undefined, visible to all roles
+}
+
+const mobileLinks: MobileLink[] = [
   {
     title: 'Dashboard',
     href: ROUTES.DASHBOARD,
@@ -24,11 +32,13 @@ const mobileLinks = [
     title: 'Locations',
     href: ROUTES.LOCATIONS,
     icon: MapPin,
+    roles: ['admin', 'fob_leader'],
   },
   {
     title: 'Team',
     href: ROUTES.TEAM,
     icon: Users,
+    roles: ['admin'],
   },
   {
     title: 'Settings',
@@ -37,9 +47,20 @@ const mobileLinks = [
   },
 ]
 
-export function MobileNav() {
+interface MobileNavProps {
+  userRole?: RoleName
+}
+
+export function MobileNav({ userRole }: MobileNavProps) {
   const pathname = usePathname()
   const { isOpen, toggle, close } = useSidebarStore()
+
+  // Filter nav links based on user role
+  const filteredLinks = mobileLinks.filter((link) => {
+    if (!link.roles) return true // Visible to all if no roles specified
+    if (!userRole) return false // Hide role-restricted links while loading
+    return link.roles.includes(userRole)
+  })
 
   return (
     <>
@@ -79,7 +100,7 @@ export function MobileNav() {
               </div>
 
               <div className="space-y-1 p-2">
-                {mobileLinks.map((link) => {
+                {filteredLinks.map((link) => {
                   const isActive =
                     pathname === link.href ||
                     pathname.startsWith(`${link.href}/`)

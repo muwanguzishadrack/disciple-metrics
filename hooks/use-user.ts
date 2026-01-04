@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 
+export type RoleName = 'admin' | 'fob_leader' | 'pastor' | null
+
 export function useUser() {
   const supabase = createClient()
 
@@ -70,5 +72,24 @@ export function useUpdateProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
+  })
+}
+
+export function useUserRole() {
+  const supabase = createClient()
+  const { data: user } = useUser()
+
+  return useQuery({
+    queryKey: ['user-role', user?.id],
+    queryFn: async () => {
+      if (!user) return null
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).rpc('get_user_role', {
+        p_user_id: user.id,
+      })
+      if (error) throw error
+      return data as RoleName
+    },
+    enabled: !!user,
   })
 }
