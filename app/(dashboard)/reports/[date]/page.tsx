@@ -74,6 +74,9 @@ export default function SingleReportPage() {
   const { toast } = useToast()
   const { data: userRole } = useUserRole()
   const isAdmin = userRole === 'admin'
+  const isFobLeader = userRole === 'fob_leader'
+  const canSearchLocations = isAdmin || isFobLeader
+  const canFilterByFob = isAdmin
   const reportDate = params.date as string
   const { data: report, isLoading } = usePgaReportByDate(reportDate)
   const { data: fobs = [] } = useFobs()
@@ -284,36 +287,42 @@ export default function SingleReportPage() {
         <Card className="rounded-lg">
           <CardContent className="pt-6">
             {/* Search and Filter Bar */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search location..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value)
+            {(canSearchLocations || canFilterByFob) && (
+              <div className="flex items-center justify-between mb-4">
+                {canSearchLocations && (
+                  <div className="relative w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search location..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        setCurrentPage(1)
+                      }}
+                      className="pl-9"
+                    />
+                  </div>
+                )}
+                {canFilterByFob && (
+                  <Select value={fobFilter} onValueChange={(value) => {
+                    setFobFilter(value)
                     setCurrentPage(1)
-                  }}
-                  className="pl-9"
-                />
+                  }}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All FOBs</SelectItem>
+                      {fobOptions.map((fob) => (
+                        <SelectItem key={fob.value} value={fob.value}>
+                          {fob.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
-              <Select value={fobFilter} onValueChange={(value) => {
-                setFobFilter(value)
-                setCurrentPage(1)
-              }}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All FOBs</SelectItem>
-                  {fobOptions.map((fob) => (
-                    <SelectItem key={fob.value} value={fob.value}>
-                      {fob.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            )}
 
             <Table>
               <TableHeader>
