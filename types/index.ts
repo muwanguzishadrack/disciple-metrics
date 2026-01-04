@@ -84,3 +84,18 @@ export const ROLE_DISPLAY_NAMES: Record<RoleName, string> = {
   fob_leader: 'FOB Leader',
   pastor: 'Pastor',
 } as const
+
+// Location management types
+export interface LocationWithFob {
+  id: string
+  name: string
+  fob_id: string
+  pastor: string | null
+  contact: string | null
+  created_at: string | null
+  updated_at: string | null
+  fob: {
+    id: string
+    name: string
+  }
+}

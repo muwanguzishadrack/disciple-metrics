@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { User, Settings, LogOut } from 'lucide-react'
+import { Settings, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -56,12 +56,6 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href={ROUTES.SETTINGS_PROFILE}>
-              <User className="mr-2 h-4 w-4" />
-              Profile
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={ROUTES.SETTINGS}>
               <Settings className="mr-2 h-4 w-4" />
