@@ -51,6 +51,7 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { usePgaReportByDate, useFobs, useUpdatePgaEntry, useDeletePgaEntry, type LocationEntry } from '@/hooks/use-pga'
 import { useToast } from '@/hooks/use-toast'
+import { useUserRole } from '@/hooks/use-user'
 
 const container = {
   hidden: { opacity: 0 },
@@ -71,6 +72,8 @@ export default function SingleReportPage() {
   const params = useParams()
   const router = useRouter()
   const { toast } = useToast()
+  const { data: userRole } = useUserRole()
+  const isAdmin = userRole === 'admin'
   const reportDate = params.date as string
   const { data: report, isLoading } = usePgaReportByDate(reportDate)
   const { data: fobs = [] } = useFobs()
@@ -351,12 +354,14 @@ export default function SingleReportPage() {
                             <DropdownMenuItem onClick={() => handleEditClick(location)}>
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => setDeleteTarget(location)}
-                            >
-                              Delete
-                            </DropdownMenuItem>
+                            {isAdmin && (
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => setDeleteTarget(location)}
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

@@ -42,6 +42,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { usePgaReports, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
+import { useUserRole } from '@/hooks/use-user'
 
 const dateFilterOptions = [
   { value: 'all-time', label: 'All Time' },
@@ -54,6 +55,8 @@ const dateFilterOptions = [
 export default function ReportsPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const { data: userRole } = useUserRole()
+  const isAdmin = userRole === 'admin'
   const { data: pgaReports = [], isLoading } = usePgaReports()
   const deletePgaReport = useDeletePgaReport()
   const [dateFilter, setDateFilter] = useState('all-time')
@@ -194,12 +197,14 @@ export default function ReportsPage() {
                             <DropdownMenuItem onClick={() => router.push(`/reports/${report.date}`)}>
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => setDeleteTarget(report)}
-                            >
-                              Delete
-                            </DropdownMenuItem>
+                            {isAdmin && (
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => setDeleteTarget(report)}
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

@@ -52,7 +52,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/layout/page-header'
-import { useProfile } from '@/hooks/use-user'
+import { useProfile, useUserRole } from '@/hooks/use-user'
 import { usePgaReports, useFobs, useLocations, useCreatePgaEntry, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
@@ -128,6 +128,8 @@ export default function DashboardPage() {
   const router = useRouter()
   const { toast } = useToast()
   const { data: profile, isLoading: isProfileLoading } = useProfile()
+  const { data: userRole } = useUserRole()
+  const isAdmin = userRole === 'admin'
   const { data: pgaReports = [], isLoading: isReportsLoading } = usePgaReports()
   const { data: fobs = [] } = useFobs()
   const { data: locations = [] } = useLocations()
@@ -567,12 +569,14 @@ export default function DashboardPage() {
                             <DropdownMenuItem onClick={() => router.push(`/reports/${report.date}`)}>
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => setDeleteTarget(report)}
-                            >
-                              Delete
-                            </DropdownMenuItem>
+                            {isAdmin && (
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => setDeleteTarget(report)}
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
