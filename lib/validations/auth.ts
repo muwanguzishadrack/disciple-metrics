@@ -34,6 +34,8 @@ export const signupSchema = z
     email: z.string().email('Please enter a valid email address'),
     password: passwordSchema,
     confirmPassword: z.string(),
+    fobId: z.string().uuid('Please select a FOB'),
+    locationId: z.string().uuid('Please select a location'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

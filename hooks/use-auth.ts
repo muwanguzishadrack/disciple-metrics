@@ -60,7 +60,8 @@ export function useSignup() {
       return result
     },
     onSuccess: () => {
-      router.push(ROUTES.VERIFY_EMAIL)
+      router.push(ROUTES.DASHBOARD)
+      router.refresh()
     },
   })
 }

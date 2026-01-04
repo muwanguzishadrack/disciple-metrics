@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { auditLog } from '@/lib/audit-log'
 import { signupSchema } from '@/lib/validations/auth'
@@ -44,10 +45,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { email, password, firstName, lastName } = result.data
+    const { email, password, firstName, lastName, locationId } = result.data
     const supabase = await createClient()
+    const adminSupabase = createAdminClient()
 
     const origin = request.headers.get('origin') || ''
+
+    // Get Pastor role ID
+    const { data: pastorRole, error: roleError } = await adminSupabase
+      .from('roles')
+      .select('id')
+      .eq('name', 'pastor')
+      .single()
+
+    if (roleError || !pastorRole) {
+      console.error('Failed to get pastor role:', roleError)
+      return NextResponse.json(
+        { error: 'Failed to create account. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    // Check if location is already assigned to someone
+    const { data: existingAssignment } = await adminSupabase
+      .from('user_assignments')
+      .select('id')
+      .eq('location_id', locationId)
+      .maybeSingle()
+
+    if (existingAssignment) {
+      return NextResponse.json(
+        { error: 'This location already has a registered pastor. Please select a different location or contact an administrator.' },
+        { status: 409 }
+      )
+    }
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -71,11 +102,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
+    // Create user assignment with Pastor role
+    if (data.user) {
+      const { error: assignmentError } = await adminSupabase
+        .from('user_assignments')
+        .insert({
+          user_id: data.user.id,
+          role_id: pastorRole.id,
+          fob_id: null, // Pastor assignment only needs location_id
+          location_id: locationId,
+        })
+
+      if (assignmentError) {
+        console.error('Failed to create user assignment:', assignmentError)
+        // Don't fail the signup, but log the error
+        await auditLog({
+          action: 'SIGNUP_ASSIGNMENT_FAILED',
+          userId: data.user.id,
+          ip,
+          details: { email, error: assignmentError.message },
+        })
+      }
+    }
+
     await auditLog({
       action: 'SIGNUP_SUCCESS',
       userId: data.user?.id,
       ip,
-      details: { email },
+      details: { email, locationId },
     })
 
     return NextResponse.json(

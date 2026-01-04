@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, Loader2, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Combobox } from '@/components/ui/combobox'
 import {
   Form,
   FormControl,
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
 import { useSignup } from '@/hooks/use-auth'
+import { useFobs, useLocations } from '@/hooks/use-pga'
 import {
   signupSchema,
   type SignupFormData,
@@ -29,6 +31,8 @@ export function SignupForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { toast } = useToast()
   const signup = useSignup()
+  const { data: fobs, isLoading: fobsLoading } = useFobs()
+  const { data: locations, isLoading: locationsLoading } = useLocations()
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -38,11 +42,42 @@ export function SignupForm() {
       email: '',
       password: '',
       confirmPassword: '',
+      fobId: '',
+      locationId: '',
     },
   })
 
   const password = form.watch('password')
+  const selectedFobId = form.watch('fobId')
   const passwordStrength = calculatePasswordStrength(password)
+
+  // Filter locations by selected FOB
+  const filteredLocations = useMemo(() => {
+    if (!selectedFobId || !locations) return []
+    return locations.filter((loc) => loc.fob_id === selectedFobId)
+  }, [locations, selectedFobId])
+
+  // Reset location when FOB changes
+  useEffect(() => {
+    if (selectedFobId) {
+      form.setValue('locationId', '')
+    }
+  }, [selectedFobId, form])
+
+  // Build options for comboboxes
+  const fobOptions = useMemo(() => {
+    return (fobs || []).map((fob) => ({
+      value: fob.id,
+      label: fob.name,
+    }))
+  }, [fobs])
+
+  const locationOptions = useMemo(() => {
+    return filteredLocations.map((loc) => ({
+      value: loc.id,
+      label: loc.name,
+    }))
+  }, [filteredLocations])
 
   const passwordChecks = [
     { check: password.length >= 8, label: 'At least 8 characters' },
@@ -57,7 +92,7 @@ export function SignupForm() {
       await signup.mutateAsync(data)
       toast({
         title: 'Account created!',
-        description: 'Please check your email to verify your account.',
+        description: 'Welcome to Disciple Metrics.',
       })
     } catch (error) {
       toast({
@@ -123,6 +158,60 @@ export function SignupForm() {
                     placeholder="name@example.com"
                     autoComplete="email"
                     {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.25 }}
+          className="grid grid-cols-2 gap-4"
+        >
+          <FormField
+            control={form.control}
+            name="fobId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>FOB</FormLabel>
+                <FormControl>
+                  <Combobox
+                    options={fobOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder={fobsLoading ? 'Loading...' : 'Select FOB...'}
+                    searchPlaceholder="Search FOB..."
+                    disabled={fobsLoading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="locationId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <FormControl>
+                  <Combobox
+                    options={locationOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder={
+                      !selectedFobId
+                        ? 'Select FOB first'
+                        : locationsLoading
+                          ? 'Loading...'
+                          : 'Select location...'
+                    }
+                    searchPlaceholder="Search location..."
+                    disabled={!selectedFobId || locationsLoading}
                   />
                 </FormControl>
                 <FormMessage />
