@@ -314,7 +314,7 @@ export default function DashboardPage() {
       <PageHeader
         title={
           isProfileLoading ? (
-            <Skeleton className="h-8 w-48 bg-primary-foreground/20" />
+            <Skeleton className="h-8 w-48 bg-[hsl(var(--header-fg)/0.2)]" />
           ) : (
             greeting
           )
@@ -323,7 +323,7 @@ export default function DashboardPage() {
         actions={
           <>
             <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-40 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground">
+              <SelectTrigger className="w-full sm:w-40 justify-center sm:justify-between border-[hsl(var(--header-fg)/0.3)] bg-[hsl(var(--header-fg)/0.1)] text-[hsl(var(--header-fg))]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -336,7 +336,7 @@ export default function DashboardPage() {
             </Select>
             <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
               <DialogTrigger asChild>
-                <Button className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+                <Button className="w-full sm:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90">
                   Record PGA
                 </Button>
               </DialogTrigger>
@@ -475,7 +475,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="gap-2 sm:justify-between">
                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
                     Cancel
                   </Button>
@@ -524,7 +524,7 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
+                  <TableHead className="whitespace-nowrap">Date</TableHead>
                   <TableHead>1SV</TableHead>
                   <TableHead>2SV</TableHead>
                   <TableHead>YXP</TableHead>
@@ -550,7 +550,7 @@ export default function DashboardPage() {
                 ) : paginatedReports.length > 0 ? (
                   paginatedReports.map((report: PgaReportWithTotals) => (
                     <TableRow key={report.id}>
-                      <TableCell>{report.date}</TableCell>
+                      <TableCell className="whitespace-nowrap">{report.date}</TableCell>
                       <TableCell>{report.totals.sv1}</TableCell>
                       <TableCell>{report.totals.sv2}</TableCell>
                       <TableCell>{report.totals.yxp}</TableCell>
@@ -594,7 +594,7 @@ export default function DashboardPage() {
             </Table>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between mt-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Rows per page:</span>
                 <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>

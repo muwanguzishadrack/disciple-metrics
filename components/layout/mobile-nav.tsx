@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, LayoutDashboard, Users, MapPin, FileText, Settings, LucideIcon } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useSidebarStore } from '@/stores/use-sidebar-store'
@@ -13,38 +14,15 @@ import { type RoleName } from '@/hooks/use-user'
 type MobileLink = {
   title: string
   href: string
-  icon: LucideIcon
   roles?: RoleName[] // If undefined, visible to all roles
 }
 
 const mobileLinks: MobileLink[] = [
-  {
-    title: 'Dashboard',
-    href: ROUTES.DASHBOARD,
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'Reports',
-    href: ROUTES.REPORTS,
-    icon: FileText,
-  },
-  {
-    title: 'Locations',
-    href: ROUTES.LOCATIONS,
-    icon: MapPin,
-    roles: ['admin', 'fob_leader'],
-  },
-  {
-    title: 'Team',
-    href: ROUTES.TEAM,
-    icon: Users,
-    roles: ['admin'],
-  },
-  {
-    title: 'Settings',
-    href: ROUTES.SETTINGS,
-    icon: Settings,
-  },
+  { title: 'Dashboard', href: ROUTES.DASHBOARD },
+  { title: 'Reports', href: ROUTES.REPORTS },
+  { title: 'Locations', href: ROUTES.LOCATIONS, roles: ['admin', 'fob_leader'] },
+  { title: 'Team', href: ROUTES.TEAM, roles: ['admin'] },
+  { title: 'Settings', href: ROUTES.SETTINGS },
 ]
 
 interface MobileNavProps {
@@ -66,11 +44,10 @@ export function MobileNav({ userRole }: MobileNavProps) {
     <>
       <Button
         variant="ghost"
-        size="icon"
-        className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground md:hidden"
+        className="!h-12 !w-12 !p-0 text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--header-fg)/0.1)] hover:text-[hsl(var(--header-fg))] md:hidden"
         onClick={toggle}
       >
-        <Menu className="h-5 w-5" />
+        <Menu style={{ width: 32, height: 32 }} />
         <span className="sr-only">Toggle menu</span>
       </Button>
 
@@ -89,17 +66,34 @@ export function MobileNav({ userRole }: MobileNavProps) {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 20 }}
-              className="fixed inset-y-0 left-0 z-50 w-72 border-r bg-card md:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-72 flex flex-col border-r bg-card dark:bg-[hsl(224,50%,10%)] dark:border-[hsl(224,50%,18%)] md:hidden"
             >
-              <div className="flex h-16 items-center justify-between border-b px-4">
-                <span className="text-lg font-semibold">{APP_NAME}</span>
-                <Button variant="ghost" size="icon" onClick={close}>
+              <div className="flex h-16 items-center justify-between border-b dark:border-[hsl(224,50%,18%)] px-4">
+                <div className="relative">
+                  <Image
+                    src="/images/Disciple Metrics Logo 02.svg"
+                    alt="Disciple Metrics"
+                    width={180}
+                    height={45}
+                    style={{ height: 'auto' }}
+                    className="dark:hidden"
+                  />
+                  <Image
+                    src="/images/Disciple Metrics Logo 01.svg"
+                    alt="Disciple Metrics"
+                    width={180}
+                    height={45}
+                    style={{ height: 'auto' }}
+                    className="hidden dark:block"
+                  />
+                </div>
+                <Button variant="ghost" size="icon" onClick={close} className="dark:hover:bg-[hsl(224,50%,15%)]">
                   <X className="h-5 w-5" />
                   <span className="sr-only">Close menu</span>
                 </Button>
               </div>
 
-              <div className="space-y-1 p-2">
+              <div className="flex-1 space-y-2 p-3">
                 {filteredLinks.map((link) => {
                   const isActive =
                     pathname === link.href ||
@@ -110,18 +104,21 @@ export function MobileNav({ userRole }: MobileNavProps) {
                       href={link.href}
                       onClick={close}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                        'block rounded-lg px-4 py-3 text-base font-medium transition-colors',
                         isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                          ? 'bg-primary text-primary-foreground dark:bg-[hsl(213,94%,68%)] dark:text-[hsl(224,71%,3%)]'
+                          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-[hsl(224,50%,15%)]'
                       )}
                     >
-                      <link.icon className="h-5 w-5" />
                       {link.title}
                     </Link>
                   )
                 })}
               </div>
+
+              <p className="p-4 text-xs text-muted-foreground">
+                &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+              </p>
             </motion.nav>
           </>
         )}

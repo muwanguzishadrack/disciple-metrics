@@ -22,12 +22,12 @@ export function UserNav() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          className="h-8 w-8 text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--header-fg)/0.1)] hover:text-[hsl(var(--header-fg))]"
         >
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40" align="end" forceMount>
+      <DropdownMenuContent className="w-40 dark:bg-[hsl(224,50%,10%)] dark:border-[hsl(224,50%,18%)]" align="end" forceMount>
         <DropdownMenuItem asChild>
           <Link href={ROUTES.SETTINGS}>
             <Settings className="mr-2 h-4 w-4" />

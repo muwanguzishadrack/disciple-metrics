@@ -8,7 +8,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <div className="sticky top-0 z-50 bg-primary">
+      <div className="sticky top-0 z-50 bg-[hsl(var(--header-bg))]">
         <Header />
       </div>
       <main className="flex-1">

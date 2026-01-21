@@ -97,7 +97,7 @@ export default function LocationsPage() {
           isAdmin && (
             <Button
               onClick={() => setCreateDialogOpen(true)}
-              className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+              className="w-full sm:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90"
             >
               Add Location
             </Button>
@@ -109,8 +109,8 @@ export default function LocationsPage() {
         <Card className="rounded-lg">
           <CardContent className="pt-6">
             {/* Search and Filter Controls */}
-            <div className="mb-4 flex items-center justify-between">
-              <div className="relative w-64">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search locations..."
@@ -121,7 +121,7 @@ export default function LocationsPage() {
               </div>
               {canFilterByFob && (
                 <Select value={fobFilter} onValueChange={setFobFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40">
                     <SelectValue placeholder="Filter by FOB" />
                   </SelectTrigger>
                   <SelectContent>
@@ -145,7 +145,7 @@ export default function LocationsPage() {
             />
 
             {/* Pagination */}
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">
                   Rows per page:

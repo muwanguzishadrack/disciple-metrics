@@ -20,6 +20,8 @@
     --popover-foreground: 224 71% 8%;
     --primary: 224 71% 12%;
     --primary-foreground: 210 40% 98%;
+    --header-bg: 224 71% 12%;
+    --header-fg: 210 40% 98%;
     --secondary: 220 30% 90%;
     --secondary-foreground: 224 71% 12%;
     --muted: 220 30% 90%;
@@ -47,6 +49,8 @@
     --popover-foreground: 210 40% 98%;
     --primary: 213 94% 68%;
     --primary-foreground: 224 71% 3%;
+    --header-bg: 224 71% 12%;
+    --header-fg: 210 40% 98%;
     --secondary: 224 50% 10%;
     --secondary-foreground: 210 40% 98%;
     --muted: 224 50% 10%;

@@ -21,7 +21,7 @@ export default function TeamPage() {
         actions={
           <Button
             onClick={() => setInviteDialogOpen(true)}
-            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+            className="w-full sm:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90"
           >
             Invite Member
           </Button>

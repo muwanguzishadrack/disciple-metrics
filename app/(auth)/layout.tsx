@@ -26,10 +26,15 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       </div>
 
       {/* Right Panel - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-card p-6 sm:p-8">
-        <div className="w-full max-w-md">
-          {children}
+      <div className="w-full lg:w-1/2 flex flex-col bg-card p-6 sm:p-8">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full max-w-md">
+            {children}
+          </div>
         </div>
+        <p className="text-center text-xs text-muted-foreground lg:hidden">
+          &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
+        </p>
       </div>
     </div>
   )

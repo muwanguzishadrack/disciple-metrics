@@ -174,18 +174,18 @@ export default function ReportsPage() {
         title="Reports"
         description="View and manage PGA attendance reports"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button
               variant="outline"
               onClick={handleExportReports}
               disabled={filteredReports.length === 0}
-              className="border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground"
+              className="w-full sm:w-auto border-[hsl(var(--header-fg)/0.3)] bg-[hsl(var(--header-fg)/0.1)] text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--header-fg)/0.2)] hover:text-[hsl(var(--header-fg))]"
             >
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
             <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-40 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground">
+              <SelectTrigger className="w-full sm:w-40 justify-center sm:justify-between border-[hsl(var(--header-fg)/0.3)] bg-[hsl(var(--header-fg)/0.1)] text-[hsl(var(--header-fg))]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -204,16 +204,16 @@ export default function ReportsPage() {
                     setStartDate(date ? format(date, 'yyyy-MM-dd') : '')
                   }
                   placeholder="Start date"
-                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-transparent hover:text-primary-foreground"
+                  className="w-full sm:w-auto justify-center sm:justify-start text-center sm:text-left border-[hsl(var(--header-fg)/0.3)] bg-[hsl(var(--header-fg)/0.1)] text-[hsl(var(--header-fg))] hover:bg-transparent hover:text-[hsl(var(--header-fg))]"
                 />
-                <span className="text-primary-foreground">to</span>
+                <span className="text-[hsl(var(--header-fg))] text-center">to</span>
                 <DatePicker
                   value={endDate ? new Date(endDate) : undefined}
                   onChange={(date) =>
                     setEndDate(date ? format(date, 'yyyy-MM-dd') : '')
                   }
                   placeholder="End date"
-                  className="w-auto border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-transparent hover:text-primary-foreground"
+                  className="w-full sm:w-auto justify-center sm:justify-start text-center sm:text-left border-[hsl(var(--header-fg)/0.3)] bg-[hsl(var(--header-fg)/0.1)] text-[hsl(var(--header-fg))] hover:bg-transparent hover:text-[hsl(var(--header-fg))]"
                 />
               </>
             )}
@@ -226,7 +226,7 @@ export default function ReportsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
+                  <TableHead className="whitespace-nowrap">Date</TableHead>
                   <TableHead>1SV</TableHead>
                   <TableHead>2SV</TableHead>
                   <TableHead>YXP</TableHead>
@@ -252,7 +252,7 @@ export default function ReportsPage() {
                 ) : paginatedReports.length > 0 ? (
                   paginatedReports.map((report: PgaReportWithTotals) => (
                     <TableRow key={report.id}>
-                      <TableCell>{report.date}</TableCell>
+                      <TableCell className="whitespace-nowrap">{report.date}</TableCell>
                       <TableCell>{report.totals.sv1}</TableCell>
                       <TableCell>{report.totals.sv2}</TableCell>
                       <TableCell>{report.totals.yxp}</TableCell>
@@ -296,7 +296,7 @@ export default function ReportsPage() {
             </Table>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between mt-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Rows per page:</span>
                 <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>

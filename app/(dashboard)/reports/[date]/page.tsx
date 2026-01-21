@@ -309,9 +309,9 @@ export default function SingleReportPage() {
         <Card className="rounded-lg">
           <CardContent className="pt-6">
             {/* Search and Filter Bar */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
               {canSearchLocations && (
-                <div className="relative w-64">
+                <div className="relative w-full sm:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search location..."
@@ -324,13 +324,13 @@ export default function SingleReportPage() {
                   />
                 </div>
               )}
-              <div className="flex items-center gap-2">
+              <div className="flex w-full sm:w-auto items-center gap-2">
                 {canFilterByFob && (
                   <Select value={fobFilter} onValueChange={(value) => {
                     setFobFilter(value)
                     setCurrentPage(1)
                   }}>
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="w-full sm:w-40">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -345,6 +345,7 @@ export default function SingleReportPage() {
                 )}
                 <Button
                   variant="outline"
+                  className="w-full sm:w-auto"
                   onClick={handleExportLocations}
                   disabled={filteredLocations.length === 0}
                 >
@@ -419,7 +420,7 @@ export default function SingleReportPage() {
             </Table>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between mt-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Rows per page:</span>
                 <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>
@@ -598,7 +599,7 @@ export default function SingleReportPage() {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:justify-between">
             <Button variant="outline" onClick={handleEditDialogClose}>
               Cancel
             </Button>
