@@ -18,7 +18,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/hooks/use-toast'
-import { useProfile, useUpdateProfile } from '@/hooks/use-user'
+import { useProfile } from '@/hooks/use-user'
 import { useUpdateEmail } from '@/hooks/use-auth'
 import { profileSchema, type ProfileFormData } from '@/lib/validations/settings'
 import { DeleteAccountDialog } from './delete-account-dialog'
@@ -26,14 +26,11 @@ import { DeleteAccountDialog } from './delete-account-dialog'
 export function ProfileForm() {
   const { toast } = useToast()
   const { data: profile, isLoading } = useProfile()
-  const updateProfile = useUpdateProfile()
   const updateEmail = useUpdateEmail()
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
       email: '',
     },
   })
@@ -41,8 +38,6 @@ export function ProfileForm() {
   useEffect(() => {
     if (profile) {
       form.reset({
-        firstName: profile.first_name || '',
-        lastName: profile.last_name || '',
         email: profile.email || '',
       })
     }
@@ -50,12 +45,6 @@ export function ProfileForm() {
 
   async function onSubmit(data: ProfileFormData) {
     try {
-      // Update profile
-      await updateProfile.mutateAsync({
-        first_name: data.firstName,
-        last_name: data.lastName,
-      })
-
       // Update email if changed
       if (data.email !== profile?.email) {
         await updateEmail.mutateAsync(data.email)
@@ -65,8 +54,8 @@ export function ProfileForm() {
         })
       } else {
         toast({
-          title: 'Profile updated',
-          description: 'Your profile has been updated successfully.',
+          title: 'No changes',
+          description: 'Your email address is already up to date.',
         })
       }
     } catch (error) {
@@ -74,7 +63,7 @@ export function ProfileForm() {
         variant: 'destructive',
         title: 'Error',
         description:
-          error instanceof Error ? error.message : 'Failed to update profile',
+          error instanceof Error ? error.message : 'Failed to update email',
       })
     }
   }
@@ -82,14 +71,6 @@ export function ProfileForm() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-10 w-full" />
-        </div>
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-10 w-full" />
-        </div>
         <div className="space-y-2">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-10 w-full" />
@@ -102,35 +83,6 @@ export function ProfileForm() {
     <div className="space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
           <FormField
             control={form.control}
             name="email"
@@ -150,9 +102,9 @@ export function ProfileForm() {
 
           <Button
             type="submit"
-            disabled={updateProfile.isPending || updateEmail.isPending}
+            disabled={updateEmail.isPending}
           >
-            {(updateProfile.isPending || updateEmail.isPending) && (
+            {updateEmail.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
             Save changes

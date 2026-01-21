@@ -35,8 +35,6 @@ export async function GET() {
         `
         id,
         email,
-        first_name,
-        last_name,
         created_at,
         user_assignments (
           role:roles (id, name, description),
@@ -57,8 +55,6 @@ export async function GET() {
       return {
         id: profile.id,
         email: profile.email,
-        firstName: profile.first_name,
-        lastName: profile.last_name,
         role: assignment?.role || null,
         fob: assignment?.fob || null,
         location: assignment?.location || null,

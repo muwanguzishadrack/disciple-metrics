@@ -48,11 +48,7 @@ export function RemoveMemberDialog({
     }
   }
 
-  const memberName = member
-    ? `${member.firstName || ''} ${member.lastName || ''}`.trim() ||
-      member.email ||
-      'this member'
-    : ''
+  const memberEmail = member?.email || 'this member'
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -60,7 +56,7 @@ export function RemoveMemberDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Remove Team Member</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to remove {memberName} from the team? This
+            Are you sure you want to remove {memberEmail} from the team? This
             action cannot be undone and will delete their account.
           </AlertDialogDescription>
         </AlertDialogHeader>

@@ -8,7 +8,9 @@ import type {
   InviteMemberData,
   UpdateMemberData,
 } from '@/types'
-import type { Role } from '@/types/supabase'
+import type { Tables } from '@/types/supabase'
+
+type Role = Tables<'roles'>
 
 // Fetch team members
 export function useTeamMembers() {

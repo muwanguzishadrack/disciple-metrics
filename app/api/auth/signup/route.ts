@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { email, password, firstName, lastName, locationId } = result.data
+    const { email, password, locationId } = result.data
     const supabase = await createClient()
     const adminSupabase = createAdminClient()
 
@@ -85,10 +85,6 @@ export async function POST(request: NextRequest) {
       password,
       options: {
         emailRedirectTo: `${origin}/api/auth/callback`,
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-        },
       },
     })
 

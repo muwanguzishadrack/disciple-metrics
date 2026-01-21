@@ -25,6 +25,7 @@ export function AuthCard({ title, description, children, footer }: AuthCardProps
           alt="Disciple Metrics"
           width={200}
           height={48}
+          style={{ height: 'auto' }}
           className="dark:hidden"
           priority
         />
@@ -33,6 +34,7 @@ export function AuthCard({ title, description, children, footer }: AuthCardProps
           alt="Disciple Metrics"
           width={200}
           height={48}
+          style={{ height: 'auto' }}
           className="hidden dark:block"
           priority
         />

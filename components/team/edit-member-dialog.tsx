@@ -135,11 +135,7 @@ export function EditMemberDialog({
     label: loc.name,
   }))
 
-  const memberName = member
-    ? `${member.firstName || ''} ${member.lastName || ''}`.trim() ||
-      member.email ||
-      'Unknown'
-    : ''
+  const memberEmail = member?.email || 'Unknown'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -147,7 +143,7 @@ export function EditMemberDialog({
         <DialogHeader>
           <DialogTitle>Edit Team Member</DialogTitle>
           <DialogDescription>
-            Update the role and assignment for {memberName}.
+            Update the role and assignment for {memberEmail}.
           </DialogDescription>
         </DialogHeader>
 

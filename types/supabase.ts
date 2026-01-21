@@ -209,9 +209,7 @@ export type Database = {
         Row: {
           created_at: string | null
           email: string | null
-          first_name: string | null
           id: string
-          last_name: string | null
           theme: string | null
           two_factor_enabled: boolean | null
           updated_at: string | null
@@ -219,9 +217,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           email?: string | null
-          first_name?: string | null
           id: string
-          last_name?: string | null
           theme?: string | null
           two_factor_enabled?: boolean | null
           updated_at?: string | null
@@ -229,9 +225,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           email?: string | null
-          first_name?: string | null
           id?: string
-          last_name?: string | null
           theme?: string | null
           two_factor_enabled?: boolean | null
           updated_at?: string | null
@@ -324,11 +318,9 @@ export type Database = {
           created_at: string | null
           email: string
           expires_at: string
-          first_name: string | null
           fob_id: string | null
           id: string
           invited_by: string
-          last_name: string | null
           location_id: string | null
           role_id: string
           token: string
@@ -339,11 +331,9 @@ export type Database = {
           created_at?: string | null
           email: string
           expires_at: string
-          first_name?: string | null
           fob_id?: string | null
           id?: string
           invited_by: string
-          last_name?: string | null
           location_id?: string | null
           role_id: string
           token: string
@@ -354,11 +344,9 @@ export type Database = {
           created_at?: string | null
           email?: string
           expires_at?: string
-          first_name?: string | null
           fob_id?: string | null
           id?: string
           invited_by?: string
-          last_name?: string | null
           location_id?: string | null
           role_id?: string
           token?: string
@@ -540,14 +528,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-// Convenience type aliases
-export type UserInvitation = Tables<'user_invitations'>
-export type Fob = Tables<'fobs'>
-export type Location = Tables<'locations'>
-export type PgaReport = Tables<'pga_reports'>
-export type PgaEntry = Tables<'pga_entries'>
-export type Profile = Tables<'profiles'>
-export type Role = Tables<'roles'>
-export type UserAssignment = Tables<'user_assignments'>
-export type AuditLog = Tables<'audit_logs'>

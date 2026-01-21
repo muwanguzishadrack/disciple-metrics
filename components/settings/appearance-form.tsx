@@ -2,8 +2,10 @@
 
 import { Sun, Moon, Monitor, Check } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useThemeStore } from '@/stores/use-theme-store'
-import { useUpdateProfile } from '@/hooks/use-user'
+import { useUpdateProfile, useUserAssignment } from '@/hooks/use-user'
 import { useToast } from '@/hooks/use-toast'
 import { Theme } from '@/types'
 import { cn } from '@/lib/utils'
@@ -33,6 +35,21 @@ export function AppearanceForm() {
   const { theme, setTheme } = useThemeStore()
   const updateProfile = useUpdateProfile()
   const { toast } = useToast()
+  const { data: assignment, isLoading: isLoadingAssignment } = useUserAssignment()
+
+  const getAssignmentLabel = () => {
+    if (!assignment) return null
+    if (assignment.role === 'admin') {
+      return 'Organization-wide access'
+    }
+    if (assignment.role === 'fob_leader' && assignment.fobName) {
+      return `FOB: ${assignment.fobName}`
+    }
+    if (assignment.role === 'pastor' && assignment.locationName) {
+      return `Location: ${assignment.locationName}`
+    }
+    return null
+  }
 
   const handleThemeChange = async (newTheme: Theme) => {
     setTheme(newTheme)
@@ -102,6 +119,27 @@ export function AppearanceForm() {
             <div className="h-2 w-20 bg-muted rounded" />
           </div>
         </div>
+      </div>
+
+      <Separator />
+
+      <div>
+        <h3 className="text-lg font-medium mb-2">Your Role</h3>
+        {isLoadingAssignment ? (
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-5 w-40" />
+          </div>
+        ) : assignment ? (
+          <div className="space-y-1">
+            <p className="text-sm text-foreground">{assignment.roleName}</p>
+            {getAssignmentLabel() && (
+              <p className="text-sm text-muted-foreground">{getAssignmentLabel()}</p>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No role assigned</p>
+        )}
       </div>
     </div>
   )

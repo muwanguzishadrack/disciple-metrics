@@ -9,8 +9,6 @@ export type Theme = 'light' | 'dark' | 'system'
 export type User = {
   id: string
   email: string
-  firstName: string | null
-  lastName: string | null
 }
 
 // Team management types
@@ -19,8 +17,6 @@ export type RoleName = 'admin' | 'fob_leader' | 'pastor'
 export interface TeamMember {
   id: string
   email: string | null
-  firstName: string | null
-  lastName: string | null
   role: {
     id: string
     name: string
@@ -40,8 +36,6 @@ export interface TeamMember {
 export interface TeamInvitation {
   id: string
   email: string
-  firstName: string | null
-  lastName: string | null
   role: {
     id: string
     name: string
@@ -57,16 +51,12 @@ export interface TeamInvitation {
   invitedBy: {
     id: string
     email: string | null
-    firstName: string | null
-    lastName: string | null
   }
   expiresAt: string
   createdAt: string | null
 }
 
 export interface InviteMemberData {
-  firstName: string
-  lastName: string
   email: string
   roleId: string
   fobId?: string | null

@@ -43,8 +43,6 @@ export function useProfile() {
 }
 
 type ProfileUpdateData = {
-  first_name?: string | null
-  last_name?: string | null
   theme?: string | null
   updated_at?: string
 }
@@ -55,9 +53,7 @@ export function useUpdateProfile() {
   const { data: user } = useUser()
 
   return useMutation({
-    mutationFn: async (
-      data: Partial<Pick<Profile, 'first_name' | 'last_name' | 'theme'>>
-    ) => {
+    mutationFn: async (data: Partial<Pick<Profile, 'theme'>>) => {
       if (!user) throw new Error('Not authenticated')
       const updateData: ProfileUpdateData = {
         ...data,
@@ -89,6 +85,56 @@ export function useUserRole() {
       })
       if (error) throw error
       return data as RoleName
+    },
+    enabled: !!user,
+  })
+}
+
+export type UserAssignment = {
+  role: string
+  roleName: string
+  fobName?: string
+  locationName?: string
+}
+
+export function useUserAssignment() {
+  const supabase = createClient()
+  const { data: user } = useUser()
+
+  return useQuery({
+    queryKey: ['user-assignment', user?.id],
+    queryFn: async (): Promise<UserAssignment | null> => {
+      if (!user) return null
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from('user_assignments')
+        .select(`
+          role_id,
+          roles!inner(name),
+          fobs(name),
+          locations(name)
+        `)
+        .eq('user_id', user.id)
+        .single()
+      if (error) throw error
+      if (!data) return null
+
+      const roleName = data.roles?.name || 'Unknown'
+      const displayRoleName =
+        roleName === 'admin'
+          ? 'Admin'
+          : roleName === 'fob_leader'
+            ? 'FOB Leader'
+            : roleName === 'pastor'
+              ? 'Pastor'
+              : roleName
+
+      return {
+        role: roleName,
+        roleName: displayRoleName,
+        fobName: data.fobs?.name,
+        locationName: data.locations?.name,
+      }
     },
     enabled: !!user,
   })

@@ -366,7 +366,7 @@ export default function SingleReportPage() {
                   <TableHead>HC1</TableHead>
                   <TableHead>HC2</TableHead>
                   <TableHead>Total</TableHead>
-                  <TableHead>Action</TableHead>
+                  {(isAdmin || isFobLeader) && <TableHead>Action</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -382,33 +382,35 @@ export default function SingleReportPage() {
                       <TableCell>{location.hc1}</TableCell>
                       <TableCell>{location.hc2}</TableCell>
                       <TableCell className="font-medium">{location.total}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditClick(location)}>
-                              Edit
-                            </DropdownMenuItem>
-                            {isAdmin && (
-                              <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteTarget(location)}
-                              >
-                                Delete
+                      {(isAdmin || isFobLeader) && (
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleEditClick(location)}>
+                                Edit
                               </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+                              {isAdmin && (
+                                <DropdownMenuItem
+                                  className="text-destructive"
+                                  onClick={() => setDeleteTarget(location)}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={(isAdmin || isFobLeader) ? 10 : 9} className="text-center text-muted-foreground py-8">
                       No locations found
                     </TableCell>
                   </TableRow>

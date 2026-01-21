@@ -8,7 +8,7 @@ import { ThemeToggle } from './theme-toggle'
 import { UserNav } from './user-nav'
 import { ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { useUserRole, type RoleName } from '@/hooks/use-user'
+import { useUserRole, useUserAssignment, type RoleName } from '@/hooks/use-user'
 
 type NavLink = {
   title: string
@@ -27,6 +27,7 @@ const navLinks: NavLink[] = [
 export function Header() {
   const pathname = usePathname()
   const { data: userRole } = useUserRole()
+  const { data: userAssignment, isLoading: isAssignmentLoading } = useUserAssignment()
 
   // Filter nav links based on user role
   const filteredNavLinks = navLinks.filter((link) => {
@@ -45,6 +46,7 @@ export function Header() {
             alt="Disciple Metrics"
             width={160}
             height={40}
+            style={{ height: 'auto' }}
             priority
           />
           <nav className="hidden items-center gap-8 md:flex">
@@ -71,6 +73,13 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          {!isAssignmentLoading && userAssignment && (
+            <span className="hidden text-sm text-primary-foreground/70 md:inline">
+              {userAssignment.roleName}
+              {(userAssignment.locationName || userAssignment.fobName) &&
+                ` - ${userAssignment.locationName || userAssignment.fobName}`}
+            </span>
+          )}
           <UserNav />
         </div>
       </div>

@@ -90,7 +90,6 @@ export function PendingInvitationsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>FOB</TableHead>
@@ -102,11 +101,6 @@ export function PendingInvitationsTable({
         <TableBody>
           {invitations.map((invitation) => (
             <TableRow key={invitation.id}>
-              <TableCell>
-                {invitation.firstName || invitation.lastName
-                  ? `${invitation.firstName || ''} ${invitation.lastName || ''}`.trim()
-                  : '-'}
-              </TableCell>
               <TableCell>{invitation.email}</TableCell>
               <TableCell>{formatRoleName(invitation.role.name)}</TableCell>
               <TableCell>{invitation.fob?.name || '-'}</TableCell>
@@ -147,7 +141,7 @@ export function PendingInvitationsTable({
           {invitations.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={7}
+                colSpan={6}
                 className="text-center text-muted-foreground"
               >
                 No pending invitations.

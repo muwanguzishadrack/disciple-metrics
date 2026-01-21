@@ -56,8 +56,6 @@ export function InviteMemberDialog({
   const form = useForm<InviteMemberFormData>({
     resolver: zodResolver(inviteMemberSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
       email: '',
       roleId: '',
       fobId: undefined,
@@ -93,8 +91,6 @@ export function InviteMemberDialog({
   const onSubmit = async (data: InviteMemberFormData) => {
     try {
       await inviteMember.mutateAsync({
-        firstName: data.firstName,
-        lastName: data.lastName,
         email: data.email,
         roleId: data.roleId,
         fobId: data.fobId || undefined,
@@ -142,36 +138,6 @@ export function InviteMemberDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
             <FormField
               control={form.control}
               name="email"

@@ -3,7 +3,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useUser } from './use-user'
-import type { Fob, Location, PgaReport, PgaEntry } from '@/types/supabase'
+import type { Tables } from '@/types/supabase'
+
+type Fob = Tables<'fobs'>
+type Location = Tables<'locations'>
 
 // Types for transformed data
 export interface LocationEntry {

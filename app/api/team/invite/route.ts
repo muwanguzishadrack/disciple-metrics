@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { firstName, lastName, email, roleId, fobId, locationId } = result.data
+    const { email, roleId, fobId, locationId } = result.data
 
     // Check if user already exists
     const { data: existingUser } = await adminSupabase
@@ -117,8 +117,6 @@ export async function POST(request: NextRequest) {
       .from('user_invitations')
       .insert({
         email,
-        first_name: firstName,
-        last_name: lastName,
         role_id: roleId,
         fob_id: roleName === 'admin' ? null : fobId || null,
         location_id: roleName === 'pastor' ? locationId : null,
@@ -138,8 +136,6 @@ export async function POST(request: NextRequest) {
         redirectTo: `${appUrl}/auth/callback`,
         data: {
           invitation_token: token,
-          first_name: firstName,
-          last_name: lastName,
         },
       }
     )

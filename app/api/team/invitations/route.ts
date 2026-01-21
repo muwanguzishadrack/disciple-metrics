@@ -32,14 +32,12 @@ export async function GET() {
         `
         id,
         email,
-        first_name,
-        last_name,
         expires_at,
         created_at,
         role:roles (id, name),
         fob:fobs (id, name),
         location:locations (id, name),
-        inviter:profiles!invited_by (id, email, first_name, last_name)
+        inviter:profiles!invited_by (id, email)
       `
       )
       .is('accepted_at', null)
@@ -54,16 +52,12 @@ export async function GET() {
       (invite: any) => ({
         id: invite.id,
         email: invite.email,
-        firstName: invite.first_name || null,
-        lastName: invite.last_name || null,
         role: invite.role!,
         fob: invite.fob || null,
         location: invite.location || null,
         invitedBy: {
           id: invite.inviter?.id || '',
           email: invite.inviter?.email || null,
-          firstName: invite.inviter?.first_name || null,
-          lastName: invite.inviter?.last_name || null,
         },
         expiresAt: invite.expires_at,
         createdAt: invite.created_at,

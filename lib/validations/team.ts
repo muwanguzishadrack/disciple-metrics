@@ -1,8 +1,6 @@
 import { z } from 'zod'
 
 export const inviteMemberSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Please enter a valid email address'),
   roleId: z.string().uuid('Please select a role'),
   fobId: z.string().uuid().optional().nullable(),

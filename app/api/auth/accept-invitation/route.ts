@@ -46,17 +46,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Already processed' })
     }
 
-    // Update user's profile with name from invitation
-    if (invitation.first_name || invitation.last_name) {
-      await adminSupabase
-        .from('profiles')
-        .update({
-          first_name: invitation.first_name,
-          last_name: invitation.last_name,
-        })
-        .eq('id', user.id)
-    }
-
     // Check if user already has an assignment
     const { data: existingAssignment } = await adminSupabase
       .from('user_assignments')

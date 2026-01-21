@@ -127,7 +127,7 @@ const item = {
 export default function DashboardPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const { data: profile, isLoading: isProfileLoading } = useProfile()
+  const { isLoading: isProfileLoading } = useProfile()
   const { data: userRole } = useUserRole()
   const isAdmin = userRole === 'admin'
   const { data: pgaReports = [], isLoading: isReportsLoading } = usePgaReports()
@@ -270,7 +270,8 @@ export default function DashboardPage() {
     }
   }
 
-  const firstName = profile?.first_name || 'there'
+  // Use a simple greeting since we no longer have first name
+  const greeting = 'Welcome back!'
 
   // Pagination calculations
   const totalRows = pgaReports.length
@@ -315,7 +316,7 @@ export default function DashboardPage() {
           isProfileLoading ? (
             <Skeleton className="h-8 w-48 bg-primary-foreground/20" />
           ) : (
-            `Welcome back, ${firstName}!`
+            greeting
           )
         }
         description="Here's an overview of your discipleship metrics."

@@ -66,7 +66,6 @@ export function TeamMembersTable({ members, isLoading }: TeamMembersTableProps) 
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Assignment</TableHead>
@@ -77,11 +76,6 @@ export function TeamMembersTable({ members, isLoading }: TeamMembersTableProps) 
           <TableBody>
             {members.map((member) => (
               <TableRow key={member.id}>
-                <TableCell>
-                  {member.firstName || member.lastName
-                    ? `${member.firstName || ''} ${member.lastName || ''}`.trim()
-                    : '-'}
-                </TableCell>
                 <TableCell>{member.email || '-'}</TableCell>
                 <TableCell>
                   {member.role ? formatRoleName(member.role.name) : '-'}
@@ -119,7 +113,7 @@ export function TeamMembersTable({ members, isLoading }: TeamMembersTableProps) 
             {members.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={5}
                   className="text-center text-muted-foreground"
                 >
                   No team members found.
