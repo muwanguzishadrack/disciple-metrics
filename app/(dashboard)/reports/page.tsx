@@ -223,19 +223,19 @@ export default function ReportsPage() {
       <div className="mx-auto max-w-7xl p-4 md:p-6">
         <Card className="rounded-lg">
           <CardContent className="pt-6">
-            <Table className="table-fixed">
+            <Table className="lg:table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[12%] whitespace-nowrap">Date</TableHead>
-                  <TableHead className="w-[8%]">1SV</TableHead>
-                  <TableHead className="w-[8%]">2SV</TableHead>
-                  <TableHead className="w-[8%]">YXP</TableHead>
-                  <TableHead className="w-[8%]">Kids</TableHead>
-                  <TableHead className="w-[8%]">Local</TableHead>
-                  <TableHead className="w-[8%]">HC1</TableHead>
-                  <TableHead className="w-[8%]">HC2</TableHead>
-                  <TableHead className="w-[10%]">Total</TableHead>
-                  <TableHead className="w-[70px]">Action</TableHead>
+                  <TableHead className="lg:w-[12%] whitespace-nowrap">Date</TableHead>
+                  <TableHead className="lg:w-[8%]">1SV</TableHead>
+                  <TableHead className="lg:w-[8%]">2SV</TableHead>
+                  <TableHead className="lg:w-[8%]">YXP</TableHead>
+                  <TableHead className="lg:w-[8%]">Kids</TableHead>
+                  <TableHead className="lg:w-[8%]">Local</TableHead>
+                  <TableHead className="lg:w-[8%]">HC1</TableHead>
+                  <TableHead className="lg:w-[8%]">HC2</TableHead>
+                  <TableHead className="lg:w-[10%]">Total</TableHead>
+                  <TableHead className="lg:w-[70px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

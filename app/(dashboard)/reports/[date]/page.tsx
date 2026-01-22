@@ -357,19 +357,19 @@ export default function SingleReportPage() {
               </div>
             </div>
 
-            <Table className="table-fixed">
+            <Table className="lg:table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[16%]">Location</TableHead>
-                  <TableHead className="w-[8%]">1SV</TableHead>
-                  <TableHead className="w-[8%]">2SV</TableHead>
-                  <TableHead className="w-[8%]">YXP</TableHead>
-                  <TableHead className="w-[8%]">Kids</TableHead>
-                  <TableHead className="w-[8%]">Local</TableHead>
-                  <TableHead className="w-[8%]">HC1</TableHead>
-                  <TableHead className="w-[8%]">HC2</TableHead>
-                  <TableHead className="w-[10%]">Total</TableHead>
-                  {(isAdmin || isFobLeader) && <TableHead className="w-[70px]">Action</TableHead>}
+                  <TableHead className="lg:w-[16%]">Location</TableHead>
+                  <TableHead className="lg:w-[8%]">1SV</TableHead>
+                  <TableHead className="lg:w-[8%]">2SV</TableHead>
+                  <TableHead className="lg:w-[8%]">YXP</TableHead>
+                  <TableHead className="lg:w-[8%]">Kids</TableHead>
+                  <TableHead className="lg:w-[8%]">Local</TableHead>
+                  <TableHead className="lg:w-[8%]">HC1</TableHead>
+                  <TableHead className="lg:w-[8%]">HC2</TableHead>
+                  <TableHead className="lg:w-[10%]">Total</TableHead>
+                  {(isAdmin || isFobLeader) && <TableHead className="lg:w-[70px]">Action</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
