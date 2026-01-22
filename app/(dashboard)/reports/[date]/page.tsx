@@ -175,14 +175,16 @@ export default function SingleReportPage() {
     }
   }
 
-  // Filter locations
+  // Filter and sort locations by total (highest first)
   const filteredLocations = useMemo(() => {
     if (!report) return []
-    return report.locations.filter((location) => {
-      const matchesSearch = location.location.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesFob = fobFilter === 'all' || location.fob === fobFilter
-      return matchesSearch && matchesFob
-    })
+    return report.locations
+      .filter((location) => {
+        const matchesSearch = location.location.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesFob = fobFilter === 'all' || location.fob === fobFilter
+        return matchesSearch && matchesFob
+      })
+      .sort((a, b) => b.total - a.total)
   }, [report, searchQuery, fobFilter])
 
   // Pagination calculations
