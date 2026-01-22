@@ -93,7 +93,9 @@ export function useUserRole() {
 export type UserAssignment = {
   role: string
   roleName: string
+  fobId?: string
   fobName?: string
+  locationId?: string
   locationName?: string
 }
 
@@ -110,6 +112,8 @@ export function useUserAssignment() {
         .from('user_assignments')
         .select(`
           role_id,
+          fob_id,
+          location_id,
           roles!inner(name),
           fobs(name),
           locations(name)
@@ -132,7 +136,9 @@ export function useUserAssignment() {
       return {
         role: roleName,
         roleName: displayRoleName,
+        fobId: data.fob_id,
         fobName: data.fobs?.name,
+        locationId: data.location_id,
         locationName: data.locations?.name,
       }
     },

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -52,7 +52,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/layout/page-header'
-import { useProfile, useUserRole } from '@/hooks/use-user'
+import { useProfile, useUserRole, useUserAssignment } from '@/hooks/use-user'
 import { usePgaReports, useFobs, useLocations, useCreatePgaEntry, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
@@ -129,7 +129,10 @@ export default function DashboardPage() {
   const { toast } = useToast()
   const { isLoading: isProfileLoading } = useProfile()
   const { data: userRole } = useUserRole()
+  const { data: userAssignment } = useUserAssignment()
   const isAdmin = userRole === 'admin'
+  const isPastor = userRole === 'pastor'
+  const isFobLeader = userRole === 'fob_leader'
   const { data: pgaReports = [], isLoading: isReportsLoading } = usePgaReports()
   const { data: fobs = [] } = useFobs()
   const { data: locations = [] } = useLocations()
@@ -167,6 +170,18 @@ export default function DashboardPage() {
       : locations
     return filtered.map((loc) => ({ value: loc.id, label: loc.name }))
   }, [locations, pgaFob])
+
+  // Pre-populate FOB and location based on user role when dialog opens
+  useEffect(() => {
+    if (dialogOpen && userAssignment) {
+      if (isPastor || isFobLeader) {
+        setPgaFob(userAssignment.fobId ?? '')
+      }
+      if (isPastor) {
+        setPgaLocation(userAssignment.locationId ?? '')
+      }
+    }
+  }, [dialogOpen, userAssignment, isPastor, isFobLeader])
 
   const pgaTotal = useMemo(() => {
     return pgaSv1 + pgaSv2 + pgaYxp + pgaKids + pgaLocal + pgaHc1 + pgaHc2
@@ -365,23 +380,35 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label>FOB</Label>
-                      <Combobox
-                        options={fobOptions}
-                        value={pgaFob}
-                        onValueChange={setPgaFob}
-                        placeholder="Select FOB..."
-                        searchPlaceholder="Search FOB..."
-                      />
+                      {isPastor || isFobLeader ? (
+                        <div className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm">
+                          {userAssignment?.fobName ?? 'Loading...'}
+                        </div>
+                      ) : (
+                        <Combobox
+                          options={fobOptions}
+                          value={pgaFob}
+                          onValueChange={setPgaFob}
+                          placeholder="Select FOB..."
+                          searchPlaceholder="Search FOB..."
+                        />
+                      )}
                     </div>
                     <div className="grid gap-2">
                       <Label>Location</Label>
-                      <Combobox
-                        options={locationOptions}
-                        value={pgaLocation}
-                        onValueChange={setPgaLocation}
-                        placeholder="Select location..."
-                        searchPlaceholder="Search location..."
-                      />
+                      {isPastor ? (
+                        <div className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm">
+                          {userAssignment?.locationName ?? 'Loading...'}
+                        </div>
+                      ) : (
+                        <Combobox
+                          options={locationOptions}
+                          value={pgaLocation}
+                          onValueChange={setPgaLocation}
+                          placeholder="Select location..."
+                          searchPlaceholder="Search location..."
+                        />
+                      )}
                     </div>
                   </div>
 
