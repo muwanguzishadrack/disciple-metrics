@@ -63,13 +63,13 @@ export function TeamMembersTable({ members, isLoading }: TeamMembersTableProps) 
   return (
     <>
       <div className="rounded-md border">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Assignment</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead className="w-[35%]">Email</TableHead>
+              <TableHead className="w-[20%]">Role</TableHead>
+              <TableHead className="w-[25%]">Assignment</TableHead>
+              <TableHead className="w-[15%]">Joined</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>

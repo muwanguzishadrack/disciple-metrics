@@ -548,19 +548,19 @@ export default function DashboardPage() {
             <CardTitle className="text-xl font-medium">Recent PGA Reports</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap">Date</TableHead>
-                  <TableHead>1SV</TableHead>
-                  <TableHead>2SV</TableHead>
-                  <TableHead>YXP</TableHead>
-                  <TableHead>Kids</TableHead>
-                  <TableHead>Local</TableHead>
-                  <TableHead>HC1</TableHead>
-                  <TableHead>HC2</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead className="w-[12%] whitespace-nowrap">Date</TableHead>
+                  <TableHead className="w-[8%]">1SV</TableHead>
+                  <TableHead className="w-[8%]">2SV</TableHead>
+                  <TableHead className="w-[8%]">YXP</TableHead>
+                  <TableHead className="w-[8%]">Kids</TableHead>
+                  <TableHead className="w-[8%]">Local</TableHead>
+                  <TableHead className="w-[8%]">HC1</TableHead>
+                  <TableHead className="w-[8%]">HC2</TableHead>
+                  <TableHead className="w-[10%]">Total</TableHead>
+                  <TableHead className="w-[70px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

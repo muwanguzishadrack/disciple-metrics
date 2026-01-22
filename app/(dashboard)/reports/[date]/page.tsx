@@ -357,19 +357,19 @@ export default function SingleReportPage() {
               </div>
             </div>
 
-            <Table>
+            <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Location</TableHead>
-                  <TableHead>1SV</TableHead>
-                  <TableHead>2SV</TableHead>
-                  <TableHead>YXP</TableHead>
-                  <TableHead>Kids</TableHead>
-                  <TableHead>Local</TableHead>
-                  <TableHead>HC1</TableHead>
-                  <TableHead>HC2</TableHead>
-                  <TableHead>Total</TableHead>
-                  {(isAdmin || isFobLeader) && <TableHead>Action</TableHead>}
+                  <TableHead className="w-[16%]">Location</TableHead>
+                  <TableHead className="w-[8%]">1SV</TableHead>
+                  <TableHead className="w-[8%]">2SV</TableHead>
+                  <TableHead className="w-[8%]">YXP</TableHead>
+                  <TableHead className="w-[8%]">Kids</TableHead>
+                  <TableHead className="w-[8%]">Local</TableHead>
+                  <TableHead className="w-[8%]">HC1</TableHead>
+                  <TableHead className="w-[8%]">HC2</TableHead>
+                  <TableHead className="w-[10%]">Total</TableHead>
+                  {(isAdmin || isFobLeader) && <TableHead className="w-[70px]">Action</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>

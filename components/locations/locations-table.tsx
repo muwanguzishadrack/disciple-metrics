@@ -43,13 +43,13 @@ export function LocationsTable({
 
   if (isLoading) {
     return (
-      <Table>
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>FOB</TableHead>
-            <TableHead>Pastor</TableHead>
-            <TableHead>Contact</TableHead>
+            <TableHead className="w-[25%]">Name</TableHead>
+            <TableHead className="w-[20%]">FOB</TableHead>
+            <TableHead className="w-[25%]">Pastor</TableHead>
+            <TableHead className="w-[25%]">Contact</TableHead>
             {showActions && <TableHead className="w-[50px]">Action</TableHead>}
           </TableRow>
         </TableHeader>
@@ -82,13 +82,13 @@ export function LocationsTable({
 
   return (
     <>
-      <Table>
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>FOB</TableHead>
-            <TableHead>Pastor</TableHead>
-            <TableHead>Contact</TableHead>
+            <TableHead className="w-[25%]">Name</TableHead>
+            <TableHead className="w-[20%]">FOB</TableHead>
+            <TableHead className="w-[25%]">Pastor</TableHead>
+            <TableHead className="w-[25%]">Contact</TableHead>
             {showActions && <TableHead className="w-[50px]">Action</TableHead>}
           </TableRow>
         </TableHeader>

@@ -87,14 +87,14 @@ export function PendingInvitationsTable({
 
   return (
     <div className="rounded-md border">
-      <Table>
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>FOB</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Expires</TableHead>
+            <TableHead className="w-[30%]">Email</TableHead>
+            <TableHead className="w-[15%]">Role</TableHead>
+            <TableHead className="w-[15%]">FOB</TableHead>
+            <TableHead className="w-[15%]">Location</TableHead>
+            <TableHead className="w-[15%]">Expires</TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
