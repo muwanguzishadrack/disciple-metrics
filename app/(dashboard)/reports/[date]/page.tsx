@@ -49,7 +49,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { usePgaReportByDate, useFobs, useUpdatePgaEntry, useDeletePgaEntry, type LocationEntry } from '@/hooks/use-pga'
+import { usePgaReportByDate, useFobs, useLocations, useUpdatePgaEntry, useDeletePgaEntry, type LocationEntry, type LocationEntryWithStatus } from '@/hooks/use-pga'
 import { useToast } from '@/hooks/use-toast'
 import { useUserRole } from '@/hooks/use-user'
 import { exportToExcel } from '@/lib/export'
@@ -81,6 +81,7 @@ export default function SingleReportPage() {
   const reportDate = params.date as string
   const { data: report, isLoading } = usePgaReportByDate(reportDate)
   const { data: fobs = [] } = useFobs()
+  const { data: allLocations = [], isLoading: isLoadingLocations } = useLocations()
   const updatePgaEntry = useUpdatePgaEntry()
   const deletePgaEntry = useDeletePgaEntry()
 
@@ -93,6 +94,42 @@ export default function SingleReportPage() {
   const fobOptions = useMemo(() => {
     return fobs.map((fob) => ({ value: fob.name, label: fob.name }))
   }, [fobs])
+
+  // Merge submitted entries with all locations to show complete list
+  const allLocationsWithEntries = useMemo((): LocationEntryWithStatus[] => {
+    if (!allLocations.length) return []
+
+    // Create a map of submitted entries by location ID
+    const submittedMap = new Map(
+      report?.locations.map((entry) => [entry.locationId, entry]) ?? []
+    )
+
+    return allLocations.map((loc) => {
+      const entry = submittedMap.get(loc.id)
+      if (entry) {
+        return {
+          ...entry,
+          hasSubmitted: true,
+        }
+      }
+      return {
+        id: null,
+        fob: loc.fob.name,
+        fobId: loc.fob.id,
+        location: loc.name,
+        locationId: loc.id,
+        sv1: null,
+        sv2: null,
+        yxp: null,
+        kids: null,
+        local: null,
+        hc1: null,
+        hc2: null,
+        total: null,
+        hasSubmitted: false,
+      }
+    })
+  }, [report, allLocations])
 
   // Edit dialog state
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -175,17 +212,26 @@ export default function SingleReportPage() {
     }
   }
 
-  // Filter and sort locations by total (highest first)
+  // Filter and sort locations: submitted first (by total desc), then not-submitted (alphabetically)
   const filteredLocations = useMemo(() => {
-    if (!report) return []
-    return report.locations
+    return allLocationsWithEntries
       .filter((location) => {
         const matchesSearch = location.location.toLowerCase().includes(searchQuery.toLowerCase())
         const matchesFob = fobFilter === 'all' || location.fob === fobFilter
         return matchesSearch && matchesFob
       })
-      .sort((a, b) => b.total - a.total)
-  }, [report, searchQuery, fobFilter])
+      .sort((a, b) => {
+        // Submitted entries come first
+        if (a.hasSubmitted && !b.hasSubmitted) return -1
+        if (!a.hasSubmitted && b.hasSubmitted) return 1
+        // Among submitted entries, sort by total (highest first)
+        if (a.hasSubmitted && b.hasSubmitted) {
+          return (b.total ?? 0) - (a.total ?? 0)
+        }
+        // Among not-submitted entries, sort alphabetically by location name
+        return a.location.localeCompare(b.location)
+      })
+  }, [allLocationsWithEntries, searchQuery, fobFilter])
 
   // Pagination calculations
   const totalRows = filteredLocations.length
@@ -205,11 +251,27 @@ export default function SingleReportPage() {
   }
 
   const handleExportLocations = () => {
-    exportToExcel<LocationEntry>({
-      data: filteredLocations,
+    // Transform data for export, converting nulls to empty strings
+    const exportData = filteredLocations.map((loc, index) => ({
+      number: index + 1,
+      location: loc.location,
+      fob: loc.fob,
+      sv1: loc.hasSubmitted ? loc.sv1 : '',
+      sv2: loc.hasSubmitted ? loc.sv2 : '',
+      yxp: loc.hasSubmitted ? loc.yxp : '',
+      kids: loc.hasSubmitted ? loc.kids : '',
+      local: loc.hasSubmitted ? loc.local : '',
+      hc1: loc.hasSubmitted ? loc.hc1 : '',
+      hc2: loc.hasSubmitted ? loc.hc2 : '',
+      total: loc.hasSubmitted ? loc.total : '',
+    }))
+
+    exportToExcel({
+      data: exportData,
       columns: [
-        { header: 'Location', accessor: 'location' },
-        { header: 'FOB', accessor: 'fob' },
+        { header: '#', accessor: 'number', skipTotal: true },
+        { header: 'Location', accessor: 'location', skipTotal: true },
+        { header: 'FOB', accessor: 'fob', skipTotal: true },
         { header: '1SV', accessor: 'sv1' },
         { header: '2SV', accessor: 'sv2' },
         { header: 'YXP', accessor: 'yxp' },
@@ -225,7 +287,7 @@ export default function SingleReportPage() {
     })
   }
 
-  if (isLoading) {
+  if (isLoading || isLoadingLocations) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-2">
@@ -375,38 +437,42 @@ export default function SingleReportPage() {
               <TableBody>
                 {paginatedLocations.length > 0 ? (
                   paginatedLocations.map((location, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={index} className={!location.hasSubmitted ? 'opacity-50' : ''}>
                       <TableCell className="font-medium">{location.location}</TableCell>
-                      <TableCell>{location.sv1}</TableCell>
-                      <TableCell>{location.sv2}</TableCell>
-                      <TableCell>{location.yxp}</TableCell>
-                      <TableCell>{location.kids}</TableCell>
-                      <TableCell>{location.local}</TableCell>
-                      <TableCell>{location.hc1}</TableCell>
-                      <TableCell>{location.hc2}</TableCell>
-                      <TableCell className="font-medium">{location.total}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.sv1 : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.sv2 : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.yxp : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.kids : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.local : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.hc1 : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.hc2 : '—'}</TableCell>
+                      <TableCell className="font-medium">{location.hasSubmitted ? location.total : '—'}</TableCell>
                       {(isAdmin || isFobLeader) && (
                         <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleEditClick(location)}>
-                                Edit
-                              </DropdownMenuItem>
-                              {isAdmin && (
-                                <DropdownMenuItem
-                                  className="text-destructive"
-                                  onClick={() => setDeleteTarget(location)}
-                                >
-                                  Delete
+                          {location.hasSubmitted ? (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleEditClick(location as LocationEntry)}>
+                                  Edit
                                 </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                {isAdmin && (
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() => setDeleteTarget(location as LocationEntry)}
+                                  >
+                                    Delete
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Not Reported</span>
+                          )}
                         </TableCell>
                       )}
                     </TableRow>

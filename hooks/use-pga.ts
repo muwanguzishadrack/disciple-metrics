@@ -25,6 +25,19 @@ export interface LocationEntry {
   total: number
 }
 
+export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total'> {
+  id: string | null
+  sv1: number | null
+  sv2: number | null
+  yxp: number | null
+  kids: number | null
+  local: number | null
+  hc1: number | null
+  hc2: number | null
+  total: number | null
+  hasSubmitted: boolean
+}
+
 export interface PgaReportWithTotals {
   id: string
   date: string

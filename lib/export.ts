@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx'
 export interface ExportColumn<T> {
   header: string
   accessor: keyof T | string | ((row: T) => string | number)
+  skipTotal?: boolean  // If true, show empty cell in totals row
 }
 
 export interface ExportOptions<T> {
@@ -39,9 +40,12 @@ export function exportToExcel<T extends object>({
   // Calculate totals row if requested
   let totalsRow: (string | number)[] = []
   if (includeTotals && rows.length > 0) {
-    totalsRow = columns.map((_, colIndex) => {
+    totalsRow = columns.map((col, colIndex) => {
       if (colIndex === 0) {
         return 'Total'
+      }
+      if (col.skipTotal) {
+        return ''  // Empty cell for columns that should skip totals
       }
       // Sum numeric values in this column
       const sum = rows.reduce((acc, row) => {
