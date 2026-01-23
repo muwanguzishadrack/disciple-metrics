@@ -19,10 +19,22 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-primary/60" />
 
-        {/* Copyright */}
-        <p className="absolute bottom-6 left-6 z-10 text-sm text-white/70">
-          &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
-        </p>
+        {/* Copyright & Developer Credit */}
+        <div className="absolute bottom-6 left-6 z-10 text-sm text-white/70">
+          <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+          <p>
+            Developed by{' '}
+            <a
+              href="https://luminouscrm.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Luminous Technologies
+            </a>
+            .
+          </p>
+        </div>
       </div>
 
       {/* Right Panel - Form */}
@@ -32,9 +44,21 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             {children}
           </div>
         </div>
-        <p className="text-center text-xs text-muted-foreground lg:hidden">
-          &copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.
-        </p>
+        <div className="text-xs text-muted-foreground lg:hidden">
+          <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+          <p>
+            Developed by{' '}
+            <a
+              href="https://luminouscrm.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              Luminous Technologies
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
   )
