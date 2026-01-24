@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   ChevronFirst,
   ChevronLast,
   ChevronLeft,
   ChevronRight,
+  Search,
 } from 'lucide-react'
 import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -25,20 +27,39 @@ import { useUserRole } from '@/hooks/use-user'
 export default function TeamPage() {
   const { data: userRole } = useUserRole()
   const isAdmin = userRole === 'admin'
+  const isManager = userRole === 'manager'
+  const isAdminOrManager = isAdmin || isManager
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [roleFilter, setRoleFilter] = useState<string>('all')
   const { data: members, isLoading: membersLoading } = useTeamMembers()
   const { data: invitations, isLoading: invitationsLoading } = useInvitations()
 
+  // Filter members by search and role
+  const filteredMembers = useMemo(() => {
+    return (members || []).filter((member) => {
+      const matchesSearch =
+        member.email?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+      const matchesRole = roleFilter === 'all' || member.role?.name === roleFilter
+      return matchesSearch && matchesRole
+    })
+  }, [members, searchQuery, roleFilter])
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, roleFilter])
+
   // Pagination calculations
-  const totalRows = members?.length || 0
+  const totalRows = filteredMembers.length
   const totalPages = Math.ceil(totalRows / rowsPerPage)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
   const paginatedMembers = useMemo(
-    () => members?.slice(startIndex, endIndex) || [],
-    [members, startIndex, endIndex]
+    () => filteredMembers.slice(startIndex, endIndex),
+    [filteredMembers, startIndex, endIndex]
   )
 
   const goToFirstPage = () => setCurrentPage(1)
@@ -85,6 +106,41 @@ export default function TeamPage() {
         {/* Team Members Section */}
         <section>
           <h2 className="mb-4 text-lg font-semibold">Team Members</h2>
+
+          {/* Search and Filter Controls */}
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            {/* Search Bar */}
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search team members..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
+            {/* Role Filter */}
+            {isAdminOrManager && (
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="w-full sm:w-40">
+                  <SelectValue placeholder="Filter by role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  {isAdmin && (
+                    <>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                    </>
+                  )}
+                  <SelectItem value="fob_leader">FOB Leader</SelectItem>
+                  <SelectItem value="pastor">Pastor</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+
           <TeamMembersTable
             members={paginatedMembers}
             isLoading={membersLoading}
