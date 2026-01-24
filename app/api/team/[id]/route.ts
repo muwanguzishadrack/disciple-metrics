@@ -33,6 +33,34 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    // Check if user is specifically admin (not just admin_or_manager)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: isAdmin } = await (supabase as any).rpc('is_admin', {
+      p_user_id: user.id,
+    })
+
+    // If user is manager (not admin), restrict which members they can edit
+    if (!isAdmin) {
+      const adminSupabase = createAdminClient()
+
+      // Get target member's current role
+      const { data: targetAssignment } = await adminSupabase
+        .from('user_assignments')
+        .select('role_id, roles(name)')
+        .eq('user_id', memberId)
+        .single()
+
+      const targetRoleName = (targetAssignment?.roles as { name: string } | null)?.name
+
+      // Manager can only edit fob_leader and pastor members
+      if (targetRoleName && !['fob_leader', 'pastor'].includes(targetRoleName)) {
+        return NextResponse.json(
+          { error: 'Managers can only edit FOB leaders and pastors' },
+          { status: 403 }
+        )
+      }
+    }
+
     // Prevent user from changing their own role
     if (memberId === user.id) {
       return NextResponse.json(
@@ -76,6 +104,14 @@ export async function PATCH(
       return NextResponse.json(
         { error: 'Pastor must be assigned to a location' },
         { status: 400 }
+      )
+    }
+
+    // If user is manager, prevent assigning admin or manager roles
+    if (!isAdmin && ['admin', 'manager'].includes(roleName)) {
+      return NextResponse.json(
+        { error: 'Managers cannot assign admin or manager roles' },
+        { status: 403 }
       )
     }
 

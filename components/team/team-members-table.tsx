@@ -20,16 +20,17 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EditMemberDialog } from './edit-member-dialog'
 import { RemoveMemberDialog } from './remove-member-dialog'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
-import { ROLE_DISPLAY_NAMES, type RoleName, type TeamMember } from '@/types'
+import { ROLE_DISPLAY_NAMES, type RoleName as DisplayRoleName, type TeamMember } from '@/types'
+import { type RoleName } from '@/hooks/use-user'
 import { format } from 'date-fns'
 
 interface TeamMembersTableProps {
   members: TeamMember[]
   isLoading: boolean
-  canDelete?: boolean
+  userRole?: RoleName
 }
 
-export function TeamMembersTable({ members, isLoading, canDelete = true }: TeamMembersTableProps) {
+export function TeamMembersTable({ members, isLoading, userRole }: TeamMembersTableProps) {
   const [editMember, setEditMember] = useState<TeamMember | null>(null)
   const [removeMember, setRemoveMember] = useState<TeamMember | null>(null)
 
@@ -44,7 +45,7 @@ export function TeamMembersTable({ members, isLoading, canDelete = true }: TeamM
   }
 
   const formatRoleName = (name: string) => {
-    return ROLE_DISPLAY_NAMES[name as RoleName] || name
+    return ROLE_DISPLAY_NAMES[name as DisplayRoleName] || name
   }
 
   const getAssignment = (member: TeamMember) => {
@@ -75,44 +76,58 @@ export function TeamMembersTable({ members, isLoading, canDelete = true }: TeamM
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell>{member.email || '-'}</TableCell>
-                <TableCell>
-                  {member.role ? formatRoleName(member.role.name) : '-'}
-                </TableCell>
-                <TableCell>{getAssignment(member)}</TableCell>
-                <TableCell>
-                  {member.createdAt
-                    ? format(new Date(member.createdAt), 'MMM d, yyyy')
-                    : '-'}
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setEditMember(member)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit Role
-                      </DropdownMenuItem>
-                      {canDelete && (
-                        <DropdownMenuItem
-                          onClick={() => setRemoveMember(member)}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Remove
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+            {members.map((member) => {
+              // Determine per-member permissions
+              const memberRoleName = member.role?.name
+              const canEdit =
+                userRole === 'admin' ||
+                (userRole === 'manager' &&
+                  ['fob_leader', 'pastor'].includes(memberRoleName || ''))
+              const canRemove = userRole === 'admin'
+
+              return (
+                <TableRow key={member.id}>
+                  <TableCell>{member.email || '-'}</TableCell>
+                  <TableCell>
+                    {member.role ? formatRoleName(member.role.name) : '-'}
+                  </TableCell>
+                  <TableCell>{getAssignment(member)}</TableCell>
+                  <TableCell>
+                    {member.createdAt
+                      ? format(new Date(member.createdAt), 'MMM d, yyyy')
+                      : '-'}
+                  </TableCell>
+                  <TableCell>
+                    {(canEdit || canRemove) && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {canEdit && (
+                            <DropdownMenuItem onClick={() => setEditMember(member)}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit Role
+                            </DropdownMenuItem>
+                          )}
+                          {canRemove && (
+                            <DropdownMenuItem
+                              onClick={() => setRemoveMember(member)}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Remove
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
             {members.length === 0 && (
               <TableRow>
                 <TableCell
@@ -131,6 +146,7 @@ export function TeamMembersTable({ members, isLoading, canDelete = true }: TeamM
         member={editMember}
         open={!!editMember}
         onOpenChange={(open) => !open && setEditMember(null)}
+        userRole={userRole}
       />
 
       <RemoveMemberDialog

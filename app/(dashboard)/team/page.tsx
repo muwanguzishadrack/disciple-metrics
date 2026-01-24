@@ -88,7 +88,7 @@ export default function TeamPage() {
           <TeamMembersTable
             members={paginatedMembers}
             isLoading={membersLoading}
-            canDelete={isAdmin}
+            userRole={userRole}
           />
 
           {/* Pagination */}

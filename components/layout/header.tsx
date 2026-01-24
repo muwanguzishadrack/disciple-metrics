@@ -19,8 +19,8 @@ type NavLink = {
 const navLinks: NavLink[] = [
   { title: 'Dashboard', href: ROUTES.DASHBOARD },
   { title: 'Reports', href: ROUTES.REPORTS },
-  { title: 'Locations', href: ROUTES.LOCATIONS, roles: ['admin', 'fob_leader'] },
-  { title: 'Team', href: ROUTES.TEAM, roles: ['admin'] },
+  { title: 'Locations', href: ROUTES.LOCATIONS, roles: ['admin', 'manager', 'fob_leader'] },
+  { title: 'Team', href: ROUTES.TEAM, roles: ['admin', 'manager'] },
   { title: 'Settings', href: ROUTES.SETTINGS },
 ]
 

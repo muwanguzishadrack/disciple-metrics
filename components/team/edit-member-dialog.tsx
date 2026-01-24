@@ -35,18 +35,21 @@ import {
   type UpdateMemberFormData,
 } from '@/lib/validations/team'
 import { useToast } from '@/hooks/use-toast'
-import { ROLE_DISPLAY_NAMES, type RoleName, type TeamMember } from '@/types'
+import { ROLE_DISPLAY_NAMES, type RoleName as DisplayRoleName, type TeamMember } from '@/types'
+import { type RoleName } from '@/hooks/use-user'
 
 interface EditMemberDialogProps {
   member: TeamMember | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  userRole?: RoleName
 }
 
 export function EditMemberDialog({
   member,
   open,
   onOpenChange,
+  userRole,
 }: EditMemberDialogProps) {
   const { toast } = useToast()
   const { data: roles } = useRoles()
@@ -86,6 +89,12 @@ export function EditMemberDialog({
   // Filter locations by selected FOB
   const filteredLocations =
     locations?.filter((l) => l.fob?.id === selectedFobId) || []
+
+  // Filter roles - managers can only assign fob_leader and pastor
+  const filteredRoles =
+    userRole === 'admin'
+      ? roles
+      : roles?.filter((r) => ['fob_leader', 'pastor'].includes(r.name))
 
   // Reset dependent fields when role changes to admin
   useEffect(() => {
@@ -162,9 +171,9 @@ export function EditMemberDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {roles?.map((role) => (
+                      {filteredRoles?.map((role) => (
                         <SelectItem key={role.id} value={role.id}>
-                          {ROLE_DISPLAY_NAMES[role.name as RoleName] ||
+                          {ROLE_DISPLAY_NAMES[role.name as DisplayRoleName] ||
                             role.name}
                         </SelectItem>
                       ))}
