@@ -68,11 +68,11 @@ export function TeamMembersTable({ members, isLoading, userRole }: TeamMembersTa
         <Table className="lg:table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead className="lg:w-[35%]">Email</TableHead>
+              <TableHead className="lg:w-[37%]">Email</TableHead>
               <TableHead className="lg:w-[20%]">Role</TableHead>
               <TableHead className="lg:w-[25%]">Assignment</TableHead>
-              <TableHead className="lg:w-[15%]">Joined</TableHead>
-              <TableHead className="lg:w-[50px]"></TableHead>
+              <TableHead className="lg:w-[12%]">Joined</TableHead>
+              <TableHead className="lg:w-[6%]">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

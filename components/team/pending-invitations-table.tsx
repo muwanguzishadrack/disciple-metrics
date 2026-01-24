@@ -94,12 +94,12 @@ export function PendingInvitationsTable({
       <Table className="lg:table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead className="lg:w-[30%]">Email</TableHead>
-            <TableHead className="lg:w-[15%]">Role</TableHead>
-            <TableHead className="lg:w-[15%]">FOB</TableHead>
-            <TableHead className="lg:w-[15%]">Location</TableHead>
-            <TableHead className="lg:w-[15%]">Expires</TableHead>
-            <TableHead className="lg:w-[50px]"></TableHead>
+            <TableHead className="lg:w-[32%]">Email</TableHead>
+            <TableHead className="lg:w-[16%]">Role</TableHead>
+            <TableHead className="lg:w-[16%]">FOB</TableHead>
+            <TableHead className="lg:w-[16%]">Location</TableHead>
+            <TableHead className="lg:w-[14%]">Expires</TableHead>
+            <TableHead className="lg:w-[6%]">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

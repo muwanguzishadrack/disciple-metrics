@@ -46,11 +46,11 @@ export function LocationsTable({
       <Table className="lg:table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead className="lg:w-[25%]">Name</TableHead>
-            <TableHead className="lg:w-[20%]">FOB</TableHead>
-            <TableHead className="lg:w-[25%]">Pastor</TableHead>
-            <TableHead className="lg:w-[25%]">Contact</TableHead>
-            {showActions && <TableHead className="lg:w-[50px]">Action</TableHead>}
+            <TableHead className="lg:w-[28%]">Name</TableHead>
+            <TableHead className="lg:w-[22%]">FOB</TableHead>
+            <TableHead className="lg:w-[22%]">Pastor</TableHead>
+            <TableHead className="lg:w-[22%]">Contact</TableHead>
+            {showActions && <TableHead className="lg:w-[6%]">Action</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -85,11 +85,11 @@ export function LocationsTable({
       <Table className="lg:table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead className="lg:w-[25%]">Name</TableHead>
-            <TableHead className="lg:w-[20%]">FOB</TableHead>
-            <TableHead className="lg:w-[25%]">Pastor</TableHead>
-            <TableHead className="lg:w-[25%]">Contact</TableHead>
-            {showActions && <TableHead className="lg:w-[50px]">Action</TableHead>}
+            <TableHead className="lg:w-[28%]">Name</TableHead>
+            <TableHead className="lg:w-[22%]">FOB</TableHead>
+            <TableHead className="lg:w-[22%]">Pastor</TableHead>
+            <TableHead className="lg:w-[22%]">Contact</TableHead>
+            {showActions && <TableHead className="lg:w-[6%]">Action</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
