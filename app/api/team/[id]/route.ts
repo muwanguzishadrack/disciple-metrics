@@ -24,16 +24,16 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or manager
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: isAdmin } = await (supabase as any).rpc('is_admin', {
+    const { data: isAdminOrManager } = await (supabase as any).rpc('is_admin_or_manager', {
       p_user_id: user.id,
     })
-    if (!isAdmin) {
+    if (!isAdminOrManager) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Prevent admin from changing their own role
+    // Prevent user from changing their own role
     if (memberId === user.id) {
       return NextResponse.json(
         { error: 'Cannot modify your own role' },

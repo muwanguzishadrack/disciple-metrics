@@ -25,11 +25,15 @@ import { formatDistanceToNow } from 'date-fns'
 interface PendingInvitationsTableProps {
   invitations: TeamInvitation[]
   isLoading: boolean
+  canCancel?: boolean
+  canResend?: boolean
 }
 
 export function PendingInvitationsTable({
   invitations,
   isLoading,
+  canCancel = true,
+  canResend = true,
 }: PendingInvitationsTableProps) {
   const { toast } = useToast()
   const resendInvite = useResendInvite()
@@ -111,30 +115,36 @@ export function PendingInvitationsTable({
                 })}
               </TableCell>
               <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => handleResend(invitation)}
-                      disabled={resendInvite.isPending}
-                    >
-                      <RefreshCw className="mr-2 h-4 w-4" />
-                      Resend
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleCancel(invitation)}
-                      disabled={cancelInvite.isPending}
-                      className="text-destructive"
-                    >
-                      <X className="mr-2 h-4 w-4" />
-                      Cancel
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {(canResend || canCancel) && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {canResend && (
+                        <DropdownMenuItem
+                          onClick={() => handleResend(invitation)}
+                          disabled={resendInvite.isPending}
+                        >
+                          <RefreshCw className="mr-2 h-4 w-4" />
+                          Resend
+                        </DropdownMenuItem>
+                      )}
+                      {canCancel && (
+                        <DropdownMenuItem
+                          onClick={() => handleCancel(invitation)}
+                          disabled={cancelInvite.isPending}
+                          className="text-destructive"
+                        >
+                          <X className="mr-2 h-4 w-4" />
+                          Cancel
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </TableCell>
             </TableRow>
           ))}

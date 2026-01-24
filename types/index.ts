@@ -12,7 +12,7 @@ export type User = {
 }
 
 // Team management types
-export type RoleName = 'admin' | 'fob_leader' | 'pastor'
+export type RoleName = 'admin' | 'manager' | 'fob_leader' | 'pastor'
 
 export interface TeamMember {
   id: string
@@ -71,6 +71,7 @@ export interface UpdateMemberData {
 
 export const ROLE_DISPLAY_NAMES: Record<RoleName, string> = {
   admin: 'Admin',
+  manager: 'Manager',
   fob_leader: 'FOB Leader',
   pastor: 'Pastor',
 } as const

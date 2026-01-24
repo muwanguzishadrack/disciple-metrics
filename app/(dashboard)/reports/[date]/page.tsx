@@ -75,9 +75,11 @@ export default function SingleReportPage() {
   const { toast } = useToast()
   const { data: userRole } = useUserRole()
   const isAdmin = userRole === 'admin'
+  const isManager = userRole === 'manager'
   const isFobLeader = userRole === 'fob_leader'
-  const canSearchLocations = isAdmin || isFobLeader
-  const canFilterByFob = isAdmin
+  const isAdminOrManager = isAdmin || isManager
+  const canSearchLocations = isAdminOrManager || isFobLeader
+  const canFilterByFob = isAdminOrManager
   const reportDate = params.date as string
   const { data: report, isLoading } = usePgaReportByDate(reportDate)
   const { data: fobs = [] } = useFobs()
@@ -431,7 +433,7 @@ export default function SingleReportPage() {
                   <TableHead className="lg:w-[8%]">HC1</TableHead>
                   <TableHead className="lg:w-[8%]">HC2</TableHead>
                   <TableHead className="lg:w-[10%]">Total</TableHead>
-                  {(isAdmin || isFobLeader) && <TableHead className="lg:w-[70px]">Action</TableHead>}
+                  {(isAdminOrManager || isFobLeader) && <TableHead className="lg:w-[70px]">Action</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -447,7 +449,7 @@ export default function SingleReportPage() {
                       <TableCell>{location.hasSubmitted ? location.hc1 : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.hc2 : '—'}</TableCell>
                       <TableCell className="font-medium">{location.hasSubmitted ? location.total : '—'}</TableCell>
-                      {(isAdmin || isFobLeader) && (
+                      {(isAdminOrManager || isFobLeader) && (
                         <TableCell>
                           {location.hasSubmitted ? (
                             <DropdownMenu>
@@ -479,7 +481,7 @@ export default function SingleReportPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={(isAdmin || isFobLeader) ? 10 : 9} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={(isAdminOrManager || isFobLeader) ? 10 : 9} className="text-center text-muted-foreground py-8">
                       No locations found
                     </TableCell>
                   </TableRow>

@@ -20,8 +20,11 @@ import { TeamMembersTable } from '@/components/team/team-members-table'
 import { PendingInvitationsTable } from '@/components/team/pending-invitations-table'
 import { InviteMemberDialog } from '@/components/team/invite-member-dialog'
 import { useTeamMembers, useInvitations } from '@/hooks/use-team'
+import { useUserRole } from '@/hooks/use-user'
 
 export default function TeamPage() {
+  const { data: userRole } = useUserRole()
+  const isAdmin = userRole === 'admin'
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -55,12 +58,14 @@ export default function TeamPage() {
         title="Team"
         description="Manage your team members and their roles."
         actions={
-          <Button
-            onClick={() => setInviteDialogOpen(true)}
-            className="w-full sm:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-          >
-            Invite Member
-          </Button>
+          isAdmin && (
+            <Button
+              onClick={() => setInviteDialogOpen(true)}
+              className="w-full sm:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+            >
+              Invite Member
+            </Button>
+          )
         }
       />
       <div className="mx-auto max-w-7xl space-y-8 p-4 md:p-6">
@@ -71,6 +76,8 @@ export default function TeamPage() {
             <PendingInvitationsTable
               invitations={invitations || []}
               isLoading={invitationsLoading}
+              canCancel={isAdmin}
+              canResend={isAdmin}
             />
           </section>
         )}
@@ -81,6 +88,7 @@ export default function TeamPage() {
           <TeamMembersTable
             members={paginatedMembers}
             isLoading={membersLoading}
+            canDelete={isAdmin}
           />
 
           {/* Pagination */}

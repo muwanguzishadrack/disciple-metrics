@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 
-export type RoleName = 'admin' | 'fob_leader' | 'pastor' | null
+export type RoleName = 'admin' | 'manager' | 'fob_leader' | 'pastor' | null
 
 export function useUser() {
   const supabase = createClient()
@@ -127,11 +127,13 @@ export function useUserAssignment() {
       const displayRoleName =
         roleName === 'admin'
           ? 'Admin'
-          : roleName === 'fob_leader'
-            ? 'FOB Leader'
-            : roleName === 'pastor'
-              ? 'Pastor'
-              : roleName
+          : roleName === 'manager'
+            ? 'Manager'
+            : roleName === 'fob_leader'
+              ? 'FOB Leader'
+              : roleName === 'pastor'
+                ? 'Pastor'
+                : roleName
 
       return {
         role: roleName,

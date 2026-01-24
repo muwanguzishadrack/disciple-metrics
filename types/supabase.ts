@@ -388,6 +388,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_generate_weekly_pga_report: { Args: never; Returns: undefined }
       can_access_location: {
         Args: { p_location_id: string; p_user_id: string }
         Returns: boolean
@@ -396,6 +397,8 @@ export type Database = {
       get_user_location_id: { Args: { p_user_id: string }; Returns: string }
       get_user_role: { Args: { p_user_id: string }; Returns: string }
       is_admin: { Args: { p_user_id: string }; Returns: boolean }
+      is_admin_or_manager: { Args: { p_user_id: string }; Returns: boolean }
+      is_fob_leader: { Args: { p_user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

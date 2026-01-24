@@ -37,10 +37,12 @@ export default function LocationsPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
   const isAdmin = userRole === 'admin'
+  const isManager = userRole === 'manager'
   const isFobLeader = userRole === 'fob_leader'
-  const canView = isAdmin || isFobLeader
-  const canFilterByFob = isAdmin
-  const canEdit = isAdmin || isFobLeader
+  const isAdminOrManager = isAdmin || isManager
+  const canView = isAdminOrManager || isFobLeader
+  const canFilterByFob = isAdminOrManager
+  const canEdit = isAdminOrManager || isFobLeader
   const canDelete = isAdmin
 
   // Filter locations by search and FOB

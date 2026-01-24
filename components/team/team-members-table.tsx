@@ -26,9 +26,10 @@ import { format } from 'date-fns'
 interface TeamMembersTableProps {
   members: TeamMember[]
   isLoading: boolean
+  canDelete?: boolean
 }
 
-export function TeamMembersTable({ members, isLoading }: TeamMembersTableProps) {
+export function TeamMembersTable({ members, isLoading, canDelete = true }: TeamMembersTableProps) {
   const [editMember, setEditMember] = useState<TeamMember | null>(null)
   const [removeMember, setRemoveMember] = useState<TeamMember | null>(null)
 
@@ -48,7 +49,7 @@ export function TeamMembersTable({ members, isLoading }: TeamMembersTableProps) 
 
   const getAssignment = (member: TeamMember) => {
     const roleName = member.role?.name
-    if (roleName === 'admin') {
+    if (roleName === 'admin' || roleName === 'manager') {
       return 'Organisation wide'
     }
     if (roleName === 'fob_leader') {
@@ -98,13 +99,15 @@ export function TeamMembersTable({ members, isLoading }: TeamMembersTableProps) 
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit Role
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setRemoveMember(member)}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Remove
-                      </DropdownMenuItem>
+                      {canDelete && (
+                        <DropdownMenuItem
+                          onClick={() => setRemoveMember(member)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Remove
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
