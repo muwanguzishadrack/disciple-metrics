@@ -127,7 +127,7 @@ const item = {
 export default function DashboardPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const { isLoading: isProfileLoading } = useProfile()
+  useProfile()
   const { data: userRole } = useUserRole()
   const { data: userAssignment } = useUserAssignment()
   const isAdmin = userRole === 'admin'
@@ -327,13 +327,7 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader
-        title={
-          isProfileLoading ? (
-            <Skeleton className="h-8 w-48 bg-[hsl(var(--header-fg)/0.2)]" />
-          ) : (
-            greeting
-          )
-        }
+        title={greeting}
         description="Here's an overview of your discipleship metrics."
         actions={
           <>
