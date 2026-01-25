@@ -19,6 +19,8 @@ function AuthCallbackContent() {
 
       const supabase = createClient()
 
+      // Note: token_hash recovery flow is now handled server-side at /auth/confirm
+
       // Get the hash fragment from the URL
       const hashParams = new URLSearchParams(window.location.hash.substring(1))
       const accessToken = hashParams.get('access_token')
