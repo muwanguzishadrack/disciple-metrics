@@ -77,6 +77,31 @@ function AuthCallbackContent() {
         }
       }
 
+      // Handle recovery flow (password reset) with hash tokens
+      if (accessToken && refreshToken && type === 'recovery') {
+        try {
+          const { data, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          })
+
+          if (sessionError) {
+            console.error('Recovery session error:', sessionError)
+            setError('Failed to authenticate. The reset link may have expired.')
+            return
+          }
+
+          if (data.session) {
+            router.replace('/reset-password')
+            return
+          }
+        } catch (err) {
+          console.error('Error handling recovery callback:', err)
+          setError('An error occurred. Please request a new password reset link.')
+          return
+        }
+      }
+
       // Handle code-based auth (PKCE flow) - redirect to server callback
       const code = searchParams.get('code')
       if (code) {
@@ -93,11 +118,15 @@ function AuthCallbackContent() {
   }, [router, searchParams])
 
   if (error) {
+    const isRecoveryError = error.includes('reset link') || error.includes('password reset')
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
         <p className="text-destructive mb-4">{error}</p>
-        <a href="/login" className="text-primary hover:underline">
-          Return to login
+        <a
+          href={isRecoveryError ? '/forgot-password' : '/login'}
+          className="text-primary hover:underline"
+        >
+          {isRecoveryError ? 'Request new reset link' : 'Return to login'}
         </a>
       </div>
     )
@@ -106,7 +135,7 @@ function AuthCallbackContent() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px]">
       <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-      <p className="text-muted-foreground">Setting up your account...</p>
+      <p className="text-muted-foreground">Processing...</p>
     </div>
   )
 }
