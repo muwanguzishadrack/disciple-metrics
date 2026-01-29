@@ -23,9 +23,14 @@ export interface LocationEntry {
   hc1: number
   hc2: number
   total: number
+  // Ministry Impact metrics (not included in PGA total)
+  salvations: number
+  baptisms: number
+  mca: number
+  mechanics: number
 }
 
-export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total'> {
+export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'baptisms' | 'mca' | 'mechanics'> {
   id: string | null
   sv1: number | null
   sv2: number | null
@@ -35,6 +40,11 @@ export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1
   hc1: number | null
   hc2: number | null
   total: number | null
+  // Ministry Impact metrics (not included in PGA total)
+  salvations: number | null
+  baptisms: number | null
+  mca: number | null
+  mechanics: number | null
   hasSubmitted: boolean
 }
 
@@ -51,6 +61,11 @@ export interface PgaReportWithTotals {
     hc1: number
     hc2: number
     total: number
+    // Ministry Impact totals (not included in PGA total)
+    salvations: number
+    baptisms: number
+    mca: number
+    mechanics: number
   }
 }
 
@@ -103,8 +118,13 @@ function calculateTotals(entries: LocationEntry[]) {
       hc1: acc.hc1 + entry.hc1,
       hc2: acc.hc2 + entry.hc2,
       total: acc.total + entry.total,
+      // Ministry Impact totals (not included in PGA total)
+      salvations: acc.salvations + entry.salvations,
+      baptisms: acc.baptisms + entry.baptisms,
+      mca: acc.mca + entry.mca,
+      mechanics: acc.mechanics + entry.mechanics,
     }),
-    { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0 }
+    { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0 }
   )
 }
 
@@ -119,6 +139,11 @@ function transformReportData(report: any): PgaReportWithTotals {
     const hc1 = entry.hc1 || 0
     const hc2 = entry.hc2 || 0
     const total = sv1 + sv2 + yxp + kids + local + hc1 + hc2
+    // Ministry Impact metrics (not included in PGA total)
+    const salvations = entry.salvations || 0
+    const baptisms = entry.baptisms || 0
+    const mca = entry.mca || 0
+    const mechanics = entry.mechanics || 0
 
     return {
       id: entry.id,
@@ -134,6 +159,10 @@ function transformReportData(report: any): PgaReportWithTotals {
       hc1,
       hc2,
       total,
+      salvations,
+      baptisms,
+      mca,
+      mechanics,
     }
   })
 
@@ -161,6 +190,7 @@ export function usePgaReports() {
           pga_entries (
             id,
             sv1, sv2, yxp, kids, local, hc1, hc2,
+            salvations, baptisms, mca, mechanics,
             location_id,
             location:locations (
               id, name,
@@ -191,6 +221,7 @@ export function usePgaReportByDate(date: string) {
           pga_entries (
             id,
             sv1, sv2, yxp, kids, local, hc1, hc2,
+            salvations, baptisms, mca, mechanics,
             location_id,
             location:locations (
               id, name,
@@ -222,6 +253,11 @@ interface CreatePgaEntryData {
   local: number
   hc1: number
   hc2: number
+  // Ministry Impact metrics (not included in PGA total)
+  salvations: number
+  baptisms: number
+  mca: number
+  mechanics: number
 }
 
 export function useCreatePgaEntry() {
@@ -267,6 +303,10 @@ export function useCreatePgaEntry() {
         local: data.local,
         hc1: data.hc1,
         hc2: data.hc2,
+        salvations: data.salvations,
+        baptisms: data.baptisms,
+        mca: data.mca,
+        mechanics: data.mechanics,
         created_by: user.id,
       })
 
@@ -289,6 +329,11 @@ interface UpdatePgaEntryData {
   local: number
   hc1: number
   hc2: number
+  // Ministry Impact metrics (not included in PGA total)
+  salvations: number
+  baptisms: number
+  mca: number
+  mechanics: number
 }
 
 export function useUpdatePgaEntry() {
@@ -307,6 +352,10 @@ export function useUpdatePgaEntry() {
           local: data.local,
           hc1: data.hc1,
           hc2: data.hc2,
+          salvations: data.salvations,
+          baptisms: data.baptisms,
+          mca: data.mca,
+          mechanics: data.mechanics,
           updated_at: new Date().toISOString(),
         })
         .eq('id', data.id)

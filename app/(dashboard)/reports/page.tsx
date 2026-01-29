@@ -142,6 +142,10 @@ export default function ReportsPage() {
         { header: 'HC1', accessor: (r) => r.totals.hc1 },
         { header: 'HC2', accessor: (r) => r.totals.hc2 },
         { header: 'Total', accessor: (r) => r.totals.total },
+        { header: 'Salv', accessor: (r) => r.totals.salvations },
+        { header: 'Bapt', accessor: (r) => r.totals.baptisms },
+        { header: 'Mech', accessor: (r) => r.totals.mechanics },
+        { header: 'MCA', accessor: (r) => r.totals.mca },
       ],
       sheetName: 'PGA Reports',
       fileName: 'pga_reports',
@@ -226,23 +230,27 @@ export default function ReportsPage() {
             <Table className="lg:table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="lg:w-[14%] whitespace-nowrap">Date</TableHead>
-                  <TableHead className="lg:w-[10%]">1SV</TableHead>
-                  <TableHead className="lg:w-[10%]">2SV</TableHead>
-                  <TableHead className="lg:w-[10%]">YXP</TableHead>
-                  <TableHead className="lg:w-[10%]">Kids</TableHead>
-                  <TableHead className="lg:w-[10%]">Local</TableHead>
-                  <TableHead className="lg:w-[10%]">HC1</TableHead>
-                  <TableHead className="lg:w-[10%]">HC2</TableHead>
-                  <TableHead className="lg:w-[10%]">Total</TableHead>
-                  <TableHead className="lg:w-[6%]">Action</TableHead>
+                  <TableHead className="lg:w-[9%] whitespace-nowrap">Date</TableHead>
+                  <TableHead className="lg:w-[6%]">1SV</TableHead>
+                  <TableHead className="lg:w-[6%]">2SV</TableHead>
+                  <TableHead className="lg:w-[6%]">YXP</TableHead>
+                  <TableHead className="lg:w-[6%]">Kids</TableHead>
+                  <TableHead className="lg:w-[6%]">Local</TableHead>
+                  <TableHead className="lg:w-[6%]">HC1</TableHead>
+                  <TableHead className="lg:w-[6%]">HC2</TableHead>
+                  <TableHead className="lg:w-[7%]">Total</TableHead>
+                  <TableHead className="lg:w-[7%]">Salv</TableHead>
+                  <TableHead className="lg:w-[7%]">Bapt</TableHead>
+                  <TableHead className="lg:w-[7%]">Mech</TableHead>
+                  <TableHead className="lg:w-[7%]">MCA</TableHead>
+                  <TableHead className="lg:w-[5%]">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      {Array.from({ length: 10 }).map((_, j) => (
+                      {Array.from({ length: 14 }).map((_, j) => (
                         <TableCell key={j}>
                           <Skeleton className="h-4 w-12" />
                         </TableCell>
@@ -260,7 +268,11 @@ export default function ReportsPage() {
                       <TableCell>{report.totals.local}</TableCell>
                       <TableCell>{report.totals.hc1}</TableCell>
                       <TableCell>{report.totals.hc2}</TableCell>
-                      <TableCell className="font-medium">{report.totals.total}</TableCell>
+                      <TableCell className="font-semibold">{report.totals.total}</TableCell>
+                      <TableCell>{report.totals.salvations}</TableCell>
+                      <TableCell>{report.totals.baptisms}</TableCell>
+                      <TableCell>{report.totals.mechanics}</TableCell>
+                      <TableCell>{report.totals.mca}</TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -287,7 +299,7 @@ export default function ReportsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={14} className="text-center text-muted-foreground py-8">
                       No reports yet. Go to the Dashboard to record your first PGA.
                     </TableCell>
                   </TableRow>

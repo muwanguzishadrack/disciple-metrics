@@ -105,6 +105,7 @@ export type Database = {
       }
       pga_entries: {
         Row: {
+          baptisms: number | null
           created_at: string | null
           created_by: string | null
           hc1: number | null
@@ -113,13 +114,17 @@ export type Database = {
           kids: number | null
           local: number | null
           location_id: string
+          mca: number | null
+          mechanics: number | null
           report_id: string
+          salvations: number | null
           sv1: number | null
           sv2: number | null
           updated_at: string | null
           yxp: number | null
         }
         Insert: {
+          baptisms?: number | null
           created_at?: string | null
           created_by?: string | null
           hc1?: number | null
@@ -128,13 +133,17 @@ export type Database = {
           kids?: number | null
           local?: number | null
           location_id: string
+          mca?: number | null
+          mechanics?: number | null
           report_id: string
+          salvations?: number | null
           sv1?: number | null
           sv2?: number | null
           updated_at?: string | null
           yxp?: number | null
         }
         Update: {
+          baptisms?: number | null
           created_at?: string | null
           created_by?: string | null
           hc1?: number | null
@@ -143,7 +152,10 @@ export type Database = {
           kids?: number | null
           local?: number | null
           location_id?: string
+          mca?: number | null
+          mechanics?: number | null
           report_id?: string
+          salvations?: number | null
           sv1?: number | null
           sv2?: number | null
           updated_at?: string | null

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react'
+import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
@@ -157,6 +157,11 @@ export default function DashboardPage() {
   const [pgaLocal, setPgaLocal] = useState(0)
   const [pgaHc1, setPgaHc1] = useState(0)
   const [pgaHc2, setPgaHc2] = useState(0)
+  // Ministry Impact metrics (not included in PGA total)
+  const [pgaSalvations, setPgaSalvations] = useState(0)
+  const [pgaBaptisms, setPgaBaptisms] = useState(0)
+  const [pgaMca, setPgaMca] = useState(0)
+  const [pgaMechanics, setPgaMechanics] = useState(0)
 
   // Build FOB and Location options from database
   const fobOptions = useMemo(() => {
@@ -199,7 +204,7 @@ export default function DashboardPage() {
   }, [pgaReports, dateFilter])
 
   // Calculate totals from filtered reports
-  type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number }
+  type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number; salvations: number; baptisms: number; mca: number; mechanics: number }
   const calculatedTotals = useMemo(() => {
     return filteredReports.reduce(
       (acc: Totals, report: { totals: Totals }) => ({
@@ -211,8 +216,12 @@ export default function DashboardPage() {
         hc1: acc.hc1 + report.totals.hc1,
         hc2: acc.hc2 + report.totals.hc2,
         total: acc.total + report.totals.total,
+        salvations: acc.salvations + report.totals.salvations,
+        baptisms: acc.baptisms + report.totals.baptisms,
+        mca: acc.mca + report.totals.mca,
+        mechanics: acc.mechanics + report.totals.mechanics,
       }),
-      { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0 }
+      { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0 }
     )
   }, [filteredReports])
 
@@ -228,6 +237,19 @@ export default function DashboardPage() {
     { title: 'Overall', value: calculatedTotals.total.toLocaleString(), icon: TrendingUp },
   ], [calculatedTotals])
 
+  // Compact number formatter for Ministry Impact stats
+  const formatCompact = (num: number) => {
+    return Intl.NumberFormat('en', { notation: 'compact' }).format(num)
+  }
+
+  // Ministry Impact stats (separate from PGA total)
+  const ministryStats = useMemo(() => [
+    { title: 'Salvations', value: formatCompact(calculatedTotals.salvations), icon: Heart },
+    { title: 'Baptisms', value: formatCompact(calculatedTotals.baptisms), icon: Droplets },
+    { title: 'Mechanics', value: formatCompact(calculatedTotals.mechanics), icon: Wrench },
+    { title: 'MCA', value: formatCompact(calculatedTotals.mca), icon: UsersRound },
+  ], [calculatedTotals])
+
   const resetPgaForm = () => {
     setPgaDate('')
     setPgaFob('')
@@ -239,6 +261,10 @@ export default function DashboardPage() {
     setPgaLocal(0)
     setPgaHc1(0)
     setPgaHc2(0)
+    setPgaSalvations(0)
+    setPgaBaptisms(0)
+    setPgaMca(0)
+    setPgaMechanics(0)
   }
 
   const handleDialogOpenChange = (open: boolean) => {
@@ -269,6 +295,10 @@ export default function DashboardPage() {
         local: pgaLocal,
         hc1: pgaHc1,
         hc2: pgaHc2,
+        salvations: pgaSalvations,
+        baptisms: pgaBaptisms,
+        mca: pgaMca,
+        mechanics: pgaMechanics,
       })
       toast({
         title: 'Success',
@@ -494,13 +524,61 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Ministry Impact Section */}
+                  <div className="border-t pt-4 mt-2">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-salvations">Salvations</Label>
+                        <Input
+                          id="pga-salvations"
+                          type="number"
+                          min="0"
+                          value={pgaSalvations}
+                          onChange={(e) => setPgaSalvations(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-baptisms">Baptisms</Label>
+                        <Input
+                          id="pga-baptisms"
+                          type="number"
+                          min="0"
+                          value={pgaBaptisms}
+                          onChange={(e) => setPgaBaptisms(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics">Mechanics</Label>
+                        <Input
+                          id="pga-mechanics"
+                          type="number"
+                          min="0"
+                          value={pgaMechanics}
+                          onChange={(e) => setPgaMechanics(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mca">MCA</Label>
+                        <Input
+                          id="pga-mca"
+                          type="number"
+                          min="0"
+                          value={pgaMca}
+                          onChange={(e) => setPgaMca(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <DialogFooter className="gap-2 sm:justify-between">
-                  <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                <DialogFooter className="flex-row gap-2">
+                  <Button variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
                     Cancel
                   </Button>
-                  <Button onClick={handleSubmitPga} disabled={createPgaEntry.isPending}>
+                  <Button onClick={handleSubmitPga} disabled={createPgaEntry.isPending} className="flex-1">
                     {createPgaEntry.isPending ? 'Saving...' : 'Save'}
                   </Button>
                 </DialogFooter>
@@ -511,30 +589,52 @@ export default function DashboardPage() {
       />
 
       <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-6">
-        <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
-      >
-        {stats.map((stat) => (
-          <motion.div key={stat.title} variants={item}>
-            <Card className="rounded-lg">
-              <div className="flex items-stretch p-4">
-                <div className="flex-1 flex flex-col justify-center">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {stat.title}
-                  </CardTitle>
-                  <div className="text-xl font-medium">{stat.value}</div>
-                </div>
-                <div className="flex items-center justify-center rounded-lg h-12 w-12 bg-[#008cff]/10">
-                  <stat.icon className="h-6 w-6 text-[#008cff] stroke-[1.5]" />
-                </div>
+        <div className="grid gap-4 lg:grid-cols-5">
+          {/* PGA Stats Cards */}
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="lg:col-span-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {stats.map((stat) => (
+              <motion.div key={stat.title} variants={item}>
+                <Card className="rounded-lg">
+                  <div className="flex items-stretch p-4">
+                    <div className="flex-1 flex flex-col justify-center">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        {stat.title}
+                      </CardTitle>
+                      <div className="text-xl font-medium">{stat.value}</div>
+                    </div>
+                    <div className="flex items-center justify-center rounded-lg h-12 w-12 bg-[#008cff]/10">
+                      <stat.icon className="h-5 w-5 text-[#008cff] stroke-[1.5]" />
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Ministry Impact Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="lg:col-span-1"
+          >
+            <Card className="rounded-lg h-full">
+              <div className="p-3 h-full grid grid-cols-2 gap-2">
+                {ministryStats.map((stat) => (
+                  <div key={stat.title} className="flex flex-col items-center justify-center p-2 rounded-md bg-muted/50">
+                    <span className="text-xl font-medium">{stat.value}</span>
+                    <span className="text-sm font-medium text-muted-foreground">{stat.title}</span>
+                  </div>
+                ))}
               </div>
             </Card>
           </motion.div>
-        ))}
-      </motion.div>
+        </div>
 
         {/* Recent PGA Reports Table */}
         <Card className="rounded-lg">
@@ -545,23 +645,27 @@ export default function DashboardPage() {
             <Table className="lg:table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="lg:w-[14%] whitespace-nowrap">Date</TableHead>
-                  <TableHead className="lg:w-[10%]">1SV</TableHead>
-                  <TableHead className="lg:w-[10%]">2SV</TableHead>
-                  <TableHead className="lg:w-[10%]">YXP</TableHead>
-                  <TableHead className="lg:w-[10%]">Kids</TableHead>
-                  <TableHead className="lg:w-[10%]">Local</TableHead>
-                  <TableHead className="lg:w-[10%]">HC1</TableHead>
-                  <TableHead className="lg:w-[10%]">HC2</TableHead>
-                  <TableHead className="lg:w-[10%]">Total</TableHead>
-                  <TableHead className="lg:w-[6%]">Action</TableHead>
+                  <TableHead className="lg:w-[9%] whitespace-nowrap">Date</TableHead>
+                  <TableHead className="lg:w-[6%]">1SV</TableHead>
+                  <TableHead className="lg:w-[6%]">2SV</TableHead>
+                  <TableHead className="lg:w-[6%]">YXP</TableHead>
+                  <TableHead className="lg:w-[6%]">Kids</TableHead>
+                  <TableHead className="lg:w-[6%]">Local</TableHead>
+                  <TableHead className="lg:w-[6%]">HC1</TableHead>
+                  <TableHead className="lg:w-[6%]">HC2</TableHead>
+                  <TableHead className="lg:w-[7%]">Total</TableHead>
+                  <TableHead className="lg:w-[7%]">Salv</TableHead>
+                  <TableHead className="lg:w-[7%]">Bapt</TableHead>
+                  <TableHead className="lg:w-[7%]">Mech</TableHead>
+                  <TableHead className="lg:w-[7%]">MCA</TableHead>
+                  <TableHead className="lg:w-[5%]">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isReportsLoading ? (
                   Array.from({ length: 3 }).map((_, i) => (
                     <TableRow key={i}>
-                      {Array.from({ length: 10 }).map((_, j) => (
+                      {Array.from({ length: 14 }).map((_, j) => (
                         <TableCell key={j}>
                           <Skeleton className="h-4 w-12" />
                         </TableCell>
@@ -579,7 +683,11 @@ export default function DashboardPage() {
                       <TableCell>{report.totals.local}</TableCell>
                       <TableCell>{report.totals.hc1}</TableCell>
                       <TableCell>{report.totals.hc2}</TableCell>
-                      <TableCell className="font-medium">{report.totals.total}</TableCell>
+                      <TableCell className="font-semibold">{report.totals.total}</TableCell>
+                      <TableCell>{report.totals.salvations}</TableCell>
+                      <TableCell>{report.totals.baptisms}</TableCell>
+                      <TableCell>{report.totals.mechanics}</TableCell>
+                      <TableCell>{report.totals.mca}</TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -606,7 +714,7 @@ export default function DashboardPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={14} className="text-center text-muted-foreground py-8">
                       No reports yet. Click &quot;Record PGA&quot; to add your first report.
                     </TableCell>
                   </TableRow>

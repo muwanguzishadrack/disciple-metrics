@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search } from 'lucide-react'
+import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
@@ -128,6 +128,10 @@ export default function SingleReportPage() {
         hc1: null,
         hc2: null,
         total: null,
+        salvations: null,
+        baptisms: null,
+        mca: null,
+        mechanics: null,
         hasSubmitted: false,
       }
     })
@@ -145,6 +149,11 @@ export default function SingleReportPage() {
   const [editLocal, setEditLocal] = useState(0)
   const [editHc1, setEditHc1] = useState(0)
   const [editHc2, setEditHc2] = useState(0)
+  // Ministry Impact edit state
+  const [editSalvations, setEditSalvations] = useState(0)
+  const [editBaptisms, setEditBaptisms] = useState(0)
+  const [editMca, setEditMca] = useState(0)
+  const [editMechanics, setEditMechanics] = useState(0)
 
   const editTotal = useMemo(() => {
     return editSv1 + editSv2 + editYxp + editKids + editLocal + editHc1 + editHc2
@@ -159,6 +168,10 @@ export default function SingleReportPage() {
     setEditLocal(location.local)
     setEditHc1(location.hc1)
     setEditHc2(location.hc2)
+    setEditSalvations(location.salvations)
+    setEditBaptisms(location.baptisms)
+    setEditMca(location.mca)
+    setEditMechanics(location.mechanics)
     setEditDialogOpen(true)
   }
 
@@ -180,6 +193,10 @@ export default function SingleReportPage() {
         local: editLocal,
         hc1: editHc1,
         hc2: editHc2,
+        salvations: editSalvations,
+        baptisms: editBaptisms,
+        mca: editMca,
+        mechanics: editMechanics,
       })
       toast({
         title: 'Success',
@@ -266,6 +283,10 @@ export default function SingleReportPage() {
       hc1: loc.hasSubmitted ? loc.hc1 : '',
       hc2: loc.hasSubmitted ? loc.hc2 : '',
       total: loc.hasSubmitted ? loc.total : '',
+      salvations: loc.hasSubmitted ? loc.salvations : '',
+      baptisms: loc.hasSubmitted ? loc.baptisms : '',
+      mca: loc.hasSubmitted ? loc.mca : '',
+      mechanics: loc.hasSubmitted ? loc.mechanics : '',
     }))
 
     exportToExcel({
@@ -282,6 +303,10 @@ export default function SingleReportPage() {
         { header: 'HC1', accessor: 'hc1' },
         { header: 'HC2', accessor: 'hc2' },
         { header: 'Total', accessor: 'total' },
+        { header: 'Salv', accessor: 'salvations' },
+        { header: 'Bapt', accessor: 'baptisms' },
+        { header: 'Mech', accessor: 'mechanics' },
+        { header: 'MCA', accessor: 'mca' },
       ],
       sheetName: 'Location Report',
       fileName: `pga_report_${reportDate}`,
@@ -319,6 +344,19 @@ export default function SingleReportPage() {
     { title: 'Overall', value: report.totals.total, icon: TrendingUp },
   ]
 
+  // Compact number formatter for Ministry Impact stats
+  const formatCompact = (num: number) => {
+    return Intl.NumberFormat('en', { notation: 'compact' }).format(num)
+  }
+
+  // Ministry Impact stats (separate from PGA total)
+  const ministryStats = [
+    { title: 'Salvations', value: formatCompact(report.totals.salvations), icon: Heart },
+    { title: 'Baptisms', value: formatCompact(report.totals.baptisms), icon: Droplets },
+    { title: 'Mechanics', value: formatCompact(report.totals.mechanics), icon: Wrench },
+    { title: 'MCA', value: formatCompact(report.totals.mca), icon: UsersRound },
+  ]
+
   // Format date for display
   const formattedDate = new Date(report.date).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -345,31 +383,52 @@ export default function SingleReportPage() {
       />
 
       <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-6">
-        {/* Stats Cards */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
-        >
-          {stats.map((stat) => (
-            <motion.div key={stat.title} variants={item}>
-              <Card className="rounded-lg">
-                <div className="flex items-stretch p-4">
-                  <div className="flex-1 flex flex-col justify-center">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                      {stat.title}
-                    </CardTitle>
-                    <div className="text-xl font-medium">{stat.value}</div>
+        <div className="grid gap-4 lg:grid-cols-5">
+          {/* PGA Stats Cards */}
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="lg:col-span-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {stats.map((stat) => (
+              <motion.div key={stat.title} variants={item}>
+                <Card className="rounded-lg">
+                  <div className="flex items-stretch p-4">
+                    <div className="flex-1 flex flex-col justify-center">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        {stat.title}
+                      </CardTitle>
+                      <div className="text-xl font-medium">{stat.value}</div>
+                    </div>
+                    <div className="flex items-center justify-center rounded-lg h-12 w-12 bg-[#008cff]/10">
+                      <stat.icon className="h-5 w-5 text-[#008cff] stroke-[1.5]" />
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center rounded-lg h-12 w-12 bg-[#008cff]/10">
-                    <stat.icon className="h-6 w-6 text-[#008cff] stroke-[1.5]" />
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Ministry Impact Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="lg:col-span-1"
+          >
+            <Card className="rounded-lg h-full">
+              <div className="p-3 h-full grid grid-cols-2 gap-2">
+                {ministryStats.map((stat) => (
+                  <div key={stat.title} className="flex flex-col items-center justify-center p-2 rounded-md bg-muted/50">
+                    <span className="text-xl font-medium">{stat.value}</span>
+                    <span className="text-sm font-medium text-muted-foreground">{stat.title}</span>
                   </div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
+                ))}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
 
         {/* Locations Table */}
         <Card className="rounded-lg">
@@ -421,19 +480,23 @@ export default function SingleReportPage() {
               </div>
             </div>
 
-            <Table className="lg:table-fixed">
+            <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="lg:w-[16%]">Location</TableHead>
-                  <TableHead className="lg:w-[8%]">1SV</TableHead>
-                  <TableHead className="lg:w-[8%]">2SV</TableHead>
-                  <TableHead className="lg:w-[8%]">YXP</TableHead>
-                  <TableHead className="lg:w-[8%]">Kids</TableHead>
-                  <TableHead className="lg:w-[8%]">Local</TableHead>
-                  <TableHead className="lg:w-[8%]">HC1</TableHead>
-                  <TableHead className="lg:w-[8%]">HC2</TableHead>
-                  <TableHead className="lg:w-[10%]">Total</TableHead>
-                  {(isAdminOrManager || isFobLeader) && <TableHead className="lg:w-[70px]">Action</TableHead>}
+                  <TableHead>Location</TableHead>
+                  <TableHead>1SV</TableHead>
+                  <TableHead>2SV</TableHead>
+                  <TableHead>YXP</TableHead>
+                  <TableHead>Kids</TableHead>
+                  <TableHead>Local</TableHead>
+                  <TableHead>HC1</TableHead>
+                  <TableHead>HC2</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Salv</TableHead>
+                  <TableHead>Bapt</TableHead>
+                  <TableHead>Mech</TableHead>
+                  <TableHead>MCA</TableHead>
+                  {(isAdminOrManager || isFobLeader) && <TableHead>Action</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -448,7 +511,11 @@ export default function SingleReportPage() {
                       <TableCell>{location.hasSubmitted ? location.local : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.hc1 : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.hc2 : '—'}</TableCell>
-                      <TableCell className="font-medium">{location.hasSubmitted ? location.total : '—'}</TableCell>
+                      <TableCell className="font-semibold">{location.hasSubmitted ? location.total : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.salvations : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.baptisms : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.mechanics : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.mca : '—'}</TableCell>
                       {(isAdminOrManager || isFobLeader) && (
                         <TableCell>
                           {location.hasSubmitted ? (
@@ -481,7 +548,7 @@ export default function SingleReportPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={(isAdminOrManager || isFobLeader) ? 10 : 9} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={(isAdminOrManager || isFobLeader) ? 14 : 13} className="text-center text-muted-foreground py-8">
                       No locations found
                     </TableCell>
                   </TableRow>
@@ -667,13 +734,61 @@ export default function SingleReportPage() {
                 </div>
               </div>
             </div>
+
+            {/* Ministry Impact Section */}
+            <div className="border-t pt-4 mt-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-salvations">Salvations</Label>
+                  <Input
+                    id="edit-salvations"
+                    type="number"
+                    min="0"
+                    value={editSalvations}
+                    onChange={(e) => setEditSalvations(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-baptisms">Baptisms</Label>
+                  <Input
+                    id="edit-baptisms"
+                    type="number"
+                    min="0"
+                    value={editBaptisms}
+                    onChange={(e) => setEditBaptisms(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics">Mechanics</Label>
+                  <Input
+                    id="edit-mechanics"
+                    type="number"
+                    min="0"
+                    value={editMechanics}
+                    onChange={(e) => setEditMechanics(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mca">MCA</Label>
+                  <Input
+                    id="edit-mca"
+                    type="number"
+                    min="0"
+                    value={editMca}
+                    onChange={(e) => setEditMca(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <DialogFooter className="gap-2 sm:justify-between">
-            <Button variant="outline" onClick={handleEditDialogClose}>
+          <DialogFooter className="flex-row gap-2">
+            <Button variant="outline" onClick={handleEditDialogClose} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={handleUpdate} disabled={updatePgaEntry.isPending}>
+            <Button onClick={handleUpdate} disabled={updatePgaEntry.isPending} className="flex-1">
               {updatePgaEntry.isPending ? 'Updating...' : 'Update'}
             </Button>
           </DialogFooter>

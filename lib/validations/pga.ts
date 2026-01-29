@@ -11,6 +11,11 @@ export const publicPgaFormSchema = z.object({
   local: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   hc1: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   hc2: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  // Ministry Impact metrics (not included in PGA total)
+  salvations: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  baptisms: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mca: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanics: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
 })
 
 // Schema for API submission (includes accessCode from PIN dialog)
