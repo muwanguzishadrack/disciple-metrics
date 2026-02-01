@@ -51,6 +51,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { PageHeader } from '@/components/layout/page-header'
 import { useProfile, useUserRole, useUserAssignment } from '@/hooks/use-user'
 import { usePgaReports, useFobs, useLocations, useCreatePgaEntry, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
@@ -387,8 +388,9 @@ export default function DashboardPage() {
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="grid gap-4 py-4">
-                  {/* Date */}
+                <ScrollArea className="max-h-[60vh]">
+                  <div className="grid gap-4 py-4 pr-4">
+                    {/* Date */}
                   <div className="grid gap-2">
                     <Label htmlFor="pga-date">Date</Label>
                     <DatePicker
@@ -572,7 +574,8 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </div>
-                </div>
+                  </div>
+                </ScrollArea>
 
                 <DialogFooter className="flex-row gap-2">
                   <Button variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">

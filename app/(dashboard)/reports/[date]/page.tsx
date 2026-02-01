@@ -49,6 +49,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { usePgaReportByDate, useFobs, useLocations, useUpdatePgaEntry, useDeletePgaEntry, type LocationEntry, type LocationEntryWithStatus } from '@/hooks/use-pga'
 import { useToast } from '@/hooks/use-toast'
 import { useUserRole } from '@/hooks/use-user'
@@ -629,8 +630,9 @@ export default function SingleReportPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            {/* FOB and Location */}
+          <ScrollArea className="max-h-[60vh]">
+            <div className="grid gap-4 py-4 pr-4">
+              {/* FOB and Location */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>FOB</Label>
@@ -782,7 +784,8 @@ export default function SingleReportPage() {
                 </div>
               </div>
             </div>
-          </div>
+            </div>
+          </ScrollArea>
 
           <DialogFooter className="flex-row gap-2">
             <Button variant="outline" onClick={handleEditDialogClose} className="flex-1">
