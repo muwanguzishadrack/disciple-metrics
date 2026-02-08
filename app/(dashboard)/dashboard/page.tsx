@@ -306,10 +306,13 @@ export default function DashboardPage() {
       })
       setDialogOpen(false)
       resetPgaForm()
-    } catch {
+    } catch (error: unknown) {
+      const isDuplicate = (error as { code?: string })?.code === '23505'
       toast({
-        title: 'Error',
-        description: 'Failed to record PGA entry',
+        title: isDuplicate ? 'Duplicate Entry' : 'Error',
+        description: isDuplicate
+          ? 'A PGA entry for this location already exists on this date'
+          : 'Failed to record PGA entry',
         variant: 'destructive',
       })
     }
