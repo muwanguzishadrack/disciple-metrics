@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -383,9 +382,6 @@ export default function DashboardPage() {
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>Record PGA</DialogTitle>
-                  <DialogDescription>
-                    Enter the attendance data for this service.
-                  </DialogDescription>
                 </DialogHeader>
 
                 <ScrollArea className="max-h-[60vh]">
@@ -402,46 +398,46 @@ export default function DashboardPage() {
                     />
                   </div>
 
-                  {/* FOB and Location */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>FOB</Label>
-                      {isPastor || isFobLeader ? (
-                        <div className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm">
-                          {userAssignment?.fobName ?? 'Loading...'}
-                        </div>
-                      ) : (
-                        <Combobox
-                          options={fobOptions}
-                          value={pgaFob}
-                          onValueChange={setPgaFob}
-                          placeholder="Select FOB..."
-                          searchPlaceholder="Search FOB..."
-                        />
-                      )}
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Location</Label>
-                      {isPastor ? (
-                        <div className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm">
-                          {userAssignment?.locationName ?? 'Loading...'}
-                        </div>
-                      ) : (
-                        <Combobox
-                          options={locationOptions}
-                          value={pgaLocation}
-                          onValueChange={setPgaLocation}
-                          placeholder="Select location..."
-                          searchPlaceholder="Search location..."
-                        />
-                      )}
-                    </div>
+                  {/* FOB */}
+                  <div className="grid gap-2">
+                    <Label>FOB</Label>
+                    {isPastor || isFobLeader ? (
+                      <div className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm">
+                        {userAssignment?.fobName ?? 'Loading...'}
+                      </div>
+                    ) : (
+                      <Combobox
+                        options={fobOptions}
+                        value={pgaFob}
+                        onValueChange={setPgaFob}
+                        placeholder="Select FOB..."
+                        searchPlaceholder="Search FOB..."
+                      />
+                    )}
+                  </div>
+
+                  {/* Location */}
+                  <div className="grid gap-2">
+                    <Label>Location</Label>
+                    {isPastor ? (
+                      <div className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm">
+                        {userAssignment?.locationName ?? 'Loading...'}
+                      </div>
+                    ) : (
+                      <Combobox
+                        options={locationOptions}
+                        value={pgaLocation}
+                        onValueChange={setPgaLocation}
+                        placeholder="Select location..."
+                        searchPlaceholder="Search location..."
+                      />
+                    )}
                   </div>
 
                   {/* Attendance Numbers */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="pga-sv1">1st Service (1SV)</Label>
+                      <Label htmlFor="pga-sv1">1st Service</Label>
                       <Input
                         id="pga-sv1"
                         type="number"
@@ -451,7 +447,7 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="pga-sv2">2nd Service (2SV)</Label>
+                      <Label htmlFor="pga-sv2">2nd Service</Label>
                       <Input
                         id="pga-sv2"
                         type="number"
@@ -497,7 +493,7 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="pga-hc1">Hosting Center 1 (HC1)</Label>
+                      <Label htmlFor="pga-hc1">Hosting Center 1</Label>
                       <Input
                         id="pga-hc1"
                         type="number"
@@ -510,7 +506,7 @@ export default function DashboardPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="pga-hc2">Hosting Center 2 (HC2)</Label>
+                      <Label htmlFor="pga-hc2">Hosting Center 2</Label>
                       <Input
                         id="pga-hc2"
                         type="number"
@@ -521,7 +517,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="grid gap-2">
                       <Label>Total</Label>
-                      <div className="flex h-10 items-center rounded-md border bg-muted px-3 font-medium">
+                      <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
                         {pgaTotal}
                       </div>
                     </div>

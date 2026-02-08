@@ -31,7 +31,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -625,9 +624,6 @@ export default function SingleReportPage() {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Edit PGA</DialogTitle>
-            <DialogDescription>
-              Update the attendance data for {editingLocation?.location}.
-            </DialogDescription>
           </DialogHeader>
 
           <ScrollArea className="max-h-[60vh]">
@@ -651,7 +647,7 @@ export default function SingleReportPage() {
             {/* Attendance Numbers */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="edit-sv1">1st Service (1SV)</Label>
+                <Label htmlFor="edit-sv1">1st Service</Label>
                 <Input
                   id="edit-sv1"
                   type="number"
@@ -661,7 +657,7 @@ export default function SingleReportPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-sv2">2nd Service (2SV)</Label>
+                <Label htmlFor="edit-sv2">2nd Service</Label>
                 <Input
                   id="edit-sv2"
                   type="number"
@@ -707,7 +703,7 @@ export default function SingleReportPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-hc1">Hosting Center 1 (HC1)</Label>
+                <Label htmlFor="edit-hc1">Hosting Center 1</Label>
                 <Input
                   id="edit-hc1"
                   type="number"
@@ -720,7 +716,7 @@ export default function SingleReportPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="edit-hc2">Hosting Center 2 (HC2)</Label>
+                <Label htmlFor="edit-hc2">Hosting Center 2</Label>
                 <Input
                   id="edit-hc2"
                   type="number"
@@ -731,7 +727,7 @@ export default function SingleReportPage() {
               </div>
               <div className="grid gap-2">
                 <Label>Total</Label>
-                <div className="flex h-10 items-center rounded-md border bg-muted px-3 font-medium">
+                <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
                   {editTotal}
                 </div>
               </div>
