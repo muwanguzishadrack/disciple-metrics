@@ -409,7 +409,10 @@ export default function DashboardPage() {
                       <Combobox
                         options={fobOptions}
                         value={pgaFob}
-                        onValueChange={setPgaFob}
+                        onValueChange={(value) => {
+                          setPgaFob(value)
+                          setPgaLocation('')
+                        }}
                         placeholder="Select FOB..."
                         searchPlaceholder="Search FOB..."
                       />
@@ -430,6 +433,7 @@ export default function DashboardPage() {
                         onValueChange={setPgaLocation}
                         placeholder="Select location..."
                         searchPlaceholder="Search location..."
+                        disabled={!pgaFob}
                       />
                     )}
                   </div>
