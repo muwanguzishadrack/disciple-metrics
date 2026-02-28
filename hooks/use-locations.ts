@@ -70,15 +70,37 @@ export function useDeleteLocation() {
 
   return useMutation({
     mutationFn: async (locationId: string) => {
+      // Delete from referencing tables first to avoid FK constraint errors
+      const { error: entriesError } = await (supabase as any)
+        .from('pga_entries')
+        .delete()
+        .eq('location_id', locationId)
+      if (entriesError) throw entriesError
+
+      const { error: assignmentsError } = await (supabase as any)
+        .from('user_assignments')
+        .delete()
+        .eq('location_id', locationId)
+      if (assignmentsError) throw assignmentsError
+
+      const { error: invitationsError } = await (supabase as any)
+        .from('team_invitations')
+        .delete()
+        .eq('location_id', locationId)
+      if (invitationsError) throw invitationsError
+
       const { error } = await (supabase as any)
         .from('locations')
         .delete()
         .eq('id', locationId)
-
       if (error) throw error
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['locations'] })
+      queryClient.invalidateQueries({ queryKey: ['user-assignment'] })
+      queryClient.invalidateQueries({ queryKey: ['team-members'] })
+      queryClient.invalidateQueries({ queryKey: ['team-invitations'] })
+      queryClient.invalidateQueries({ queryKey: ['pga-reports'] })
     },
   })
 }

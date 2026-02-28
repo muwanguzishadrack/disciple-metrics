@@ -55,8 +55,8 @@ export function DeleteLocationDialog({
           <AlertDialogTitle>Delete Location</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete &quot;{location?.name}&quot;? This
-            action cannot be undone. Any PGA entries associated with this
-            location will also be deleted.
+            action cannot be undone. Any PGA entries, user assignments, and
+            invitations associated with this location will also be removed.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
