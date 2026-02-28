@@ -29,13 +29,13 @@ export default function ReportsPage() {
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="w-full overflow-x-auto sm:w-auto">
               <TabsList className="w-full sm:w-auto">
-                <TabsTrigger value="pga-reports">PGA</TabsTrigger>
-                <TabsTrigger value="four-week-pga">4 Wk PGA</TabsTrigger>
-                <TabsTrigger value="epga-report">EPGA</TabsTrigger>
-                <TabsTrigger value="four-week-epga">4 Wk EPGA</TabsTrigger>
+                <TabsTrigger value="pga-reports" className="flex-1 sm:flex-initial">PGA</TabsTrigger>
+                <TabsTrigger value="four-week-pga" className="flex-1 sm:flex-initial">4 Wk PGA</TabsTrigger>
+                <TabsTrigger value="epga-report" className="flex-1 sm:flex-initial">EPGA</TabsTrigger>
+                <TabsTrigger value="four-week-epga" className="flex-1 sm:flex-initial">4 Wk EPGA</TabsTrigger>
               </TabsList>
             </div>
-            <div ref={setActionsContainer} className="flex flex-wrap items-center gap-2" />
+            <div ref={setActionsContainer} className="flex w-full flex-wrap items-center gap-2 sm:w-auto [&>*]:w-full [&>*]:sm:w-auto" />
           </div>
           <TabsContent value="pga-reports">
             <PgaReportsTab embedded actionsContainer={actionsContainer} />
