@@ -130,7 +130,7 @@ export default function FourWeekEpgaDetailPage() {
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground hover:bg-primary-foreground/20"
+            className="border-[hsl(var(--header-fg)/0.3)] bg-[hsl(var(--header-fg)/0.1)] text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--header-fg)/0.2)] hover:text-[hsl(var(--header-fg))]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back

@@ -29,7 +29,7 @@ export default function ReportsPage() {
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="w-full overflow-x-auto sm:w-auto">
               <TabsList className="w-full sm:w-auto">
-                <TabsTrigger value="pga-reports">PGA Reports</TabsTrigger>
+                <TabsTrigger value="pga-reports">PGA</TabsTrigger>
                 <TabsTrigger value="four-week-pga">4 Wk PGA</TabsTrigger>
                 <TabsTrigger value="epga-report">EPGA</TabsTrigger>
                 <TabsTrigger value="four-week-epga">4 Wk EPGA</TabsTrigger>
