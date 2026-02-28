@@ -72,7 +72,7 @@ export function TeamMembersTable({ members, isLoading, userRole }: TeamMembersTa
               <TableHead className="lg:w-[20%]">Role</TableHead>
               <TableHead className="lg:w-[25%]">Assignment</TableHead>
               <TableHead className="lg:w-[12%]">Joined</TableHead>
-              <TableHead className="lg:w-[6%]">Action</TableHead>
+              <TableHead className="lg:w-[6%] text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -97,7 +97,7 @@ export function TeamMembersTable({ members, isLoading, userRole }: TeamMembersTa
                       ? format(new Date(member.createdAt), 'MMM d, yyyy')
                       : '-'}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     {(canEdit || canRemove) && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

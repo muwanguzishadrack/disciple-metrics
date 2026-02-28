@@ -53,7 +53,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { PageHeader } from '@/components/layout/page-header'
 import { useProfile, useUserRole, useUserAssignment } from '@/hooks/use-user'
-import { usePgaReports, useFobs, useLocations, useCreatePgaEntry, useDeletePgaReport, type PgaReportWithTotals } from '@/hooks/use-pga'
+import { usePgaReports, useFobs, useLocations, useCreatePgaEntry, useDeletePgaReport, type PgaReportSummary } from '@/hooks/use-pga'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 
@@ -146,7 +146,7 @@ export default function DashboardPage() {
   // Record PGA Dialog state
   const [dialogOpen, setDialogOpen] = useState(false)
   // Delete confirmation state
-  const [deleteTarget, setDeleteTarget] = useState<PgaReportWithTotals | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<PgaReportSummary | null>(null)
   const [pgaDate, setPgaDate] = useState('')
   const [pgaFob, setPgaFob] = useState('')
   const [pgaLocation, setPgaLocation] = useState('')
@@ -207,19 +207,19 @@ export default function DashboardPage() {
   type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number; salvations: number; baptisms: number; mca: number; mechanics: number }
   const calculatedTotals = useMemo(() => {
     return filteredReports.reduce(
-      (acc: Totals, report: { totals: Totals }) => ({
-        sv1: acc.sv1 + report.totals.sv1,
-        sv2: acc.sv2 + report.totals.sv2,
-        yxp: acc.yxp + report.totals.yxp,
-        kids: acc.kids + report.totals.kids,
-        local: acc.local + report.totals.local,
-        hc1: acc.hc1 + report.totals.hc1,
-        hc2: acc.hc2 + report.totals.hc2,
-        total: acc.total + report.totals.total,
-        salvations: acc.salvations + report.totals.salvations,
-        baptisms: acc.baptisms + report.totals.baptisms,
-        mca: acc.mca + report.totals.mca,
-        mechanics: acc.mechanics + report.totals.mechanics,
+      (acc: Totals, report: PgaReportSummary) => ({
+        sv1: acc.sv1 + report.sv1,
+        sv2: acc.sv2 + report.sv2,
+        yxp: acc.yxp + report.yxp,
+        kids: acc.kids + report.kids,
+        local: acc.local + report.local,
+        hc1: acc.hc1 + report.hc1,
+        hc2: acc.hc2 + report.hc2,
+        total: acc.total + report.total,
+        salvations: acc.salvations + report.salvations,
+        baptisms: acc.baptisms + report.baptisms,
+        mca: acc.mca + report.mca,
+        mechanics: acc.mechanics + report.mechanics,
       }),
       { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0 }
     )
@@ -341,7 +341,7 @@ export default function DashboardPage() {
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return
     try {
-      await deletePgaReport.mutateAsync(deleteTarget.id)
+      await deletePgaReport.mutateAsync(deleteTarget.report_id)
       toast({
         title: 'Success',
         description: 'Report deleted successfully',
@@ -664,7 +664,7 @@ export default function DashboardPage() {
                   <TableHead className="lg:w-[7%]">Bapt</TableHead>
                   <TableHead className="lg:w-[7%]">Mech</TableHead>
                   <TableHead className="lg:w-[7%]">MCA</TableHead>
-                  <TableHead className="lg:w-[5%]">Action</TableHead>
+                  <TableHead className="lg:w-[5%] text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -679,22 +679,22 @@ export default function DashboardPage() {
                     </TableRow>
                   ))
                 ) : paginatedReports.length > 0 ? (
-                  paginatedReports.map((report: PgaReportWithTotals) => (
-                    <TableRow key={report.id}>
+                  paginatedReports.map((report: PgaReportSummary) => (
+                    <TableRow key={report.report_id}>
                       <TableCell className="whitespace-nowrap">{report.date}</TableCell>
-                      <TableCell>{report.totals.sv1}</TableCell>
-                      <TableCell>{report.totals.sv2}</TableCell>
-                      <TableCell>{report.totals.yxp}</TableCell>
-                      <TableCell>{report.totals.kids}</TableCell>
-                      <TableCell>{report.totals.local}</TableCell>
-                      <TableCell>{report.totals.hc1}</TableCell>
-                      <TableCell>{report.totals.hc2}</TableCell>
-                      <TableCell className="font-semibold">{report.totals.total}</TableCell>
-                      <TableCell>{report.totals.salvations}</TableCell>
-                      <TableCell>{report.totals.baptisms}</TableCell>
-                      <TableCell>{report.totals.mechanics}</TableCell>
-                      <TableCell>{report.totals.mca}</TableCell>
-                      <TableCell>
+                      <TableCell>{report.sv1}</TableCell>
+                      <TableCell>{report.sv2}</TableCell>
+                      <TableCell>{report.yxp}</TableCell>
+                      <TableCell>{report.kids}</TableCell>
+                      <TableCell>{report.local}</TableCell>
+                      <TableCell>{report.hc1}</TableCell>
+                      <TableCell>{report.hc2}</TableCell>
+                      <TableCell className="font-semibold">{report.total}</TableCell>
+                      <TableCell>{report.salvations}</TableCell>
+                      <TableCell>{report.baptisms}</TableCell>
+                      <TableCell>{report.mechanics}</TableCell>
+                      <TableCell>{report.mca}</TableCell>
+                      <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">

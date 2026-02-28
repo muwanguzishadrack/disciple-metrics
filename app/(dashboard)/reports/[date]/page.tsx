@@ -496,7 +496,7 @@ export default function SingleReportPage() {
                   <TableHead>Bapt</TableHead>
                   <TableHead>Mech</TableHead>
                   <TableHead>MCA</TableHead>
-                  {(isAdminOrManager || isFobLeader) && <TableHead>Action</TableHead>}
+                  {(isAdminOrManager || isFobLeader) && <TableHead className="text-right">Action</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -517,7 +517,7 @@ export default function SingleReportPage() {
                       <TableCell>{location.hasSubmitted ? location.mechanics : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.mca : '—'}</TableCell>
                       {(isAdminOrManager || isFobLeader) && (
-                        <TableCell>
+                        <TableCell className="text-right">
                           {location.hasSubmitted ? (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>

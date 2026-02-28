@@ -99,7 +99,7 @@ export function PendingInvitationsTable({
             <TableHead className="lg:w-[16%]">FOB</TableHead>
             <TableHead className="lg:w-[16%]">Location</TableHead>
             <TableHead className="lg:w-[14%]">Expires</TableHead>
-            <TableHead className="lg:w-[6%]">Action</TableHead>
+            <TableHead className="lg:w-[6%] text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -114,7 +114,7 @@ export function PendingInvitationsTable({
                   addSuffix: true,
                 })}
               </TableCell>
-              <TableCell>
+              <TableCell className="text-right">
                 {(canResend || canCancel) && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

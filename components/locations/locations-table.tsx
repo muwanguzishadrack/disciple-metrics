@@ -50,7 +50,7 @@ export function LocationsTable({
             <TableHead className="lg:w-[22%]">FOB</TableHead>
             <TableHead className="lg:w-[22%]">Pastor</TableHead>
             <TableHead className="lg:w-[22%]">Contact</TableHead>
-            {showActions && <TableHead className="lg:w-[6%]">Action</TableHead>}
+            {showActions && <TableHead className="lg:w-[6%] text-right">Action</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -89,7 +89,7 @@ export function LocationsTable({
             <TableHead className="lg:w-[22%]">FOB</TableHead>
             <TableHead className="lg:w-[22%]">Pastor</TableHead>
             <TableHead className="lg:w-[22%]">Contact</TableHead>
-            {showActions && <TableHead className="lg:w-[6%]">Action</TableHead>}
+            {showActions && <TableHead className="lg:w-[6%] text-right">Action</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -100,7 +100,7 @@ export function LocationsTable({
               <TableCell>{location.pastor || '-'}</TableCell>
               <TableCell>{location.contact || '-'}</TableCell>
               {showActions && (
-                <TableCell>
+                <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
