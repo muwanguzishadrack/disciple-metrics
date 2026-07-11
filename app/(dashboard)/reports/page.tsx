@@ -8,6 +8,7 @@ import { PgaReportsTab } from '@/components/reports/pga-reports-tab'
 import { FourWeekPgaTab } from '@/components/reports/four-week-pga-tab'
 import { EpgaReportTab } from '@/components/reports/epga-report-tab'
 import { FourWeekEpgaTab } from '@/components/reports/four-week-epga-tab'
+import { SalvationReportTab } from '@/components/reports/salvation-report-tab'
 
 export default function ReportsPage() {
   const { data: userRole } = useUserRole()
@@ -33,6 +34,7 @@ export default function ReportsPage() {
                 <TabsTrigger value="four-week-pga" className="flex-1 sm:flex-initial">4 Wk PGA</TabsTrigger>
                 <TabsTrigger value="epga-report" className="flex-1 sm:flex-initial">EPGA</TabsTrigger>
                 <TabsTrigger value="four-week-epga" className="flex-1 sm:flex-initial">4 Wk EPGA</TabsTrigger>
+                <TabsTrigger value="salvation-report" className="flex-1 sm:flex-initial">Salvation</TabsTrigger>
               </TabsList>
             </div>
             <div ref={setActionsContainer} className="flex w-full flex-wrap items-center gap-2 sm:w-auto [&>*]:w-full [&>*]:sm:w-auto" />
@@ -48,6 +50,9 @@ export default function ReportsPage() {
           </TabsContent>
           <TabsContent value="four-week-epga">
             <FourWeekEpgaTab actionsContainer={actionsContainer} />
+          </TabsContent>
+          <TabsContent value="salvation-report">
+            <SalvationReportTab actionsContainer={actionsContainer} />
           </TabsContent>
         </Tabs>
       </div>

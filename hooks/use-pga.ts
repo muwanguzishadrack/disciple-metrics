@@ -203,6 +203,7 @@ const queryKeys = {
   fourWeekPgaSummary: ['four-week-pga-summary'] as const,
   fourWeekEpgaSummary: ['four-week-epga-summary'] as const,
   epgaSummary: ['epga-summary'] as const,
+  salvationSummary: ['salvation-summary'] as const,
   epgaDetail: (date: string | undefined) => ['epga-detail', date] as const,
   fourWeekPgaDetail: (date: string) => ['four-week-pga-detail', date] as const,
   fourWeekEpgaDetail: (date: string) => ['four-week-epga-detail', date] as const,
@@ -458,6 +459,76 @@ export function useEpgaReport(date: string | undefined) {
   })
 }
 
+// --- Salvation report hooks ---
+
+// Summary row for the Salvation listing (one row per report date)
+export interface SalvationSummaryRow {
+  reportId: string
+  date: string
+  livestream: number
+  inhouse: number
+  mc: number
+  other: number
+  total: number
+}
+
+// Per-location row for the Salvation detail page
+export interface SalvationRow {
+  location: string
+  locationId: string
+  livestream: number
+  inhouse: number
+  mc: number
+  other: number
+  total: number
+}
+
+// Salvation summary from pga_report_summary view (select salvation columns)
+export function useSalvationSummary() {
+  const supabase = createClient()
+
+  return useQuery({
+    queryKey: queryKeys.salvationSummary,
+    queryFn: async (): Promise<SalvationSummaryRow[]> => {
+      const { data, error } = await (supabase as any)
+        .from('pga_report_summary')
+        .select('report_id, date, salvations_livestream, salvations_inhouse, salvations_mc, salvations_other, salvations')
+        .order('date', { ascending: false })
+
+      if (error) throw error
+
+      return (data || []).map((row: any): SalvationSummaryRow => ({
+        reportId: row.report_id,
+        date: row.date,
+        livestream: row.salvations_livestream,
+        inhouse: row.salvations_inhouse,
+        mc: row.salvations_mc,
+        other: row.salvations_other,
+        total: row.salvations,
+      }))
+    },
+  })
+}
+
+// Salvation report for a specific date (reuses the per-location report fetch)
+export function useSalvationReport(date: string | undefined) {
+  const { data, isLoading } = usePgaReportByDate(date ?? '')
+
+  const rows: SalvationRow[] = (data?.locations ?? [])
+    .map((loc): SalvationRow => ({
+      location: loc.location,
+      locationId: loc.locationId,
+      livestream: loc.salvationsLivestream,
+      inhouse: loc.salvationsInhouse,
+      mc: loc.salvationsMc,
+      other: loc.salvationsOther,
+      total: loc.salvations,
+    }))
+    .sort((a, b) => b.total - a.total)
+
+  return { data: rows, isLoading }
+}
+
 // --- Mutation hooks ---
 
 interface CreatePgaEntryData {
@@ -482,6 +553,7 @@ interface CreatePgaEntryData {
 function invalidateAllPgaQueries(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: queryKeys.pgaReportSummary })
   queryClient.invalidateQueries({ queryKey: queryKeys.epgaSummary })
+  queryClient.invalidateQueries({ queryKey: queryKeys.salvationSummary })
   queryClient.invalidateQueries({ queryKey: queryKeys.fourWeekPgaSummary })
   queryClient.invalidateQueries({ queryKey: queryKeys.fourWeekEpgaSummary })
   queryClient.invalidateQueries({ queryKey: ['epga-detail'] })
