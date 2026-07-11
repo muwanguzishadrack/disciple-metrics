@@ -382,14 +382,6 @@ export default function SingleReportPage() {
   ]
 
   // Salvations split by source
-  const salvationBreakdown = [
-    { title: 'Livestream', value: report.totals.salvationsLivestream },
-    { title: 'In-house', value: report.totals.salvationsInhouse },
-    { title: 'MC', value: report.totals.salvationsMc },
-    { title: 'Other Events', value: report.totals.salvationsOther },
-    { title: 'Total', value: report.totals.salvations },
-  ]
-
   // Format date for display
   const formattedDate = new Date(report.date).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -462,33 +454,6 @@ export default function SingleReportPage() {
             </Card>
           </motion.div>
         </div>
-
-        {/* Salvations by Source */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="rounded-lg">
-            <CardContent className="pt-6">
-              <div className="mb-4 flex items-center gap-2">
-                <Heart className="h-5 w-5 text-[#008cff] stroke-[1.5]" />
-                <CardTitle className="text-base font-medium">Salvations by Source</CardTitle>
-              </div>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-                {salvationBreakdown.map((stat) => (
-                  <div
-                    key={stat.title}
-                    className={`flex flex-col items-center justify-center rounded-md p-3 ${stat.title === 'Total' ? 'bg-[#008cff]/10' : 'bg-muted/50'}`}
-                  >
-                    <span className="text-xl font-medium">{stat.value.toLocaleString()}</span>
-                    <span className="text-sm font-medium text-muted-foreground">{stat.title}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
 
         {/* Locations Table */}
         <Card className="rounded-lg">
