@@ -129,6 +129,10 @@ export default function SingleReportPage() {
         hc2: null,
         total: null,
         salvations: null,
+        salvationsLivestream: null,
+        salvationsInhouse: null,
+        salvationsMc: null,
+        salvationsOther: null,
         baptisms: null,
         mca: null,
         mechanics: null,
@@ -150,7 +154,10 @@ export default function SingleReportPage() {
   const [editHc1, setEditHc1] = useState(0)
   const [editHc2, setEditHc2] = useState(0)
   // Ministry Impact edit state
-  const [editSalvations, setEditSalvations] = useState(0)
+  const [editSalvationsLivestream, setEditSalvationsLivestream] = useState(0)
+  const [editSalvationsInhouse, setEditSalvationsInhouse] = useState(0)
+  const [editSalvationsMc, setEditSalvationsMc] = useState(0)
+  const [editSalvationsOther, setEditSalvationsOther] = useState(0)
   const [editBaptisms, setEditBaptisms] = useState(0)
   const [editMca, setEditMca] = useState(0)
   const [editMechanics, setEditMechanics] = useState(0)
@@ -158,6 +165,9 @@ export default function SingleReportPage() {
   const editTotal = useMemo(() => {
     return editSv1 + editSv2 + editYxp + editKids + editLocal + editHc1 + editHc2
   }, [editSv1, editSv2, editYxp, editKids, editLocal, editHc1, editHc2])
+
+  // Salvations total = sum of the four category inputs
+  const editSalvationsTotal = editSalvationsLivestream + editSalvationsInhouse + editSalvationsMc + editSalvationsOther
 
   const handleEditClick = (location: LocationEntry) => {
     setEditingLocation(location)
@@ -168,7 +178,10 @@ export default function SingleReportPage() {
     setEditLocal(location.local)
     setEditHc1(location.hc1)
     setEditHc2(location.hc2)
-    setEditSalvations(location.salvations)
+    setEditSalvationsLivestream(location.salvationsLivestream)
+    setEditSalvationsInhouse(location.salvationsInhouse)
+    setEditSalvationsMc(location.salvationsMc)
+    setEditSalvationsOther(location.salvationsOther)
     setEditBaptisms(location.baptisms)
     setEditMca(location.mca)
     setEditMechanics(location.mechanics)
@@ -193,7 +206,10 @@ export default function SingleReportPage() {
         local: editLocal,
         hc1: editHc1,
         hc2: editHc2,
-        salvations: editSalvations,
+        salvationsLivestream: editSalvationsLivestream,
+        salvationsInhouse: editSalvationsInhouse,
+        salvationsMc: editSalvationsMc,
+        salvationsOther: editSalvationsOther,
         baptisms: editBaptisms,
         mca: editMca,
         mechanics: editMechanics,
@@ -284,6 +300,10 @@ export default function SingleReportPage() {
       hc2: loc.hasSubmitted ? loc.hc2 : '',
       total: loc.hasSubmitted ? loc.total : '',
       salvations: loc.hasSubmitted ? loc.salvations : '',
+      salvationsLivestream: loc.hasSubmitted ? loc.salvationsLivestream : '',
+      salvationsInhouse: loc.hasSubmitted ? loc.salvationsInhouse : '',
+      salvationsMc: loc.hasSubmitted ? loc.salvationsMc : '',
+      salvationsOther: loc.hasSubmitted ? loc.salvationsOther : '',
       baptisms: loc.hasSubmitted ? loc.baptisms : '',
       mca: loc.hasSubmitted ? loc.mca : '',
       mechanics: loc.hasSubmitted ? loc.mechanics : '',
@@ -304,6 +324,10 @@ export default function SingleReportPage() {
         { header: 'HC2', accessor: 'hc2' },
         { header: 'Total', accessor: 'total' },
         { header: 'Salv', accessor: 'salvations' },
+        { header: 'Salv-LS', accessor: 'salvationsLivestream' },
+        { header: 'Salv-IH', accessor: 'salvationsInhouse' },
+        { header: 'Salv-MC', accessor: 'salvationsMc' },
+        { header: 'Salv-Oth', accessor: 'salvationsOther' },
         { header: 'Bapt', accessor: 'baptisms' },
         { header: 'Mech', accessor: 'mechanics' },
         { header: 'MCA', accessor: 'mca' },
@@ -355,6 +379,15 @@ export default function SingleReportPage() {
     { title: 'Baptisms', value: formatCompact(report.totals.baptisms), icon: Droplets },
     { title: 'Mechanics', value: formatCompact(report.totals.mechanics), icon: Wrench },
     { title: 'MCA', value: formatCompact(report.totals.mca), icon: UsersRound },
+  ]
+
+  // Salvations split by source
+  const salvationBreakdown = [
+    { title: 'Livestream', value: report.totals.salvationsLivestream },
+    { title: 'In-house', value: report.totals.salvationsInhouse },
+    { title: 'MC', value: report.totals.salvationsMc },
+    { title: 'Other Events', value: report.totals.salvationsOther },
+    { title: 'Total', value: report.totals.salvations },
   ]
 
   // Format date for display
@@ -429,6 +462,33 @@ export default function SingleReportPage() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Salvations by Source */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="rounded-lg">
+            <CardContent className="pt-6">
+              <div className="mb-4 flex items-center gap-2">
+                <Heart className="h-5 w-5 text-[#008cff] stroke-[1.5]" />
+                <CardTitle className="text-base font-medium">Salvations by Source</CardTitle>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                {salvationBreakdown.map((stat) => (
+                  <div
+                    key={stat.title}
+                    className={`flex flex-col items-center justify-center rounded-md p-3 ${stat.title === 'Total' ? 'bg-[#008cff]/10' : 'bg-muted/50'}`}
+                  >
+                    <span className="text-xl font-medium">{stat.value.toLocaleString()}</span>
+                    <span className="text-sm font-medium text-muted-foreground">{stat.title}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Locations Table */}
         <Card className="rounded-lg">
@@ -735,17 +795,60 @@ export default function SingleReportPage() {
 
             {/* Ministry Impact Section */}
             <div className="border-t pt-4 mt-2">
+              {/* Salvations by source */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations">Salvations</Label>
+                  <Label htmlFor="edit-salvations-livestream">Livestream Salvations</Label>
                   <Input
-                    id="edit-salvations"
+                    id="edit-salvations-livestream"
                     type="number"
                     min="0"
-                    value={editSalvations}
-                    onChange={(e) => setEditSalvations(Number(e.target.value) || 0)}
+                    value={editSalvationsLivestream}
+                    onChange={(e) => setEditSalvationsLivestream(Number(e.target.value) || 0)}
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-salvations-inhouse">In-house Salvations</Label>
+                  <Input
+                    id="edit-salvations-inhouse"
+                    type="number"
+                    min="0"
+                    value={editSalvationsInhouse}
+                    onChange={(e) => setEditSalvationsInhouse(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-salvations-mc">MC Salvations</Label>
+                  <Input
+                    id="edit-salvations-mc"
+                    type="number"
+                    min="0"
+                    value={editSalvationsMc}
+                    onChange={(e) => setEditSalvationsMc(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-salvations-other">Other Events</Label>
+                  <Input
+                    id="edit-salvations-other"
+                    type="number"
+                    min="0"
+                    value={editSalvationsOther}
+                    onChange={(e) => setEditSalvationsOther(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label>Total Salvations</Label>
+                  <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
+                    {editSalvationsTotal}
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="grid gap-2">
                   <Label htmlFor="edit-baptisms">Baptisms</Label>
                   <Input
@@ -756,8 +859,6 @@ export default function SingleReportPage() {
                     onChange={(e) => setEditBaptisms(Number(e.target.value) || 0)}
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="grid gap-2">
                   <Label htmlFor="edit-mechanics">Mechanics</Label>
                   <Input

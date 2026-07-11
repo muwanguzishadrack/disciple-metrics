@@ -24,12 +24,16 @@ export interface LocationEntry {
   hc2: number
   total: number
   salvations: number
+  salvationsLivestream: number
+  salvationsInhouse: number
+  salvationsMc: number
+  salvationsOther: number
   baptisms: number
   mca: number
   mechanics: number
 }
 
-export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'baptisms' | 'mca' | 'mechanics'> {
+export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestream' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics'> {
   id: string | null
   sv1: number | null
   sv2: number | null
@@ -40,6 +44,10 @@ export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1
   hc2: number | null
   total: number | null
   salvations: number | null
+  salvationsLivestream: number | null
+  salvationsInhouse: number | null
+  salvationsMc: number | null
+  salvationsOther: number | null
   baptisms: number | null
   mca: number | null
   mechanics: number | null
@@ -61,6 +69,10 @@ export interface PgaReportWithTotals {
     hc2: number
     total: number
     salvations: number
+    salvationsLivestream: number
+    salvationsInhouse: number
+    salvationsMc: number
+    salvationsOther: number
     baptisms: number
     mca: number
     mechanics: number
@@ -81,6 +93,10 @@ export interface PgaReportSummary {
   hc2: number
   total: number
   salvations: number
+  salvations_livestream: number
+  salvations_inhouse: number
+  salvations_mc: number
+  salvations_other: number
   baptisms: number
   mca: number
   mechanics: number
@@ -135,7 +151,11 @@ function transformReportData(report: any): PgaReportWithTotals {
     const hc1 = entry.hc1 || 0
     const hc2 = entry.hc2 || 0
     const total = sv1 + sv2 + yxp + kids + local + hc1 + hc2
-    const salvations = entry.salvations || 0
+    const salvationsLivestream = entry.salvations_livestream || 0
+    const salvationsInhouse = entry.salvations_inhouse || 0
+    const salvationsMc = entry.salvations_mc || 0
+    const salvationsOther = entry.salvations_other || 0
+    const salvations = salvationsLivestream + salvationsInhouse + salvationsMc + salvationsOther
     const baptisms = entry.baptisms || 0
     const mca = entry.mca || 0
     const mechanics = entry.mechanics || 0
@@ -147,7 +167,8 @@ function transformReportData(report: any): PgaReportWithTotals {
       location: entry.location?.name || 'Unknown Location',
       locationId: entry.location_id,
       sv1, sv2, yxp, kids, local, hc1, hc2, total,
-      salvations, baptisms, mca, mechanics,
+      salvations, salvationsLivestream, salvationsInhouse, salvationsMc, salvationsOther,
+      baptisms, mca, mechanics,
     }
   })
 
@@ -162,11 +183,15 @@ function transformReportData(report: any): PgaReportWithTotals {
       hc2: acc.hc2 + entry.hc2,
       total: acc.total + entry.total,
       salvations: acc.salvations + entry.salvations,
+      salvationsLivestream: acc.salvationsLivestream + entry.salvationsLivestream,
+      salvationsInhouse: acc.salvationsInhouse + entry.salvationsInhouse,
+      salvationsMc: acc.salvationsMc + entry.salvationsMc,
+      salvationsOther: acc.salvationsOther + entry.salvationsOther,
       baptisms: acc.baptisms + entry.baptisms,
       mca: acc.mca + entry.mca,
       mechanics: acc.mechanics + entry.mechanics,
     }),
-    { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0 }
+    { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, salvationsLivestream: 0, salvationsInhouse: 0, salvationsMc: 0, salvationsOther: 0, baptisms: 0, mca: 0, mechanics: 0 }
   )
 
   return { id: report.id, date: report.date, locations, totals }
@@ -217,7 +242,8 @@ export function usePgaReportByDate(date: string) {
           pga_entries (
             id,
             sv1, sv2, yxp, kids, local, hc1, hc2,
-            salvations, baptisms, mca, mechanics,
+            salvations, salvations_livestream, salvations_inhouse, salvations_mc, salvations_other,
+            baptisms, mca, mechanics,
             location_id,
             location:locations (
               id, name,
@@ -444,7 +470,10 @@ interface CreatePgaEntryData {
   local: number
   hc1: number
   hc2: number
-  salvations: number
+  salvationsLivestream: number
+  salvationsInhouse: number
+  salvationsMc: number
+  salvationsOther: number
   baptisms: number
   mca: number
   mechanics: number
@@ -502,7 +531,10 @@ export function useCreatePgaEntry() {
         local: data.local,
         hc1: data.hc1,
         hc2: data.hc2,
-        salvations: data.salvations,
+        salvations_livestream: data.salvationsLivestream,
+        salvations_inhouse: data.salvationsInhouse,
+        salvations_mc: data.salvationsMc,
+        salvations_other: data.salvationsOther,
         baptisms: data.baptisms,
         mca: data.mca,
         mechanics: data.mechanics,
@@ -527,7 +559,10 @@ interface UpdatePgaEntryData {
   local: number
   hc1: number
   hc2: number
-  salvations: number
+  salvationsLivestream: number
+  salvationsInhouse: number
+  salvationsMc: number
+  salvationsOther: number
   baptisms: number
   mca: number
   mechanics: number
@@ -549,7 +584,10 @@ export function useUpdatePgaEntry() {
           local: data.local,
           hc1: data.hc1,
           hc2: data.hc2,
-          salvations: data.salvations,
+          salvations_livestream: data.salvationsLivestream,
+          salvations_inhouse: data.salvationsInhouse,
+          salvations_mc: data.salvationsMc,
+          salvations_other: data.salvationsOther,
           baptisms: data.baptisms,
           mca: data.mca,
           mechanics: data.mechanics,

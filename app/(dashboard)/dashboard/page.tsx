@@ -158,7 +158,10 @@ export default function DashboardPage() {
   const [pgaHc1, setPgaHc1] = useState(0)
   const [pgaHc2, setPgaHc2] = useState(0)
   // Ministry Impact metrics (not included in PGA total)
-  const [pgaSalvations, setPgaSalvations] = useState(0)
+  const [pgaSalvationsLivestream, setPgaSalvationsLivestream] = useState(0)
+  const [pgaSalvationsInhouse, setPgaSalvationsInhouse] = useState(0)
+  const [pgaSalvationsMc, setPgaSalvationsMc] = useState(0)
+  const [pgaSalvationsOther, setPgaSalvationsOther] = useState(0)
   const [pgaBaptisms, setPgaBaptisms] = useState(0)
   const [pgaMca, setPgaMca] = useState(0)
   const [pgaMechanics, setPgaMechanics] = useState(0)
@@ -191,6 +194,9 @@ export default function DashboardPage() {
   const pgaTotal = useMemo(() => {
     return pgaSv1 + pgaSv2 + pgaYxp + pgaKids + pgaLocal + pgaHc1 + pgaHc2
   }, [pgaSv1, pgaSv2, pgaYxp, pgaKids, pgaLocal, pgaHc1, pgaHc2])
+
+  // Salvations total = sum of the four category inputs
+  const pgaSalvationsTotal = pgaSalvationsLivestream + pgaSalvationsInhouse + pgaSalvationsMc + pgaSalvationsOther
 
   // Filter reports by date range
   const filteredReports = useMemo(() => {
@@ -261,7 +267,10 @@ export default function DashboardPage() {
     setPgaLocal(0)
     setPgaHc1(0)
     setPgaHc2(0)
-    setPgaSalvations(0)
+    setPgaSalvationsLivestream(0)
+    setPgaSalvationsInhouse(0)
+    setPgaSalvationsMc(0)
+    setPgaSalvationsOther(0)
     setPgaBaptisms(0)
     setPgaMca(0)
     setPgaMechanics(0)
@@ -295,7 +304,10 @@ export default function DashboardPage() {
         local: pgaLocal,
         hc1: pgaHc1,
         hc2: pgaHc2,
-        salvations: pgaSalvations,
+        salvationsLivestream: pgaSalvationsLivestream,
+        salvationsInhouse: pgaSalvationsInhouse,
+        salvationsMc: pgaSalvationsMc,
+        salvationsOther: pgaSalvationsOther,
         baptisms: pgaBaptisms,
         mca: pgaMca,
         mechanics: pgaMechanics,
@@ -532,17 +544,60 @@ export default function DashboardPage() {
 
                   {/* Ministry Impact Section */}
                   <div className="border-t pt-4 mt-2">
+                    {/* Salvations by source */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations">Salvations</Label>
+                        <Label htmlFor="pga-salvations-livestream">Livestream Salvations</Label>
                         <Input
-                          id="pga-salvations"
+                          id="pga-salvations-livestream"
                           type="number"
                           min="0"
-                          value={pgaSalvations}
-                          onChange={(e) => setPgaSalvations(Number(e.target.value) || 0)}
+                          value={pgaSalvationsLivestream}
+                          onChange={(e) => setPgaSalvationsLivestream(Number(e.target.value) || 0)}
                         />
                       </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-salvations-inhouse">In-house Salvations</Label>
+                        <Input
+                          id="pga-salvations-inhouse"
+                          type="number"
+                          min="0"
+                          value={pgaSalvationsInhouse}
+                          onChange={(e) => setPgaSalvationsInhouse(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-salvations-mc">MC Salvations</Label>
+                        <Input
+                          id="pga-salvations-mc"
+                          type="number"
+                          min="0"
+                          value={pgaSalvationsMc}
+                          onChange={(e) => setPgaSalvationsMc(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-salvations-other">Other Events</Label>
+                        <Input
+                          id="pga-salvations-other"
+                          type="number"
+                          min="0"
+                          value={pgaSalvationsOther}
+                          onChange={(e) => setPgaSalvationsOther(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label>Total Salvations</Label>
+                        <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
+                          {pgaSalvationsTotal}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
                       <div className="grid gap-2">
                         <Label htmlFor="pga-baptisms">Baptisms</Label>
                         <Input
@@ -553,8 +608,6 @@ export default function DashboardPage() {
                           onChange={(e) => setPgaBaptisms(Number(e.target.value) || 0)}
                         />
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
                       <div className="grid gap-2">
                         <Label htmlFor="pga-mechanics">Mechanics</Label>
                         <Input

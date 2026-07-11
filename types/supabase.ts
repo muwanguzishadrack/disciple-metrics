@@ -118,6 +118,10 @@ export type Database = {
           mechanics: number | null
           report_id: string
           salvations: number | null
+          salvations_inhouse: number | null
+          salvations_livestream: number | null
+          salvations_mc: number | null
+          salvations_other: number | null
           sv1: number | null
           sv2: number | null
           updated_at: string | null
@@ -137,6 +141,10 @@ export type Database = {
           mechanics?: number | null
           report_id: string
           salvations?: number | null
+          salvations_inhouse?: number | null
+          salvations_livestream?: number | null
+          salvations_mc?: number | null
+          salvations_other?: number | null
           sv1?: number | null
           sv2?: number | null
           updated_at?: string | null
@@ -156,6 +164,10 @@ export type Database = {
           mechanics?: number | null
           report_id?: string
           salvations?: number | null
+          salvations_inhouse?: number | null
+          salvations_livestream?: number | null
+          salvations_mc?: number | null
+          salvations_other?: number | null
           sv1?: number | null
           sv2?: number | null
           updated_at?: string | null
@@ -175,6 +187,27 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "locations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pga_entries_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "four_week_epga_summary"
+            referencedColumns: ["report_id"]
+          },
+          {
+            foreignKeyName: "pga_entries_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "four_week_pga_summary"
+            referencedColumns: ["report_id"]
+          },
+          {
+            foreignKeyName: "pga_entries_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "pga_report_summary"
+            referencedColumns: ["report_id"]
           },
           {
             foreignKeyName: "pga_entries_report_id_fkey"
@@ -397,7 +430,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      four_week_epga_summary: {
+        Row: {
+          average: number | null
+          date: string | null
+          report_id: string | null
+          wk1_date: string | null
+          wk1_total: number | null
+          wk2_date: string | null
+          wk2_total: number | null
+          wk3_date: string | null
+          wk3_total: number | null
+          wk4_date: string | null
+          wk4_total: number | null
+        }
+        Relationships: []
+      }
+      four_week_pga_summary: {
+        Row: {
+          average: number | null
+          date: string | null
+          report_id: string | null
+          wk1_date: string | null
+          wk1_total: number | null
+          wk2_date: string | null
+          wk2_total: number | null
+          wk3_date: string | null
+          wk3_total: number | null
+          wk4_date: string | null
+          wk4_total: number | null
+        }
+        Relationships: []
+      }
+      pga_report_summary: {
+        Row: {
+          baptisms: number | null
+          created_at: string | null
+          date: string | null
+          epga_total: number | null
+          hc1: number | null
+          hc2: number | null
+          kids: number | null
+          local: number | null
+          mca: number | null
+          mechanics: number | null
+          report_id: string | null
+          salvations: number | null
+          salvations_inhouse: number | null
+          salvations_livestream: number | null
+          salvations_mc: number | null
+          salvations_other: number | null
+          sv1: number | null
+          sv2: number | null
+          total: number | null
+          yxp: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       auto_generate_weekly_pga_report: { Args: never; Returns: undefined }
@@ -405,6 +494,19 @@ export type Database = {
         Args: { p_location_id: string; p_user_id: string }
         Returns: boolean
       }
+      get_epga_detail: {
+        Args: { p_date: string }
+        Returns: {
+          location_id: string
+          location_name: string
+          sv1: number
+          sv2: number
+          total: number
+          yxp: number
+        }[]
+      }
+      get_four_week_epga_detail: { Args: { p_date: string }; Returns: Json }
+      get_four_week_pga_detail: { Args: { p_date: string }; Returns: Json }
       get_user_fob_id: { Args: { p_user_id: string }; Returns: string }
       get_user_location_id: { Args: { p_user_id: string }; Returns: string }
       get_user_role: { Args: { p_user_id: string }; Returns: string }
