@@ -116,7 +116,7 @@ export function useUserAssignment() {
           location_id,
           roles!inner(name),
           fobs(name),
-          locations(name)
+          locations(name, fob_id, fobs(id, name))
         `)
         .eq('user_id', user.id)
         .single()
@@ -135,11 +135,15 @@ export function useUserAssignment() {
                 ? 'Pastor'
                 : roleName
 
+      // Pastor assignments only store location_id (valid_assignment constraint),
+      // so derive the FOB from the assigned location when fob_id is null
+      const locationFob = data.locations?.fobs
+
       return {
         role: roleName,
         roleName: displayRoleName,
-        fobId: data.fob_id,
-        fobName: data.fobs?.name,
+        fobId: data.fob_id ?? locationFob?.id,
+        fobName: data.fobs?.name ?? locationFob?.name,
         locationId: data.location_id,
         locationName: data.locations?.name,
       }
