@@ -28,6 +28,8 @@ export const publicPgaFormSchema = z.object({
   mechanicsParkingSecurity: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   mechanicsFacilities: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   mechanicsBusing: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  // Standalone Others metric; not part of the mechanics total
+  mechanicsTraining: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
 })
 
 // Schema for API submission (includes accessCode from PIN dialog)

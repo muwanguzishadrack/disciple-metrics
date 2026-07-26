@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
+import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search, Heart, Droplets, UsersRound, Wrench, GraduationCap } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
@@ -136,6 +136,7 @@ export default function SingleReportPage() {
         salvationsOther: null,
         baptisms: null,
         mca: null,
+        mechanicsTraining: null,
         mechanics: null,
         mechanicsGet: null,
         mechanicsWorship: null,
@@ -170,6 +171,7 @@ export default function SingleReportPage() {
   const [editSalvationsOther, setEditSalvationsOther] = useState(0)
   const [editBaptisms, setEditBaptisms] = useState(0)
   const [editMca, setEditMca] = useState(0)
+  const [editMechanicsTraining, setEditMechanicsTraining] = useState(0)
   // Mechanics captured per serving team; the DB stores their sum as `mechanics`
   const [editMechanicsGet, setEditMechanicsGet] = useState(0)
   const [editMechanicsWorship, setEditMechanicsWorship] = useState(0)
@@ -209,6 +211,7 @@ export default function SingleReportPage() {
     setEditSalvationsOther(location.salvationsOther)
     setEditBaptisms(location.baptisms)
     setEditMca(location.mca)
+    setEditMechanicsTraining(location.mechanicsTraining)
     setEditMechanicsGet(location.mechanicsGet)
     setEditMechanicsWorship(location.mechanicsWorship)
     setEditMechanicsMedia(location.mechanicsMedia)
@@ -244,6 +247,7 @@ export default function SingleReportPage() {
         salvationsOther: editSalvationsOther,
         baptisms: editBaptisms,
         mca: editMca,
+        mechanicsTraining: editMechanicsTraining,
         mechanicsGet: editMechanicsGet,
         mechanicsWorship: editMechanicsWorship,
         mechanicsMedia: editMechanicsMedia,
@@ -345,6 +349,7 @@ export default function SingleReportPage() {
       salvationsOther: loc.hasSubmitted ? loc.salvationsOther : '',
       baptisms: loc.hasSubmitted ? loc.baptisms : '',
       mca: loc.hasSubmitted ? loc.mca : '',
+      mechanicsTraining: loc.hasSubmitted ? loc.mechanicsTraining : '',
       mechanicsGet: loc.hasSubmitted ? loc.mechanicsGet : '',
       mechanicsWorship: loc.hasSubmitted ? loc.mechanicsWorship : '',
       mechanicsMedia: loc.hasSubmitted ? loc.mechanicsMedia : '',
@@ -387,6 +392,7 @@ export default function SingleReportPage() {
         { header: 'Mech-Unsp', accessor: 'mechanicsLegacy' },
         { header: 'Mech-Total', accessor: 'mechanics' },
         { header: 'MCA', accessor: 'mca' },
+        { header: 'Mech-Trn', accessor: 'mechanicsTraining' },
       ],
       sheetName: 'Location Report',
       fileName: `pga_report_${reportDate}`,
@@ -435,6 +441,7 @@ export default function SingleReportPage() {
     { title: 'Baptisms', value: formatCompact(report.totals.baptisms), icon: Droplets },
     { title: 'Mechanics', value: formatCompact(report.totals.mechanics), icon: Wrench },
     { title: 'MCA', value: formatCompact(report.totals.mca), icon: UsersRound },
+    { title: 'Mech Training', value: formatCompact(report.totals.mechanicsTraining), icon: GraduationCap },
   ]
 
   // Salvations split by source
@@ -577,6 +584,7 @@ export default function SingleReportPage() {
                   <TableHead>Bapt</TableHead>
                   <TableHead>Mech</TableHead>
                   <TableHead>MCA</TableHead>
+                  <TableHead>Mech-Trn</TableHead>
                   {(isAdminOrManager || isFobLeader) && <TableHead className="text-right">Action</TableHead>}
                 </TableRow>
               </TableHeader>
@@ -597,6 +605,7 @@ export default function SingleReportPage() {
                       <TableCell>{location.hasSubmitted ? location.baptisms : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.mechanics : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.mca : '—'}</TableCell>
+                      <TableCell>{location.hasSubmitted ? location.mechanicsTraining : '—'}</TableCell>
                       {(isAdminOrManager || isFobLeader) && (
                         <TableCell className="text-right">
                           {location.hasSubmitted ? (
@@ -997,6 +1006,18 @@ export default function SingleReportPage() {
                     min="0"
                     value={editMca}
                     onChange={(e) => setEditMca(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-training">Mechanics Training</Label>
+                  <Input
+                    id="edit-mechanics-training"
+                    type="number"
+                    min="0"
+                    value={editMechanicsTraining}
+                    onChange={(e) => setEditMechanicsTraining(Number(e.target.value) || 0)}
                   />
                 </div>
               </div>

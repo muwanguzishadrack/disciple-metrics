@@ -98,6 +98,7 @@ function parseExcelFile(filePath) {
       mechanicsParkingSecurity: 0,
       mechanicsFacilities: 0,
       mechanicsBusing: 0,
+      mechanicsTraining: 0,
     };
 
     entries.push(entry);
@@ -217,6 +218,7 @@ async function importEntries(matchedEntries, existingEntries, reportId) {
       mechanics_parking_security: entry.mechanicsParkingSecurity,
       mechanics_facilities: entry.mechanicsFacilities,
       mechanics_busing: entry.mechanicsBusing,
+      mechanics_training: entry.mechanicsTraining,
     };
 
     const existingId = existingByLocation.get(entry.locationId);

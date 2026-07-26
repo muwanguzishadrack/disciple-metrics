@@ -123,6 +123,7 @@ export type Database = {
           mechanics_legacy: number | null
           mechanics_media: number | null
           mechanics_parking_security: number | null
+          mechanics_training: number | null
           mechanics_worship: number | null
           report_id: string
           salvations: number | null
@@ -155,6 +156,7 @@ export type Database = {
           mechanics_legacy?: number | null
           mechanics_media?: number | null
           mechanics_parking_security?: number | null
+          mechanics_training?: number | null
           mechanics_worship?: number | null
           report_id: string
           salvations?: number | null
@@ -187,6 +189,7 @@ export type Database = {
           mechanics_legacy?: number | null
           mechanics_media?: number | null
           mechanics_parking_security?: number | null
+          mechanics_training?: number | null
           mechanics_worship?: number | null
           report_id?: string
           salvations?: number | null
@@ -508,6 +511,7 @@ export type Database = {
           mechanics_legacy: number | null
           mechanics_media: number | null
           mechanics_parking_security: number | null
+          mechanics_training: number | null
           mechanics_worship: number | null
           report_id: string | null
           salvations: number | null

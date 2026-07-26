@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
+import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical, Heart, Droplets, UsersRound, Wrench, GraduationCap } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
@@ -165,6 +165,7 @@ export default function DashboardPage() {
   const [pgaSalvationsOther, setPgaSalvationsOther] = useState(0)
   const [pgaBaptisms, setPgaBaptisms] = useState(0)
   const [pgaMca, setPgaMca] = useState(0)
+  const [pgaMechanicsTraining, setPgaMechanicsTraining] = useState(0)
   // Mechanics captured per serving team; the DB stores their sum as `mechanics`
   const [pgaMechanicsGet, setPgaMechanicsGet] = useState(0)
   const [pgaMechanicsWorship, setPgaMechanicsWorship] = useState(0)
@@ -223,7 +224,7 @@ export default function DashboardPage() {
   }, [pgaReports, dateFilter])
 
   // Calculate totals from filtered reports
-  type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number; salvations: number; baptisms: number; mca: number; mechanics: number }
+  type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number; salvations: number; baptisms: number; mca: number; mechanics: number; mechanicsTraining: number }
   const calculatedTotals = useMemo(() => {
     return filteredReports.reduce(
       (acc: Totals, report: PgaReportSummary) => ({
@@ -239,8 +240,9 @@ export default function DashboardPage() {
         baptisms: acc.baptisms + report.baptisms,
         mca: acc.mca + report.mca,
         mechanics: acc.mechanics + report.mechanics,
+        mechanicsTraining: acc.mechanicsTraining + report.mechanics_training,
       }),
-      { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0 }
+      { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0, mechanicsTraining: 0 }
     )
   }, [filteredReports])
 
@@ -267,6 +269,7 @@ export default function DashboardPage() {
     { title: 'Baptisms', value: formatCompact(calculatedTotals.baptisms), icon: Droplets },
     { title: 'Mechanics', value: formatCompact(calculatedTotals.mechanics), icon: Wrench },
     { title: 'MCA', value: formatCompact(calculatedTotals.mca), icon: UsersRound },
+    { title: 'Mech Training', value: formatCompact(calculatedTotals.mechanicsTraining), icon: GraduationCap },
   ], [calculatedTotals])
 
   const resetPgaForm = () => {
@@ -287,6 +290,7 @@ export default function DashboardPage() {
     setPgaSalvationsOther(0)
     setPgaBaptisms(0)
     setPgaMca(0)
+    setPgaMechanicsTraining(0)
     setPgaMechanicsGet(0)
     setPgaMechanicsWorship(0)
     setPgaMechanicsMedia(0)
@@ -331,6 +335,7 @@ export default function DashboardPage() {
         salvationsOther: pgaSalvationsOther,
         baptisms: pgaBaptisms,
         mca: pgaMca,
+        mechanicsTraining: pgaMechanicsTraining,
         mechanicsGet: pgaMechanicsGet,
         mechanicsWorship: pgaMechanicsWorship,
         mechanicsMedia: pgaMechanicsMedia,
@@ -750,6 +755,18 @@ export default function DashboardPage() {
                         />
                       </div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-training">Mechanics Training</Label>
+                        <Input
+                          id="pga-mechanics-training"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsTraining}
+                          onChange={(e) => setPgaMechanicsTraining(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
                   </div>
                   </div>
                 </ScrollArea>
@@ -838,6 +855,7 @@ export default function DashboardPage() {
                   <TableHead className="lg:w-[7%]">Bapt</TableHead>
                   <TableHead className="lg:w-[7%]">Mech</TableHead>
                   <TableHead className="lg:w-[7%]">MCA</TableHead>
+                  <TableHead className="lg:w-[7%]">Mech-Trn</TableHead>
                   <TableHead className="lg:w-[5%] text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -868,6 +886,7 @@ export default function DashboardPage() {
                       <TableCell>{report.baptisms}</TableCell>
                       <TableCell>{report.mechanics}</TableCell>
                       <TableCell>{report.mca}</TableCell>
+                      <TableCell>{report.mechanics_training}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

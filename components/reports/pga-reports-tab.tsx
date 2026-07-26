@@ -153,6 +153,7 @@ export function PgaReportsTab({ embedded = false, actionsContainer }: PgaReports
         { header: 'Bapt', accessor: 'baptisms' },
         { header: 'Mech', accessor: 'mechanics' },
         { header: 'MCA', accessor: 'mca' },
+        { header: 'Mech-Trn', accessor: 'mechanics_training' },
       ],
       sheetName: 'PGA Reports',
       fileName: 'pga_reports',
@@ -274,6 +275,7 @@ export function PgaReportsTab({ embedded = false, actionsContainer }: PgaReports
                   <TableHead className="lg:w-[7%]">Bapt</TableHead>
                   <TableHead className="lg:w-[7%]">Mech</TableHead>
                   <TableHead className="lg:w-[7%]">MCA</TableHead>
+                  <TableHead className="lg:w-[7%]">Mech-Trn</TableHead>
                   <TableHead className="lg:w-[5%] text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -304,6 +306,7 @@ export function PgaReportsTab({ embedded = false, actionsContainer }: PgaReports
                       <TableCell>{report.baptisms}</TableCell>
                       <TableCell>{report.mechanics}</TableCell>
                       <TableCell>{report.mca}</TableCell>
+                      <TableCell>{report.mechanics_training}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

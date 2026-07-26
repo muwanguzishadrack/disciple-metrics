@@ -41,9 +41,11 @@ export interface LocationEntry {
   mechanicsBusing: number
   // Pre-split history with no team breakdown; not editable, kept so totals reconcile
   mechanicsLegacy: number
+  // Standalone Others metric; not part of the mechanics total
+  mechanicsTraining: number
 }
 
-export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestreamEnc' | 'salvationsLivestreamYxp' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsMedia' | 'mechanicsHarvestKids' | 'mechanicsParkingSecurity' | 'mechanicsFacilities' | 'mechanicsBusing' | 'mechanicsLegacy'> {
+export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestreamEnc' | 'salvationsLivestreamYxp' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsMedia' | 'mechanicsHarvestKids' | 'mechanicsParkingSecurity' | 'mechanicsFacilities' | 'mechanicsBusing' | 'mechanicsLegacy' | 'mechanicsTraining'> {
   id: string | null
   sv1: number | null
   sv2: number | null
@@ -70,6 +72,7 @@ export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1
   mechanicsFacilities: number | null
   mechanicsBusing: number | null
   mechanicsLegacy: number | null
+  mechanicsTraining: number | null
   hasSubmitted: boolean
 }
 
@@ -104,6 +107,7 @@ export interface PgaReportWithTotals {
     mechanicsFacilities: number
     mechanicsBusing: number
     mechanicsLegacy: number
+    mechanicsTraining: number
   }
 }
 
@@ -137,6 +141,7 @@ export interface PgaReportSummary {
   mechanics_facilities: number
   mechanics_busing: number
   mechanics_legacy: number
+  mechanics_training: number
   epga_total: number
 }
 
@@ -204,6 +209,7 @@ function transformReportData(report: any): PgaReportWithTotals {
     const mechanicsFacilities = entry.mechanics_facilities || 0
     const mechanicsBusing = entry.mechanics_busing || 0
     const mechanicsLegacy = entry.mechanics_legacy || 0
+    const mechanicsTraining = entry.mechanics_training || 0
     const mechanics =
       mechanicsGet + mechanicsWorship + mechanicsMedia + mechanicsHarvestKids +
       mechanicsParkingSecurity + mechanicsFacilities + mechanicsBusing + mechanicsLegacy
@@ -219,6 +225,7 @@ function transformReportData(report: any): PgaReportWithTotals {
       baptisms, mca, mechanics,
       mechanicsGet, mechanicsWorship, mechanicsMedia, mechanicsHarvestKids,
       mechanicsParkingSecurity, mechanicsFacilities, mechanicsBusing, mechanicsLegacy,
+      mechanicsTraining,
     }
   })
 
@@ -249,13 +256,14 @@ function transformReportData(report: any): PgaReportWithTotals {
       mechanicsFacilities: acc.mechanicsFacilities + entry.mechanicsFacilities,
       mechanicsBusing: acc.mechanicsBusing + entry.mechanicsBusing,
       mechanicsLegacy: acc.mechanicsLegacy + entry.mechanicsLegacy,
+      mechanicsTraining: acc.mechanicsTraining + entry.mechanicsTraining,
     }),
     {
       sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0,
       salvations: 0, salvationsLivestreamEnc: 0, salvationsLivestreamYxp: 0, salvationsInhouse: 0, salvationsMc: 0, salvationsOther: 0,
       baptisms: 0, mca: 0, mechanics: 0,
       mechanicsGet: 0, mechanicsWorship: 0, mechanicsMedia: 0, mechanicsHarvestKids: 0,
-      mechanicsParkingSecurity: 0, mechanicsFacilities: 0, mechanicsBusing: 0, mechanicsLegacy: 0,
+      mechanicsParkingSecurity: 0, mechanicsFacilities: 0, mechanicsBusing: 0, mechanicsLegacy: 0, mechanicsTraining: 0,
     }
   )
 
@@ -314,6 +322,7 @@ export function usePgaReportByDate(date: string) {
             baptisms, mca, mechanics,
             mechanics_get, mechanics_worship, mechanics_media, mechanics_harvest_kids,
             mechanics_parking_security, mechanics_facilities, mechanics_busing, mechanics_legacy,
+            mechanics_training,
             location_id,
             location:locations (
               id, name,
@@ -714,6 +723,7 @@ interface CreatePgaEntryData {
   mechanicsParkingSecurity: number
   mechanicsFacilities: number
   mechanicsBusing: number
+  mechanicsTraining: number
 }
 
 function invalidateAllPgaQueries(queryClient: ReturnType<typeof useQueryClient>) {
@@ -784,6 +794,7 @@ export function useCreatePgaEntry() {
         mechanics_parking_security: data.mechanicsParkingSecurity,
         mechanics_facilities: data.mechanicsFacilities,
         mechanics_busing: data.mechanicsBusing,
+        mechanics_training: data.mechanicsTraining,
         created_by: user.id,
       })
 
@@ -819,6 +830,7 @@ interface UpdatePgaEntryData {
   mechanicsParkingSecurity: number
   mechanicsFacilities: number
   mechanicsBusing: number
+  mechanicsTraining: number
 }
 
 export function useUpdatePgaEntry() {
@@ -851,6 +863,7 @@ export function useUpdatePgaEntry() {
           mechanics_parking_security: data.mechanicsParkingSecurity,
           mechanics_facilities: data.mechanicsFacilities,
           mechanics_busing: data.mechanicsBusing,
+          mechanics_training: data.mechanicsTraining,
           updated_at: new Date().toISOString(),
         })
         .eq('id', data.id)
