@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical, Heart, Droplets, UsersRound, Wrench, GraduationCap } from 'lucide-react'
+import { Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, MoreVertical, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
@@ -224,7 +224,7 @@ export default function DashboardPage() {
   }, [pgaReports, dateFilter])
 
   // Calculate totals from filtered reports
-  type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number; salvations: number; baptisms: number; mca: number; mechanics: number; mechanicsTraining: number }
+  type Totals = { sv1: number; sv2: number; yxp: number; kids: number; local: number; hc1: number; hc2: number; total: number; salvations: number; baptisms: number; mca: number; mechanics: number }
   const calculatedTotals = useMemo(() => {
     return filteredReports.reduce(
       (acc: Totals, report: PgaReportSummary) => ({
@@ -240,9 +240,8 @@ export default function DashboardPage() {
         baptisms: acc.baptisms + report.baptisms,
         mca: acc.mca + report.mca,
         mechanics: acc.mechanics + report.mechanics,
-        mechanicsTraining: acc.mechanicsTraining + report.mechanics_training,
       }),
-      { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0, mechanicsTraining: 0 }
+      { sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0, salvations: 0, baptisms: 0, mca: 0, mechanics: 0 }
     )
   }, [filteredReports])
 
@@ -269,7 +268,6 @@ export default function DashboardPage() {
     { title: 'Baptisms', value: formatCompact(calculatedTotals.baptisms), icon: Droplets },
     { title: 'Mechanics', value: formatCompact(calculatedTotals.mechanics), icon: Wrench },
     { title: 'MCA', value: formatCompact(calculatedTotals.mca), icon: UsersRound },
-    { title: 'Mech Training', value: formatCompact(calculatedTotals.mechanicsTraining), icon: GraduationCap },
   ], [calculatedTotals])
 
   const resetPgaForm = () => {

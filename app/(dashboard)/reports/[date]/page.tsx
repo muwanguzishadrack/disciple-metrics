@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search, Heart, Droplets, UsersRound, Wrench, GraduationCap } from 'lucide-react'
+import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
@@ -441,7 +441,6 @@ export default function SingleReportPage() {
     { title: 'Baptisms', value: formatCompact(report.totals.baptisms), icon: Droplets },
     { title: 'Mechanics', value: formatCompact(report.totals.mechanics), icon: Wrench },
     { title: 'MCA', value: formatCompact(report.totals.mca), icon: UsersRound },
-    { title: 'Mech Training', value: formatCompact(report.totals.mechanicsTraining), icon: GraduationCap },
   ]
 
   // Salvations split by source
