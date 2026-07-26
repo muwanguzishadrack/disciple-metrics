@@ -26,7 +26,7 @@ export const publicPgaFormSchema = z.object({
   mechanicsHarvestKids: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   mechanicsParkingSecurity: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   mechanicsFacilities: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  mechanicsBussing: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanicsBusing: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
 })
 
 // Schema for API submission (includes accessCode from PIN dialog)

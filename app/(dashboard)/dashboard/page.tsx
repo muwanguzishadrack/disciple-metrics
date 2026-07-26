@@ -171,7 +171,7 @@ export default function DashboardPage() {
   const [pgaMechanicsHarvestKids, setPgaMechanicsHarvestKids] = useState(0)
   const [pgaMechanicsParkingSecurity, setPgaMechanicsParkingSecurity] = useState(0)
   const [pgaMechanicsFacilities, setPgaMechanicsFacilities] = useState(0)
-  const [pgaMechanicsBussing, setPgaMechanicsBussing] = useState(0)
+  const [pgaMechanicsBusing, setPgaMechanicsBusing] = useState(0)
 
   // Build FOB and Location options from database
   const fobOptions = useMemo(() => {
@@ -208,7 +208,7 @@ export default function DashboardPage() {
   // Mechanics total = sum of the seven team inputs
   const pgaMechanicsTotal =
     pgaMechanicsGet + pgaMechanicsWorship + pgaMechanicsMedia + pgaMechanicsHarvestKids +
-    pgaMechanicsParkingSecurity + pgaMechanicsFacilities + pgaMechanicsBussing
+    pgaMechanicsParkingSecurity + pgaMechanicsFacilities + pgaMechanicsBusing
 
   // Filter reports by date range
   const filteredReports = useMemo(() => {
@@ -291,7 +291,7 @@ export default function DashboardPage() {
     setPgaMechanicsHarvestKids(0)
     setPgaMechanicsParkingSecurity(0)
     setPgaMechanicsFacilities(0)
-    setPgaMechanicsBussing(0)
+    setPgaMechanicsBusing(0)
   }
 
   const handleDialogOpenChange = (open: boolean) => {
@@ -334,7 +334,7 @@ export default function DashboardPage() {
         mechanicsHarvestKids: pgaMechanicsHarvestKids,
         mechanicsParkingSecurity: pgaMechanicsParkingSecurity,
         mechanicsFacilities: pgaMechanicsFacilities,
-        mechanicsBussing: pgaMechanicsBussing,
+        mechanicsBusing: pgaMechanicsBusing,
       })
       toast({
         title: 'Success',
@@ -715,13 +715,13 @@ export default function DashboardPage() {
                       </div>
                       <div className="grid grid-cols-2 gap-4 mt-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-bussing">Bussing</Label>
+                          <Label htmlFor="pga-mechanics-busing">Busing</Label>
                           <Input
-                            id="pga-mechanics-bussing"
+                            id="pga-mechanics-busing"
                             type="number"
                             min="0"
-                            value={pgaMechanicsBussing}
-                            onChange={(e) => setPgaMechanicsBussing(Number(e.target.value) || 0)}
+                            value={pgaMechanicsBusing}
+                            onChange={(e) => setPgaMechanicsBusing(Number(e.target.value) || 0)}
                           />
                         </div>
                         <div className="grid gap-2">

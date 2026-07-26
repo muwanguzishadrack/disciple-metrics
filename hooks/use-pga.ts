@@ -37,12 +37,12 @@ export interface LocationEntry {
   mechanicsHarvestKids: number
   mechanicsParkingSecurity: number
   mechanicsFacilities: number
-  mechanicsBussing: number
+  mechanicsBusing: number
   // Pre-split history with no team breakdown; not editable, kept so totals reconcile
   mechanicsLegacy: number
 }
 
-export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestream' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsMedia' | 'mechanicsHarvestKids' | 'mechanicsParkingSecurity' | 'mechanicsFacilities' | 'mechanicsBussing' | 'mechanicsLegacy'> {
+export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestream' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsMedia' | 'mechanicsHarvestKids' | 'mechanicsParkingSecurity' | 'mechanicsFacilities' | 'mechanicsBusing' | 'mechanicsLegacy'> {
   id: string | null
   sv1: number | null
   sv2: number | null
@@ -66,7 +66,7 @@ export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1
   mechanicsHarvestKids: number | null
   mechanicsParkingSecurity: number | null
   mechanicsFacilities: number | null
-  mechanicsBussing: number | null
+  mechanicsBusing: number | null
   mechanicsLegacy: number | null
   hasSubmitted: boolean
 }
@@ -99,7 +99,7 @@ export interface PgaReportWithTotals {
     mechanicsHarvestKids: number
     mechanicsParkingSecurity: number
     mechanicsFacilities: number
-    mechanicsBussing: number
+    mechanicsBusing: number
     mechanicsLegacy: number
   }
 }
@@ -131,7 +131,7 @@ export interface PgaReportSummary {
   mechanics_harvest_kids: number
   mechanics_parking_security: number
   mechanics_facilities: number
-  mechanics_bussing: number
+  mechanics_busing: number
   mechanics_legacy: number
   epga_total: number
 }
@@ -197,11 +197,11 @@ function transformReportData(report: any): PgaReportWithTotals {
     const mechanicsHarvestKids = entry.mechanics_harvest_kids || 0
     const mechanicsParkingSecurity = entry.mechanics_parking_security || 0
     const mechanicsFacilities = entry.mechanics_facilities || 0
-    const mechanicsBussing = entry.mechanics_bussing || 0
+    const mechanicsBusing = entry.mechanics_busing || 0
     const mechanicsLegacy = entry.mechanics_legacy || 0
     const mechanics =
       mechanicsGet + mechanicsWorship + mechanicsMedia + mechanicsHarvestKids +
-      mechanicsParkingSecurity + mechanicsFacilities + mechanicsBussing + mechanicsLegacy
+      mechanicsParkingSecurity + mechanicsFacilities + mechanicsBusing + mechanicsLegacy
 
     return {
       id: entry.id,
@@ -213,7 +213,7 @@ function transformReportData(report: any): PgaReportWithTotals {
       salvations, salvationsLivestream, salvationsInhouse, salvationsMc, salvationsOther,
       baptisms, mca, mechanics,
       mechanicsGet, mechanicsWorship, mechanicsMedia, mechanicsHarvestKids,
-      mechanicsParkingSecurity, mechanicsFacilities, mechanicsBussing, mechanicsLegacy,
+      mechanicsParkingSecurity, mechanicsFacilities, mechanicsBusing, mechanicsLegacy,
     }
   })
 
@@ -241,7 +241,7 @@ function transformReportData(report: any): PgaReportWithTotals {
       mechanicsHarvestKids: acc.mechanicsHarvestKids + entry.mechanicsHarvestKids,
       mechanicsParkingSecurity: acc.mechanicsParkingSecurity + entry.mechanicsParkingSecurity,
       mechanicsFacilities: acc.mechanicsFacilities + entry.mechanicsFacilities,
-      mechanicsBussing: acc.mechanicsBussing + entry.mechanicsBussing,
+      mechanicsBusing: acc.mechanicsBusing + entry.mechanicsBusing,
       mechanicsLegacy: acc.mechanicsLegacy + entry.mechanicsLegacy,
     }),
     {
@@ -249,7 +249,7 @@ function transformReportData(report: any): PgaReportWithTotals {
       salvations: 0, salvationsLivestream: 0, salvationsInhouse: 0, salvationsMc: 0, salvationsOther: 0,
       baptisms: 0, mca: 0, mechanics: 0,
       mechanicsGet: 0, mechanicsWorship: 0, mechanicsMedia: 0, mechanicsHarvestKids: 0,
-      mechanicsParkingSecurity: 0, mechanicsFacilities: 0, mechanicsBussing: 0, mechanicsLegacy: 0,
+      mechanicsParkingSecurity: 0, mechanicsFacilities: 0, mechanicsBusing: 0, mechanicsLegacy: 0,
     }
   )
 
@@ -306,7 +306,7 @@ export function usePgaReportByDate(date: string) {
             salvations, salvations_livestream, salvations_inhouse, salvations_mc, salvations_other,
             baptisms, mca, mechanics,
             mechanics_get, mechanics_worship, mechanics_media, mechanics_harvest_kids,
-            mechanics_parking_security, mechanics_facilities, mechanics_bussing, mechanics_legacy,
+            mechanics_parking_security, mechanics_facilities, mechanics_busing, mechanics_legacy,
             location_id,
             location:locations (
               id, name,
@@ -603,7 +603,7 @@ export interface MechanicsSummaryRow {
   harvestKids: number
   parkingSecurity: number
   facilities: number
-  bussing: number
+  busing: number
   unspecified: number
   total: number
 }
@@ -618,7 +618,7 @@ export interface MechanicsRow {
   harvestKids: number
   parkingSecurity: number
   facilities: number
-  bussing: number
+  busing: number
   unspecified: number
   total: number
 }
@@ -632,7 +632,7 @@ export function useMechanicsSummary() {
     queryFn: async (): Promise<MechanicsSummaryRow[]> => {
       const { data, error } = await (supabase as any)
         .from('pga_report_summary')
-        .select('report_id, date, mechanics_get, mechanics_worship, mechanics_media, mechanics_harvest_kids, mechanics_parking_security, mechanics_facilities, mechanics_bussing, mechanics_legacy, mechanics')
+        .select('report_id, date, mechanics_get, mechanics_worship, mechanics_media, mechanics_harvest_kids, mechanics_parking_security, mechanics_facilities, mechanics_busing, mechanics_legacy, mechanics')
         .order('date', { ascending: false })
 
       if (error) throw error
@@ -646,7 +646,7 @@ export function useMechanicsSummary() {
         harvestKids: row.mechanics_harvest_kids,
         parkingSecurity: row.mechanics_parking_security,
         facilities: row.mechanics_facilities,
-        bussing: row.mechanics_bussing,
+        busing: row.mechanics_busing,
         unspecified: row.mechanics_legacy,
         total: row.mechanics,
       }))
@@ -668,7 +668,7 @@ export function useMechanicsReport(date: string | undefined) {
       harvestKids: loc.mechanicsHarvestKids,
       parkingSecurity: loc.mechanicsParkingSecurity,
       facilities: loc.mechanicsFacilities,
-      bussing: loc.mechanicsBussing,
+      busing: loc.mechanicsBusing,
       unspecified: loc.mechanicsLegacy,
       total: loc.mechanics,
     }))
@@ -701,7 +701,7 @@ interface CreatePgaEntryData {
   mechanicsHarvestKids: number
   mechanicsParkingSecurity: number
   mechanicsFacilities: number
-  mechanicsBussing: number
+  mechanicsBusing: number
 }
 
 function invalidateAllPgaQueries(queryClient: ReturnType<typeof useQueryClient>) {
@@ -770,7 +770,7 @@ export function useCreatePgaEntry() {
         mechanics_harvest_kids: data.mechanicsHarvestKids,
         mechanics_parking_security: data.mechanicsParkingSecurity,
         mechanics_facilities: data.mechanicsFacilities,
-        mechanics_bussing: data.mechanicsBussing,
+        mechanics_busing: data.mechanicsBusing,
         created_by: user.id,
       })
 
@@ -804,7 +804,7 @@ interface UpdatePgaEntryData {
   mechanicsHarvestKids: number
   mechanicsParkingSecurity: number
   mechanicsFacilities: number
-  mechanicsBussing: number
+  mechanicsBusing: number
 }
 
 export function useUpdatePgaEntry() {
@@ -835,7 +835,7 @@ export function useUpdatePgaEntry() {
           mechanics_harvest_kids: data.mechanicsHarvestKids,
           mechanics_parking_security: data.mechanicsParkingSecurity,
           mechanics_facilities: data.mechanicsFacilities,
-          mechanics_bussing: data.mechanicsBussing,
+          mechanics_busing: data.mechanicsBusing,
           updated_at: new Date().toISOString(),
         })
         .eq('id', data.id)

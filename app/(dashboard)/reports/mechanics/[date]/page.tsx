@@ -57,11 +57,11 @@ export default function MechanicsDetailPage() {
         harvestKids: acc.harvestKids + row.harvestKids,
         parkingSecurity: acc.parkingSecurity + row.parkingSecurity,
         facilities: acc.facilities + row.facilities,
-        bussing: acc.bussing + row.bussing,
+        busing: acc.busing + row.busing,
         unspecified: acc.unspecified + row.unspecified,
         total: acc.total + row.total,
       }),
-      { get: 0, worship: 0, media: 0, harvestKids: 0, parkingSecurity: 0, facilities: 0, bussing: 0, unspecified: 0, total: 0 }
+      { get: 0, worship: 0, media: 0, harvestKids: 0, parkingSecurity: 0, facilities: 0, busing: 0, unspecified: 0, total: 0 }
     )
   }, [data])
 
@@ -92,7 +92,7 @@ export default function MechanicsDetailPage() {
         { header: 'Harvest Kids', accessor: 'harvestKids' },
         { header: 'Parking & Sec', accessor: 'parkingSecurity' },
         { header: 'Facilities', accessor: 'facilities' },
-        { header: 'Bussing', accessor: 'bussing' },
+        { header: 'Busing', accessor: 'busing' },
         { header: 'Unspecified', accessor: 'unspecified' },
         { header: 'Mech-Total', accessor: 'total' },
       ],
@@ -135,7 +135,7 @@ export default function MechanicsDetailPage() {
     { title: 'Harvest Kids', value: totals.harvestKids, icon: Baby },
     { title: 'Parking & Security', value: totals.parkingSecurity, icon: Car },
     { title: 'Facilities', value: totals.facilities, icon: Building },
-    { title: 'Bussing', value: totals.bussing, icon: Bus },
+    { title: 'Busing', value: totals.busing, icon: Bus },
     { title: 'Total', value: totals.total, icon: Wrench },
   ]
 
@@ -206,7 +206,7 @@ export default function MechanicsDetailPage() {
                   <TableHead>H-Kids</TableHead>
                   <TableHead>Park &amp; Sec</TableHead>
                   <TableHead>Facilities</TableHead>
-                  <TableHead>Bussing</TableHead>
+                  <TableHead>Busing</TableHead>
                   <TableHead>Unspec.</TableHead>
                   <TableHead>Mech-Total</TableHead>
                 </TableRow>
@@ -222,7 +222,7 @@ export default function MechanicsDetailPage() {
                       <TableCell>{row.harvestKids}</TableCell>
                       <TableCell>{row.parkingSecurity}</TableCell>
                       <TableCell>{row.facilities}</TableCell>
-                      <TableCell>{row.bussing}</TableCell>
+                      <TableCell>{row.busing}</TableCell>
                       <TableCell className="text-muted-foreground">{row.unspecified}</TableCell>
                       <TableCell className="font-semibold">{row.total}</TableCell>
                     </TableRow>

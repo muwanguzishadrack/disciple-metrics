@@ -96,7 +96,7 @@ function parseExcelFile(filePath) {
       mechanicsHarvestKids: 0,
       mechanicsParkingSecurity: 0,
       mechanicsFacilities: 0,
-      mechanicsBussing: 0,
+      mechanicsBusing: 0,
     };
 
     entries.push(entry);
@@ -214,7 +214,7 @@ async function importEntries(matchedEntries, existingEntries, reportId) {
       mechanics_harvest_kids: entry.mechanicsHarvestKids,
       mechanics_parking_security: entry.mechanicsParkingSecurity,
       mechanics_facilities: entry.mechanicsFacilities,
-      mechanics_bussing: entry.mechanicsBussing,
+      mechanics_busing: entry.mechanicsBusing,
     };
 
     const existingId = existingByLocation.get(entry.locationId);

@@ -139,7 +139,7 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
         { header: 'Harvest Kids', accessor: 'harvestKids' },
         { header: 'Parking & Sec', accessor: 'parkingSecurity' },
         { header: 'Facilities', accessor: 'facilities' },
-        { header: 'Bussing', accessor: 'bussing' },
+        { header: 'Busing', accessor: 'busing' },
         { header: 'Unspecified', accessor: 'unspecified' },
         { header: 'Mech-Total', accessor: 'total' },
       ],
@@ -215,7 +215,7 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
                 <TableHead>H-Kids</TableHead>
                 <TableHead>Park &amp; Sec</TableHead>
                 <TableHead>Facilities</TableHead>
-                <TableHead>Bussing</TableHead>
+                <TableHead>Busing</TableHead>
                 <TableHead>Unspec.</TableHead>
                 <TableHead>Mech-Total</TableHead>
                 <TableHead className="text-right">Action</TableHead>
@@ -242,7 +242,7 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
                     <TableCell>{row.harvestKids}</TableCell>
                     <TableCell>{row.parkingSecurity}</TableCell>
                     <TableCell>{row.facilities}</TableCell>
-                    <TableCell>{row.bussing}</TableCell>
+                    <TableCell>{row.busing}</TableCell>
                     <TableCell className="text-muted-foreground">{row.unspecified}</TableCell>
                     <TableCell className="font-semibold">{row.total}</TableCell>
                     <TableCell className="text-right">

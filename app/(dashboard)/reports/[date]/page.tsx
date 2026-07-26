@@ -142,7 +142,7 @@ export default function SingleReportPage() {
         mechanicsHarvestKids: null,
         mechanicsParkingSecurity: null,
         mechanicsFacilities: null,
-        mechanicsBussing: null,
+        mechanicsBusing: null,
         mechanicsLegacy: null,
         hasSubmitted: false,
       }
@@ -175,7 +175,7 @@ export default function SingleReportPage() {
   const [editMechanicsHarvestKids, setEditMechanicsHarvestKids] = useState(0)
   const [editMechanicsParkingSecurity, setEditMechanicsParkingSecurity] = useState(0)
   const [editMechanicsFacilities, setEditMechanicsFacilities] = useState(0)
-  const [editMechanicsBussing, setEditMechanicsBussing] = useState(0)
+  const [editMechanicsBusing, setEditMechanicsBusing] = useState(0)
 
   const editTotal = useMemo(() => {
     return editSv1 + editSv2 + editYxp + editKids + editLocal + editHc1 + editHc2
@@ -188,7 +188,7 @@ export default function SingleReportPage() {
   // team breakdown (carried in mechanics_legacy and left untouched by edits)
   const editMechanicsTotal =
     editMechanicsGet + editMechanicsWorship + editMechanicsMedia + editMechanicsHarvestKids +
-    editMechanicsParkingSecurity + editMechanicsFacilities + editMechanicsBussing +
+    editMechanicsParkingSecurity + editMechanicsFacilities + editMechanicsBusing +
     (editingLocation?.mechanicsLegacy ?? 0)
 
   const handleEditClick = (location: LocationEntry) => {
@@ -212,7 +212,7 @@ export default function SingleReportPage() {
     setEditMechanicsHarvestKids(location.mechanicsHarvestKids)
     setEditMechanicsParkingSecurity(location.mechanicsParkingSecurity)
     setEditMechanicsFacilities(location.mechanicsFacilities)
-    setEditMechanicsBussing(location.mechanicsBussing)
+    setEditMechanicsBusing(location.mechanicsBusing)
     setEditDialogOpen(true)
   }
 
@@ -246,7 +246,7 @@ export default function SingleReportPage() {
         mechanicsHarvestKids: editMechanicsHarvestKids,
         mechanicsParkingSecurity: editMechanicsParkingSecurity,
         mechanicsFacilities: editMechanicsFacilities,
-        mechanicsBussing: editMechanicsBussing,
+        mechanicsBusing: editMechanicsBusing,
       })
       toast({
         title: 'Success',
@@ -346,7 +346,7 @@ export default function SingleReportPage() {
       mechanicsHarvestKids: loc.hasSubmitted ? loc.mechanicsHarvestKids : '',
       mechanicsParkingSecurity: loc.hasSubmitted ? loc.mechanicsParkingSecurity : '',
       mechanicsFacilities: loc.hasSubmitted ? loc.mechanicsFacilities : '',
-      mechanicsBussing: loc.hasSubmitted ? loc.mechanicsBussing : '',
+      mechanicsBusing: loc.hasSubmitted ? loc.mechanicsBusing : '',
       mechanicsLegacy: loc.hasSubmitted ? loc.mechanicsLegacy : '',
       mechanics: loc.hasSubmitted ? loc.mechanics : '',
     }))
@@ -377,7 +377,7 @@ export default function SingleReportPage() {
         { header: 'Mech-HK', accessor: 'mechanicsHarvestKids' },
         { header: 'Mech-P&S', accessor: 'mechanicsParkingSecurity' },
         { header: 'Mech-Fac', accessor: 'mechanicsFacilities' },
-        { header: 'Mech-Bus', accessor: 'mechanicsBussing' },
+        { header: 'Mech-Bus', accessor: 'mechanicsBusing' },
         { header: 'Mech-Unsp', accessor: 'mechanicsLegacy' },
         { header: 'Mech-Total', accessor: 'mechanics' },
         { header: 'MCA', accessor: 'mca' },
@@ -957,13 +957,13 @@ export default function SingleReportPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-bussing">Bussing</Label>
+                    <Label htmlFor="edit-mechanics-busing">Busing</Label>
                     <Input
-                      id="edit-mechanics-bussing"
+                      id="edit-mechanics-busing"
                       type="number"
                       min="0"
-                      value={editMechanicsBussing}
-                      onChange={(e) => setEditMechanicsBussing(Number(e.target.value) || 0)}
+                      value={editMechanicsBusing}
+                      onChange={(e) => setEditMechanicsBusing(Number(e.target.value) || 0)}
                     />
                   </div>
                   <div className="grid gap-2">

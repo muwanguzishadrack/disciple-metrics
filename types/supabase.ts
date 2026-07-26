@@ -116,7 +116,7 @@ export type Database = {
           location_id: string
           mca: number | null
           mechanics: number | null
-          mechanics_bussing: number | null
+          mechanics_busing: number | null
           mechanics_facilities: number | null
           mechanics_get: number | null
           mechanics_harvest_kids: number | null
@@ -147,7 +147,7 @@ export type Database = {
           location_id: string
           mca?: number | null
           mechanics?: number | null
-          mechanics_bussing?: number | null
+          mechanics_busing?: number | null
           mechanics_facilities?: number | null
           mechanics_get?: number | null
           mechanics_harvest_kids?: number | null
@@ -178,7 +178,7 @@ export type Database = {
           location_id?: string
           mca?: number | null
           mechanics?: number | null
-          mechanics_bussing?: number | null
+          mechanics_busing?: number | null
           mechanics_facilities?: number | null
           mechanics_get?: number | null
           mechanics_harvest_kids?: number | null
@@ -498,7 +498,7 @@ export type Database = {
           local: number | null
           mca: number | null
           mechanics: number | null
-          mechanics_bussing: number | null
+          mechanics_busing: number | null
           mechanics_facilities: number | null
           mechanics_get: number | null
           mechanics_harvest_kids: number | null
