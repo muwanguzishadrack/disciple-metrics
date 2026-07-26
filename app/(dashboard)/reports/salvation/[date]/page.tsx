@@ -51,13 +51,14 @@ export default function SalvationDetailPage() {
   const totals = useMemo(() => {
     return data.reduce(
       (acc, row) => ({
-        livestream: acc.livestream + row.livestream,
+        livestreamEnc: acc.livestreamEnc + row.livestreamEnc,
+        livestreamYxp: acc.livestreamYxp + row.livestreamYxp,
         inhouse: acc.inhouse + row.inhouse,
         mc: acc.mc + row.mc,
         other: acc.other + row.other,
         total: acc.total + row.total,
       }),
-      { livestream: 0, inhouse: 0, mc: 0, other: 0, total: 0 }
+      { livestreamEnc: 0, livestreamYxp: 0, inhouse: 0, mc: 0, other: 0, total: 0 }
     )
   }, [data])
 
@@ -82,7 +83,8 @@ export default function SalvationDetailPage() {
       data,
       columns: [
         { header: 'Location', accessor: 'location', skipTotal: true },
-        { header: 'Salv-LS', accessor: 'livestream' },
+        { header: 'Salv-Enc', accessor: 'livestreamEnc' },
+        { header: 'Salv-YXP', accessor: 'livestreamYxp' },
         { header: 'Salv-IH', accessor: 'inhouse' },
         { header: 'Salv-MC', accessor: 'mc' },
         { header: 'Salv-Oth', accessor: 'other' },
@@ -121,9 +123,10 @@ export default function SalvationDetailPage() {
   })
 
   const stats = [
-    { title: 'Livestream', value: totals.livestream, icon: Video },
-    { title: 'In-house', value: totals.inhouse, icon: Building },
-    { title: 'MC', value: totals.mc, icon: Users },
+    { title: 'Livestream (Enc)', value: totals.livestreamEnc, icon: Video },
+    { title: 'Livestream (YXP)', value: totals.livestreamYxp, icon: Video },
+    { title: 'In-house (ALL)', value: totals.inhouse, icon: Building },
+    { title: 'MCs', value: totals.mc, icon: Users },
     { title: 'Other Events', value: totals.other, icon: Sparkles },
     { title: 'Total', value: totals.total, icon: Heart },
   ]
@@ -150,7 +153,7 @@ export default function SalvationDetailPage() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+          className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
         >
           {stats.map((stat) => (
             <motion.div key={stat.title} variants={item}>
@@ -189,7 +192,8 @@ export default function SalvationDetailPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Location</TableHead>
-                  <TableHead>Salv-LS</TableHead>
+                  <TableHead>Salv-Enc</TableHead>
+                  <TableHead>Salv-YXP</TableHead>
                   <TableHead>Salv-IH</TableHead>
                   <TableHead>Salv-MC</TableHead>
                   <TableHead>Salv-Oth</TableHead>
@@ -201,7 +205,8 @@ export default function SalvationDetailPage() {
                   paginatedData.map((row) => (
                     <TableRow key={row.locationId}>
                       <TableCell className="whitespace-nowrap font-medium">{row.location}</TableCell>
-                      <TableCell>{row.livestream}</TableCell>
+                      <TableCell>{row.livestreamEnc}</TableCell>
+                      <TableCell>{row.livestreamYxp}</TableCell>
                       <TableCell>{row.inhouse}</TableCell>
                       <TableCell>{row.mc}</TableCell>
                       <TableCell>{row.other}</TableCell>
@@ -210,7 +215,7 @@ export default function SalvationDetailPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                       No location data available.
                     </TableCell>
                   </TableRow>

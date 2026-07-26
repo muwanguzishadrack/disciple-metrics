@@ -127,7 +127,8 @@ export type Database = {
           report_id: string
           salvations: number | null
           salvations_inhouse: number | null
-          salvations_livestream: number | null
+          salvations_livestream_enc: number | null
+          salvations_livestream_yxp: number | null
           salvations_mc: number | null
           salvations_other: number | null
           sv1: number | null
@@ -158,7 +159,8 @@ export type Database = {
           report_id: string
           salvations?: number | null
           salvations_inhouse?: number | null
-          salvations_livestream?: number | null
+          salvations_livestream_enc?: number | null
+          salvations_livestream_yxp?: number | null
           salvations_mc?: number | null
           salvations_other?: number | null
           sv1?: number | null
@@ -189,7 +191,8 @@ export type Database = {
           report_id?: string
           salvations?: number | null
           salvations_inhouse?: number | null
-          salvations_livestream?: number | null
+          salvations_livestream_enc?: number | null
+          salvations_livestream_yxp?: number | null
           salvations_mc?: number | null
           salvations_other?: number | null
           sv1?: number | null
@@ -509,7 +512,8 @@ export type Database = {
           report_id: string | null
           salvations: number | null
           salvations_inhouse: number | null
-          salvations_livestream: number | null
+          salvations_livestream_enc: number | null
+          salvations_livestream_yxp: number | null
           salvations_mc: number | null
           salvations_other: number | null
           sv1: number | null

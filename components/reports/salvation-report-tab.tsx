@@ -133,7 +133,8 @@ export function SalvationReportTab({ actionsContainer }: SalvationReportTabProps
       data: filteredRows,
       columns: [
         { header: 'Date', accessor: 'date' },
-        { header: 'Salv-LS', accessor: 'livestream' },
+        { header: 'Salv-Enc', accessor: 'livestreamEnc' },
+        { header: 'Salv-YXP', accessor: 'livestreamYxp' },
         { header: 'Salv-IH', accessor: 'inhouse' },
         { header: 'Salv-MC', accessor: 'mc' },
         { header: 'Salv-Oth', accessor: 'other' },
@@ -205,7 +206,8 @@ export function SalvationReportTab({ actionsContainer }: SalvationReportTabProps
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
-                <TableHead>Salv-LS</TableHead>
+                <TableHead>Salv-Enc</TableHead>
+                <TableHead>Salv-YXP</TableHead>
                 <TableHead>Salv-IH</TableHead>
                 <TableHead>Salv-MC</TableHead>
                 <TableHead>Salv-Oth</TableHead>
@@ -217,7 +219,7 @@ export function SalvationReportTab({ actionsContainer }: SalvationReportTabProps
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    {Array.from({ length: 7 }).map((_, j) => (
+                    {Array.from({ length: 8 }).map((_, j) => (
                       <TableCell key={j}>
                         <Skeleton className="h-4 w-12" />
                       </TableCell>
@@ -228,7 +230,8 @@ export function SalvationReportTab({ actionsContainer }: SalvationReportTabProps
                 paginatedRows.map((row) => (
                   <TableRow key={row.reportId}>
                     <TableCell className="whitespace-nowrap">{row.date}</TableCell>
-                    <TableCell>{row.livestream}</TableCell>
+                    <TableCell>{row.livestreamEnc}</TableCell>
+                    <TableCell>{row.livestreamYxp}</TableCell>
                     <TableCell>{row.inhouse}</TableCell>
                     <TableCell>{row.mc}</TableCell>
                     <TableCell>{row.other}</TableCell>
@@ -259,7 +262,7 @@ export function SalvationReportTab({ actionsContainer }: SalvationReportTabProps
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                     No salvation data available.
                   </TableCell>
                 </TableRow>

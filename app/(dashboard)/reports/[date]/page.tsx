@@ -129,7 +129,8 @@ export default function SingleReportPage() {
         hc2: null,
         total: null,
         salvations: null,
-        salvationsLivestream: null,
+        salvationsLivestreamEnc: null,
+        salvationsLivestreamYxp: null,
         salvationsInhouse: null,
         salvationsMc: null,
         salvationsOther: null,
@@ -162,7 +163,8 @@ export default function SingleReportPage() {
   const [editHc1, setEditHc1] = useState(0)
   const [editHc2, setEditHc2] = useState(0)
   // Ministry Impact edit state
-  const [editSalvationsLivestream, setEditSalvationsLivestream] = useState(0)
+  const [editSalvationsLivestreamEnc, setEditSalvationsLivestreamEnc] = useState(0)
+  const [editSalvationsLivestreamYxp, setEditSalvationsLivestreamYxp] = useState(0)
   const [editSalvationsInhouse, setEditSalvationsInhouse] = useState(0)
   const [editSalvationsMc, setEditSalvationsMc] = useState(0)
   const [editSalvationsOther, setEditSalvationsOther] = useState(0)
@@ -182,7 +184,7 @@ export default function SingleReportPage() {
   }, [editSv1, editSv2, editYxp, editKids, editLocal, editHc1, editHc2])
 
   // Salvations total = sum of the four category inputs
-  const editSalvationsTotal = editSalvationsLivestream + editSalvationsInhouse + editSalvationsMc + editSalvationsOther
+  const editSalvationsTotal = editSalvationsLivestreamEnc + editSalvationsLivestreamYxp + editSalvationsInhouse + editSalvationsMc + editSalvationsOther
 
   // Mechanics total = sum of the seven team inputs, plus any pre-split total with no
   // team breakdown (carried in mechanics_legacy and left untouched by edits)
@@ -200,7 +202,8 @@ export default function SingleReportPage() {
     setEditLocal(location.local)
     setEditHc1(location.hc1)
     setEditHc2(location.hc2)
-    setEditSalvationsLivestream(location.salvationsLivestream)
+    setEditSalvationsLivestreamEnc(location.salvationsLivestreamEnc)
+    setEditSalvationsLivestreamYxp(location.salvationsLivestreamYxp)
     setEditSalvationsInhouse(location.salvationsInhouse)
     setEditSalvationsMc(location.salvationsMc)
     setEditSalvationsOther(location.salvationsOther)
@@ -234,7 +237,8 @@ export default function SingleReportPage() {
         local: editLocal,
         hc1: editHc1,
         hc2: editHc2,
-        salvationsLivestream: editSalvationsLivestream,
+        salvationsLivestreamEnc: editSalvationsLivestreamEnc,
+        salvationsLivestreamYxp: editSalvationsLivestreamYxp,
         salvationsInhouse: editSalvationsInhouse,
         salvationsMc: editSalvationsMc,
         salvationsOther: editSalvationsOther,
@@ -334,7 +338,8 @@ export default function SingleReportPage() {
       hc2: loc.hasSubmitted ? loc.hc2 : '',
       total: loc.hasSubmitted ? loc.total : '',
       salvations: loc.hasSubmitted ? loc.salvations : '',
-      salvationsLivestream: loc.hasSubmitted ? loc.salvationsLivestream : '',
+      salvationsLivestreamEnc: loc.hasSubmitted ? loc.salvationsLivestreamEnc : '',
+      salvationsLivestreamYxp: loc.hasSubmitted ? loc.salvationsLivestreamYxp : '',
       salvationsInhouse: loc.hasSubmitted ? loc.salvationsInhouse : '',
       salvationsMc: loc.hasSubmitted ? loc.salvationsMc : '',
       salvationsOther: loc.hasSubmitted ? loc.salvationsOther : '',
@@ -365,7 +370,8 @@ export default function SingleReportPage() {
         { header: 'HC1', accessor: 'hc1' },
         { header: 'HC2', accessor: 'hc2' },
         { header: 'Total', accessor: 'total' },
-        { header: 'Salv-LS', accessor: 'salvationsLivestream' },
+        { header: 'Salv-Enc', accessor: 'salvationsLivestreamEnc' },
+        { header: 'Salv-YXP', accessor: 'salvationsLivestreamYxp' },
         { header: 'Salv-IH', accessor: 'salvationsInhouse' },
         { header: 'Salv-MC', accessor: 'salvationsMc' },
         { header: 'Salv-Oth', accessor: 'salvationsOther' },
@@ -813,17 +819,29 @@ export default function SingleReportPage() {
               <p className="text-sm font-medium mb-3">Salvations</p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-livestream">Livestream Salvations</Label>
+                  <Label htmlFor="edit-salvations-livestream-enc">Livestream Preacher (Enc)</Label>
                   <Input
-                    id="edit-salvations-livestream"
+                    id="edit-salvations-livestream-enc"
                     type="number"
                     min="0"
-                    value={editSalvationsLivestream}
-                    onChange={(e) => setEditSalvationsLivestream(Number(e.target.value) || 0)}
+                    value={editSalvationsLivestreamEnc}
+                    onChange={(e) => setEditSalvationsLivestreamEnc(Number(e.target.value) || 0)}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-inhouse">In-House Salvations</Label>
+                  <Label htmlFor="edit-salvations-livestream-yxp">Livestream Preacher (YXP)</Label>
+                  <Input
+                    id="edit-salvations-livestream-yxp"
+                    type="number"
+                    min="0"
+                    value={editSalvationsLivestreamYxp}
+                    onChange={(e) => setEditSalvationsLivestreamYxp(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-salvations-inhouse">In-house Preacher (ALL)</Label>
                   <Input
                     id="edit-salvations-inhouse"
                     type="number"
@@ -832,10 +850,8 @@ export default function SingleReportPage() {
                     onChange={(e) => setEditSalvationsInhouse(Number(e.target.value) || 0)}
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-mc">MC Salvations</Label>
+                  <Label htmlFor="edit-salvations-mc">Salvs in MCs</Label>
                   <Input
                     id="edit-salvations-mc"
                     type="number"
@@ -844,8 +860,10 @@ export default function SingleReportPage() {
                     onChange={(e) => setEditSalvationsMc(Number(e.target.value) || 0)}
                   />
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-other">Other Salvations</Label>
+                  <Label htmlFor="edit-salvations-other">Salvs in Other Events</Label>
                   <Input
                     id="edit-salvations-other"
                     type="number"
@@ -854,8 +872,6 @@ export default function SingleReportPage() {
                     onChange={(e) => setEditSalvationsOther(Number(e.target.value) || 0)}
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="grid gap-2">
                   <Label>Total Salvations</Label>
                   <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">

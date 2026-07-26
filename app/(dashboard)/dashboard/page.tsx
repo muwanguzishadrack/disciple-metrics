@@ -158,7 +158,8 @@ export default function DashboardPage() {
   const [pgaHc1, setPgaHc1] = useState(0)
   const [pgaHc2, setPgaHc2] = useState(0)
   // Ministry Impact metrics (not included in PGA total)
-  const [pgaSalvationsLivestream, setPgaSalvationsLivestream] = useState(0)
+  const [pgaSalvationsLivestreamEnc, setPgaSalvationsLivestreamEnc] = useState(0)
+  const [pgaSalvationsLivestreamYxp, setPgaSalvationsLivestreamYxp] = useState(0)
   const [pgaSalvationsInhouse, setPgaSalvationsInhouse] = useState(0)
   const [pgaSalvationsMc, setPgaSalvationsMc] = useState(0)
   const [pgaSalvationsOther, setPgaSalvationsOther] = useState(0)
@@ -203,7 +204,7 @@ export default function DashboardPage() {
   }, [pgaSv1, pgaSv2, pgaYxp, pgaKids, pgaLocal, pgaHc1, pgaHc2])
 
   // Salvations total = sum of the four category inputs
-  const pgaSalvationsTotal = pgaSalvationsLivestream + pgaSalvationsInhouse + pgaSalvationsMc + pgaSalvationsOther
+  const pgaSalvationsTotal = pgaSalvationsLivestreamEnc + pgaSalvationsLivestreamYxp + pgaSalvationsInhouse + pgaSalvationsMc + pgaSalvationsOther
 
   // Mechanics total = sum of the seven team inputs
   const pgaMechanicsTotal =
@@ -279,7 +280,8 @@ export default function DashboardPage() {
     setPgaLocal(0)
     setPgaHc1(0)
     setPgaHc2(0)
-    setPgaSalvationsLivestream(0)
+    setPgaSalvationsLivestreamEnc(0)
+    setPgaSalvationsLivestreamYxp(0)
     setPgaSalvationsInhouse(0)
     setPgaSalvationsMc(0)
     setPgaSalvationsOther(0)
@@ -322,7 +324,8 @@ export default function DashboardPage() {
         local: pgaLocal,
         hc1: pgaHc1,
         hc2: pgaHc2,
-        salvationsLivestream: pgaSalvationsLivestream,
+        salvationsLivestreamEnc: pgaSalvationsLivestreamEnc,
+        salvationsLivestreamYxp: pgaSalvationsLivestreamYxp,
         salvationsInhouse: pgaSalvationsInhouse,
         salvationsMc: pgaSalvationsMc,
         salvationsOther: pgaSalvationsOther,
@@ -571,17 +574,29 @@ export default function DashboardPage() {
                     <p className="text-sm font-medium mb-3">Salvations</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-livestream">Livestream Salvations</Label>
+                        <Label htmlFor="pga-salvations-livestream-enc">Livestream Preacher (Enc)</Label>
                         <Input
-                          id="pga-salvations-livestream"
+                          id="pga-salvations-livestream-enc"
                           type="number"
                           min="0"
-                          value={pgaSalvationsLivestream}
-                          onChange={(e) => setPgaSalvationsLivestream(Number(e.target.value) || 0)}
+                          value={pgaSalvationsLivestreamEnc}
+                          onChange={(e) => setPgaSalvationsLivestreamEnc(Number(e.target.value) || 0)}
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-inhouse">In-House Salvations</Label>
+                        <Label htmlFor="pga-salvations-livestream-yxp">Livestream Preacher (YXP)</Label>
+                        <Input
+                          id="pga-salvations-livestream-yxp"
+                          type="number"
+                          min="0"
+                          value={pgaSalvationsLivestreamYxp}
+                          onChange={(e) => setPgaSalvationsLivestreamYxp(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-salvations-inhouse">In-house Preacher (ALL)</Label>
                         <Input
                           id="pga-salvations-inhouse"
                           type="number"
@@ -590,10 +605,8 @@ export default function DashboardPage() {
                           onChange={(e) => setPgaSalvationsInhouse(Number(e.target.value) || 0)}
                         />
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-mc">MC Salvations</Label>
+                        <Label htmlFor="pga-salvations-mc">Salvs in MCs</Label>
                         <Input
                           id="pga-salvations-mc"
                           type="number"
@@ -602,8 +615,10 @@ export default function DashboardPage() {
                           onChange={(e) => setPgaSalvationsMc(Number(e.target.value) || 0)}
                         />
                       </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-other">Other Salvations</Label>
+                        <Label htmlFor="pga-salvations-other">Salvs in Other Events</Label>
                         <Input
                           id="pga-salvations-other"
                           type="number"
@@ -612,8 +627,6 @@ export default function DashboardPage() {
                           onChange={(e) => setPgaSalvationsOther(Number(e.target.value) || 0)}
                         />
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
                       <div className="grid gap-2">
                         <Label>Total Salvations</Label>
                         <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">

@@ -24,7 +24,8 @@ export interface LocationEntry {
   hc2: number
   total: number
   salvations: number
-  salvationsLivestream: number
+  salvationsLivestreamEnc: number
+  salvationsLivestreamYxp: number
   salvationsInhouse: number
   salvationsMc: number
   salvationsOther: number
@@ -42,7 +43,7 @@ export interface LocationEntry {
   mechanicsLegacy: number
 }
 
-export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestream' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsMedia' | 'mechanicsHarvestKids' | 'mechanicsParkingSecurity' | 'mechanicsFacilities' | 'mechanicsBusing' | 'mechanicsLegacy'> {
+export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestreamEnc' | 'salvationsLivestreamYxp' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsMedia' | 'mechanicsHarvestKids' | 'mechanicsParkingSecurity' | 'mechanicsFacilities' | 'mechanicsBusing' | 'mechanicsLegacy'> {
   id: string | null
   sv1: number | null
   sv2: number | null
@@ -53,7 +54,8 @@ export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1
   hc2: number | null
   total: number | null
   salvations: number | null
-  salvationsLivestream: number | null
+  salvationsLivestreamEnc: number | null
+  salvationsLivestreamYxp: number | null
   salvationsInhouse: number | null
   salvationsMc: number | null
   salvationsOther: number | null
@@ -86,7 +88,8 @@ export interface PgaReportWithTotals {
     hc2: number
     total: number
     salvations: number
-    salvationsLivestream: number
+    salvationsLivestreamEnc: number
+    salvationsLivestreamYxp: number
     salvationsInhouse: number
     salvationsMc: number
     salvationsOther: number
@@ -118,7 +121,8 @@ export interface PgaReportSummary {
   hc2: number
   total: number
   salvations: number
-  salvations_livestream: number
+  salvations_livestream_enc: number
+  salvations_livestream_yxp: number
   salvations_inhouse: number
   salvations_mc: number
   salvations_other: number
@@ -184,11 +188,12 @@ function transformReportData(report: any): PgaReportWithTotals {
     const hc1 = entry.hc1 || 0
     const hc2 = entry.hc2 || 0
     const total = sv1 + sv2 + yxp + kids + local + hc1 + hc2
-    const salvationsLivestream = entry.salvations_livestream || 0
+    const salvationsLivestreamEnc = entry.salvations_livestream_enc || 0
+    const salvationsLivestreamYxp = entry.salvations_livestream_yxp || 0
     const salvationsInhouse = entry.salvations_inhouse || 0
     const salvationsMc = entry.salvations_mc || 0
     const salvationsOther = entry.salvations_other || 0
-    const salvations = salvationsLivestream + salvationsInhouse + salvationsMc + salvationsOther
+    const salvations = salvationsLivestreamEnc + salvationsLivestreamYxp + salvationsInhouse + salvationsMc + salvationsOther
     const baptisms = entry.baptisms || 0
     const mca = entry.mca || 0
     const mechanicsGet = entry.mechanics_get || 0
@@ -210,7 +215,7 @@ function transformReportData(report: any): PgaReportWithTotals {
       location: entry.location?.name || 'Unknown Location',
       locationId: entry.location_id,
       sv1, sv2, yxp, kids, local, hc1, hc2, total,
-      salvations, salvationsLivestream, salvationsInhouse, salvationsMc, salvationsOther,
+      salvations, salvationsLivestreamEnc, salvationsLivestreamYxp, salvationsInhouse, salvationsMc, salvationsOther,
       baptisms, mca, mechanics,
       mechanicsGet, mechanicsWorship, mechanicsMedia, mechanicsHarvestKids,
       mechanicsParkingSecurity, mechanicsFacilities, mechanicsBusing, mechanicsLegacy,
@@ -228,7 +233,8 @@ function transformReportData(report: any): PgaReportWithTotals {
       hc2: acc.hc2 + entry.hc2,
       total: acc.total + entry.total,
       salvations: acc.salvations + entry.salvations,
-      salvationsLivestream: acc.salvationsLivestream + entry.salvationsLivestream,
+      salvationsLivestreamEnc: acc.salvationsLivestreamEnc + entry.salvationsLivestreamEnc,
+      salvationsLivestreamYxp: acc.salvationsLivestreamYxp + entry.salvationsLivestreamYxp,
       salvationsInhouse: acc.salvationsInhouse + entry.salvationsInhouse,
       salvationsMc: acc.salvationsMc + entry.salvationsMc,
       salvationsOther: acc.salvationsOther + entry.salvationsOther,
@@ -246,7 +252,7 @@ function transformReportData(report: any): PgaReportWithTotals {
     }),
     {
       sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0,
-      salvations: 0, salvationsLivestream: 0, salvationsInhouse: 0, salvationsMc: 0, salvationsOther: 0,
+      salvations: 0, salvationsLivestreamEnc: 0, salvationsLivestreamYxp: 0, salvationsInhouse: 0, salvationsMc: 0, salvationsOther: 0,
       baptisms: 0, mca: 0, mechanics: 0,
       mechanicsGet: 0, mechanicsWorship: 0, mechanicsMedia: 0, mechanicsHarvestKids: 0,
       mechanicsParkingSecurity: 0, mechanicsFacilities: 0, mechanicsBusing: 0, mechanicsLegacy: 0,
@@ -303,7 +309,8 @@ export function usePgaReportByDate(date: string) {
           pga_entries (
             id,
             sv1, sv2, yxp, kids, local, hc1, hc2,
-            salvations, salvations_livestream, salvations_inhouse, salvations_mc, salvations_other,
+            salvations, salvations_livestream_enc, salvations_livestream_yxp,
+            salvations_inhouse, salvations_mc, salvations_other,
             baptisms, mca, mechanics,
             mechanics_get, mechanics_worship, mechanics_media, mechanics_harvest_kids,
             mechanics_parking_security, mechanics_facilities, mechanics_busing, mechanics_legacy,
@@ -527,7 +534,8 @@ export function useEpgaReport(date: string | undefined) {
 export interface SalvationSummaryRow {
   reportId: string
   date: string
-  livestream: number
+  livestreamEnc: number
+  livestreamYxp: number
   inhouse: number
   mc: number
   other: number
@@ -538,7 +546,8 @@ export interface SalvationSummaryRow {
 export interface SalvationRow {
   location: string
   locationId: string
-  livestream: number
+  livestreamEnc: number
+  livestreamYxp: number
   inhouse: number
   mc: number
   other: number
@@ -554,7 +563,7 @@ export function useSalvationSummary() {
     queryFn: async (): Promise<SalvationSummaryRow[]> => {
       const { data, error } = await (supabase as any)
         .from('pga_report_summary')
-        .select('report_id, date, salvations_livestream, salvations_inhouse, salvations_mc, salvations_other, salvations')
+        .select('report_id, date, salvations_livestream_enc, salvations_livestream_yxp, salvations_inhouse, salvations_mc, salvations_other, salvations')
         .order('date', { ascending: false })
 
       if (error) throw error
@@ -562,7 +571,8 @@ export function useSalvationSummary() {
       return (data || []).map((row: any): SalvationSummaryRow => ({
         reportId: row.report_id,
         date: row.date,
-        livestream: row.salvations_livestream,
+        livestreamEnc: row.salvations_livestream_enc,
+        livestreamYxp: row.salvations_livestream_yxp,
         inhouse: row.salvations_inhouse,
         mc: row.salvations_mc,
         other: row.salvations_other,
@@ -580,7 +590,8 @@ export function useSalvationReport(date: string | undefined) {
     .map((loc): SalvationRow => ({
       location: loc.location,
       locationId: loc.locationId,
-      livestream: loc.salvationsLivestream,
+      livestreamEnc: loc.salvationsLivestreamEnc,
+      livestreamYxp: loc.salvationsLivestreamYxp,
       inhouse: loc.salvationsInhouse,
       mc: loc.salvationsMc,
       other: loc.salvationsOther,
@@ -689,7 +700,8 @@ interface CreatePgaEntryData {
   local: number
   hc1: number
   hc2: number
-  salvationsLivestream: number
+  salvationsLivestreamEnc: number
+  salvationsLivestreamYxp: number
   salvationsInhouse: number
   salvationsMc: number
   salvationsOther: number
@@ -758,7 +770,8 @@ export function useCreatePgaEntry() {
         local: data.local,
         hc1: data.hc1,
         hc2: data.hc2,
-        salvations_livestream: data.salvationsLivestream,
+        salvations_livestream_enc: data.salvationsLivestreamEnc,
+        salvations_livestream_yxp: data.salvationsLivestreamYxp,
         salvations_inhouse: data.salvationsInhouse,
         salvations_mc: data.salvationsMc,
         salvations_other: data.salvationsOther,
@@ -792,7 +805,8 @@ interface UpdatePgaEntryData {
   local: number
   hc1: number
   hc2: number
-  salvationsLivestream: number
+  salvationsLivestreamEnc: number
+  salvationsLivestreamYxp: number
   salvationsInhouse: number
   salvationsMc: number
   salvationsOther: number
@@ -823,7 +837,8 @@ export function useUpdatePgaEntry() {
           local: data.local,
           hc1: data.hc1,
           hc2: data.hc2,
-          salvations_livestream: data.salvationsLivestream,
+          salvations_livestream_enc: data.salvationsLivestreamEnc,
+          salvations_livestream_yxp: data.salvationsLivestreamYxp,
           salvations_inhouse: data.salvationsInhouse,
           salvations_mc: data.salvationsMc,
           salvations_other: data.salvationsOther,

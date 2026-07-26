@@ -13,7 +13,8 @@ export const publicPgaFormSchema = z.object({
   hc2: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   // Ministry Impact metrics (not included in PGA total)
   // Salvations are captured per source; the DB stores their sum as `salvations`.
-  salvationsLivestream: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  salvationsLivestreamEnc: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  salvationsLivestreamYxp: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   salvationsInhouse: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   salvationsMc: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   salvationsOther: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
