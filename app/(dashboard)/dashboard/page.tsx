@@ -477,98 +477,98 @@ export default function DashboardPage() {
                     )}
                   </div>
 
-                  {/* Attendance Numbers */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="pga-sv1">1st Service</Label>
-                      <Input
-                        id="pga-sv1"
-                        type="number"
-                        min="0"
-                        value={pgaSv1}
-                        onChange={(e) => setPgaSv1(Number(e.target.value) || 0)}
-                      />
+                  {/* Garage */}
+                  <div className="border-t pt-4">
+                    <p className="text-sm font-medium mb-3">Garage</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-sv1">1st Service</Label>
+                        <Input
+                          id="pga-sv1"
+                          type="number"
+                          min="0"
+                          value={pgaSv1}
+                          onChange={(e) => setPgaSv1(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-sv2">2nd Service</Label>
+                        <Input
+                          id="pga-sv2"
+                          type="number"
+                          min="0"
+                          value={pgaSv2}
+                          onChange={(e) => setPgaSv2(Number(e.target.value) || 0)}
+                        />
+                      </div>
                     </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="pga-sv2">2nd Service</Label>
-                      <Input
-                        id="pga-sv2"
-                        type="number"
-                        min="0"
-                        value={pgaSv2}
-                        onChange={(e) => setPgaSv2(Number(e.target.value) || 0)}
-                      />
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-yxp">YXP</Label>
+                        <Input
+                          id="pga-yxp"
+                          type="number"
+                          min="0"
+                          value={pgaYxp}
+                          onChange={(e) => setPgaYxp(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-kids">Kids</Label>
+                        <Input
+                          id="pga-kids"
+                          type="number"
+                          min="0"
+                          value={pgaKids}
+                          onChange={(e) => setPgaKids(Number(e.target.value) || 0)}
+                        />
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="pga-yxp">YXP</Label>
-                      <Input
-                        id="pga-yxp"
-                        type="number"
-                        min="0"
-                        value={pgaYxp}
-                        onChange={(e) => setPgaYxp(Number(e.target.value) || 0)}
-                      />
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-local">Local</Label>
+                        <Input
+                          id="pga-local"
+                          type="number"
+                          min="0"
+                          value={pgaLocal}
+                          onChange={(e) => setPgaLocal(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-hc1">Hosting Center 1</Label>
+                        <Input
+                          id="pga-hc1"
+                          type="number"
+                          min="0"
+                          value={pgaHc1}
+                          onChange={(e) => setPgaHc1(Number(e.target.value) || 0)}
+                        />
+                      </div>
                     </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="pga-kids">Kids</Label>
-                      <Input
-                        id="pga-kids"
-                        type="number"
-                        min="0"
-                        value={pgaKids}
-                        onChange={(e) => setPgaKids(Number(e.target.value) || 0)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="pga-local">Local</Label>
-                      <Input
-                        id="pga-local"
-                        type="number"
-                        min="0"
-                        value={pgaLocal}
-                        onChange={(e) => setPgaLocal(Number(e.target.value) || 0)}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="pga-hc1">Hosting Center 1</Label>
-                      <Input
-                        id="pga-hc1"
-                        type="number"
-                        min="0"
-                        value={pgaHc1}
-                        onChange={(e) => setPgaHc1(Number(e.target.value) || 0)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="pga-hc2">Hosting Center 2</Label>
-                      <Input
-                        id="pga-hc2"
-                        type="number"
-                        min="0"
-                        value={pgaHc2}
-                        onChange={(e) => setPgaHc2(Number(e.target.value) || 0)}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Total</Label>
-                      <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                        {pgaTotal}
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-hc2">Hosting Center 2</Label>
+                        <Input
+                          id="pga-hc2"
+                          type="number"
+                          min="0"
+                          value={pgaHc2}
+                          onChange={(e) => setPgaHc2(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Total</Label>
+                        <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
+                          {pgaTotal}
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Ministry Impact Section */}
-                  <div className="border-t pt-4 mt-2">
-                    {/* Salvations by source */}
+                  {/* Salvations */}
+                  <div className="border-t pt-4">
+                    <p className="text-sm font-medium mb-3">Salvations</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
                         <Label htmlFor="pga-salvations-livestream">Livestream Salvations</Label>
@@ -581,7 +581,7 @@ export default function DashboardPage() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-inhouse">In-house Salvations</Label>
+                        <Label htmlFor="pga-salvations-inhouse">In-House Salvations</Label>
                         <Input
                           id="pga-salvations-inhouse"
                           type="number"
@@ -603,7 +603,7 @@ export default function DashboardPage() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-other">Other Events</Label>
+                        <Label htmlFor="pga-salvations-other">Other Salvations</Label>
                         <Input
                           id="pga-salvations-other"
                           type="number"
@@ -621,7 +621,101 @@ export default function DashboardPage() {
                         </div>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Mechanics */}
+                  <div className="border-t pt-4">
+                    <p className="text-sm font-medium mb-3">Mechanics</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-get">GET</Label>
+                        <Input
+                          id="pga-mechanics-get"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsGet}
+                          onChange={(e) => setPgaMechanicsGet(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-worship">Worship Team</Label>
+                        <Input
+                          id="pga-mechanics-worship"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsWorship}
+                          onChange={(e) => setPgaMechanicsWorship(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
                     <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-media">Media Team</Label>
+                        <Input
+                          id="pga-mechanics-media"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsMedia}
+                          onChange={(e) => setPgaMechanicsMedia(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-harvest-kids">Harvest Kids</Label>
+                        <Input
+                          id="pga-mechanics-harvest-kids"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsHarvestKids}
+                          onChange={(e) => setPgaMechanicsHarvestKids(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-parking-security">Parking &amp; Security</Label>
+                        <Input
+                          id="pga-mechanics-parking-security"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsParkingSecurity}
+                          onChange={(e) => setPgaMechanicsParkingSecurity(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-facilities">Facilities</Label>
+                        <Input
+                          id="pga-mechanics-facilities"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsFacilities}
+                          onChange={(e) => setPgaMechanicsFacilities(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="pga-mechanics-busing">Busing</Label>
+                        <Input
+                          id="pga-mechanics-busing"
+                          type="number"
+                          min="0"
+                          value={pgaMechanicsBusing}
+                          onChange={(e) => setPgaMechanicsBusing(Number(e.target.value) || 0)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Total Mechanics</Label>
+                        <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
+                          {pgaMechanicsTotal}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Others */}
+                  <div className="border-t pt-4">
+                    <p className="text-sm font-medium mb-3">Others</p>
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
                         <Label htmlFor="pga-baptisms">Baptisms</Label>
                         <Input
@@ -641,95 +735,6 @@ export default function DashboardPage() {
                           value={pgaMca}
                           onChange={(e) => setPgaMca(Number(e.target.value) || 0)}
                         />
-                      </div>
-                    </div>
-
-                    {/* Mechanics by serving team */}
-                    <div className="border-t pt-4 mt-4">
-                      <p className="text-sm font-medium mb-3">Mechanics by Team</p>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-get">GET</Label>
-                          <Input
-                            id="pga-mechanics-get"
-                            type="number"
-                            min="0"
-                            value={pgaMechanicsGet}
-                            onChange={(e) => setPgaMechanicsGet(Number(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-worship">Worship Team</Label>
-                          <Input
-                            id="pga-mechanics-worship"
-                            type="number"
-                            min="0"
-                            value={pgaMechanicsWorship}
-                            onChange={(e) => setPgaMechanicsWorship(Number(e.target.value) || 0)}
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-media">Media Team</Label>
-                          <Input
-                            id="pga-mechanics-media"
-                            type="number"
-                            min="0"
-                            value={pgaMechanicsMedia}
-                            onChange={(e) => setPgaMechanicsMedia(Number(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-harvest-kids">Harvest Kids</Label>
-                          <Input
-                            id="pga-mechanics-harvest-kids"
-                            type="number"
-                            min="0"
-                            value={pgaMechanicsHarvestKids}
-                            onChange={(e) => setPgaMechanicsHarvestKids(Number(e.target.value) || 0)}
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-parking-security">Parking &amp; Security</Label>
-                          <Input
-                            id="pga-mechanics-parking-security"
-                            type="number"
-                            min="0"
-                            value={pgaMechanicsParkingSecurity}
-                            onChange={(e) => setPgaMechanicsParkingSecurity(Number(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-facilities">Facilities</Label>
-                          <Input
-                            id="pga-mechanics-facilities"
-                            type="number"
-                            min="0"
-                            value={pgaMechanicsFacilities}
-                            onChange={(e) => setPgaMechanicsFacilities(Number(e.target.value) || 0)}
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="pga-mechanics-busing">Busing</Label>
-                          <Input
-                            id="pga-mechanics-busing"
-                            type="number"
-                            min="0"
-                            value={pgaMechanicsBusing}
-                            onChange={(e) => setPgaMechanicsBusing(Number(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label>Total Mechanics</Label>
-                          <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                            {pgaMechanicsTotal}
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>

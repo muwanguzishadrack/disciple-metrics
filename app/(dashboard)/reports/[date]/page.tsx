@@ -719,98 +719,98 @@ export default function SingleReportPage() {
               </div>
             </div>
 
-            {/* Attendance Numbers */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-sv1">1st Service</Label>
-                <Input
-                  id="edit-sv1"
-                  type="number"
-                  min="0"
-                  value={editSv1}
-                  onChange={(e) => setEditSv1(Number(e.target.value) || 0)}
-                />
+            {/* Garage */}
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium mb-3">Garage</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-sv1">1st Service</Label>
+                  <Input
+                    id="edit-sv1"
+                    type="number"
+                    min="0"
+                    value={editSv1}
+                    onChange={(e) => setEditSv1(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-sv2">2nd Service</Label>
+                  <Input
+                    id="edit-sv2"
+                    type="number"
+                    min="0"
+                    value={editSv2}
+                    onChange={(e) => setEditSv2(Number(e.target.value) || 0)}
+                  />
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-sv2">2nd Service</Label>
-                <Input
-                  id="edit-sv2"
-                  type="number"
-                  min="0"
-                  value={editSv2}
-                  onChange={(e) => setEditSv2(Number(e.target.value) || 0)}
-                />
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-yxp">YXP</Label>
+                  <Input
+                    id="edit-yxp"
+                    type="number"
+                    min="0"
+                    value={editYxp}
+                    onChange={(e) => setEditYxp(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-kids">Kids</Label>
+                  <Input
+                    id="edit-kids"
+                    type="number"
+                    min="0"
+                    value={editKids}
+                    onChange={(e) => setEditKids(Number(e.target.value) || 0)}
+                  />
+                </div>
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-yxp">YXP</Label>
-                <Input
-                  id="edit-yxp"
-                  type="number"
-                  min="0"
-                  value={editYxp}
-                  onChange={(e) => setEditYxp(Number(e.target.value) || 0)}
-                />
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-local">Local</Label>
+                  <Input
+                    id="edit-local"
+                    type="number"
+                    min="0"
+                    value={editLocal}
+                    onChange={(e) => setEditLocal(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-hc1">Hosting Center 1</Label>
+                  <Input
+                    id="edit-hc1"
+                    type="number"
+                    min="0"
+                    value={editHc1}
+                    onChange={(e) => setEditHc1(Number(e.target.value) || 0)}
+                  />
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-kids">Kids</Label>
-                <Input
-                  id="edit-kids"
-                  type="number"
-                  min="0"
-                  value={editKids}
-                  onChange={(e) => setEditKids(Number(e.target.value) || 0)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-local">Local</Label>
-                <Input
-                  id="edit-local"
-                  type="number"
-                  min="0"
-                  value={editLocal}
-                  onChange={(e) => setEditLocal(Number(e.target.value) || 0)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-hc1">Hosting Center 1</Label>
-                <Input
-                  id="edit-hc1"
-                  type="number"
-                  min="0"
-                  value={editHc1}
-                  onChange={(e) => setEditHc1(Number(e.target.value) || 0)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-hc2">Hosting Center 2</Label>
-                <Input
-                  id="edit-hc2"
-                  type="number"
-                  min="0"
-                  value={editHc2}
-                  onChange={(e) => setEditHc2(Number(e.target.value) || 0)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Total</Label>
-                <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                  {editTotal}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-hc2">Hosting Center 2</Label>
+                  <Input
+                    id="edit-hc2"
+                    type="number"
+                    min="0"
+                    value={editHc2}
+                    onChange={(e) => setEditHc2(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Total</Label>
+                  <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
+                    {editTotal}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Ministry Impact Section */}
-            <div className="border-t pt-4 mt-2">
-              {/* Salvations by source */}
+            {/* Salvations */}
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium mb-3">Salvations</p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="edit-salvations-livestream">Livestream Salvations</Label>
@@ -823,7 +823,7 @@ export default function SingleReportPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-inhouse">In-house Salvations</Label>
+                  <Label htmlFor="edit-salvations-inhouse">In-House Salvations</Label>
                   <Input
                     id="edit-salvations-inhouse"
                     type="number"
@@ -845,7 +845,7 @@ export default function SingleReportPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-other">Other Events</Label>
+                  <Label htmlFor="edit-salvations-other">Other Salvations</Label>
                   <Input
                     id="edit-salvations-other"
                     type="number"
@@ -863,7 +863,106 @@ export default function SingleReportPage() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Mechanics */}
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium mb-3">Mechanics</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-get">GET</Label>
+                  <Input
+                    id="edit-mechanics-get"
+                    type="number"
+                    min="0"
+                    value={editMechanicsGet}
+                    onChange={(e) => setEditMechanicsGet(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-worship">Worship Team</Label>
+                  <Input
+                    id="edit-mechanics-worship"
+                    type="number"
+                    min="0"
+                    value={editMechanicsWorship}
+                    onChange={(e) => setEditMechanicsWorship(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-media">Media Team</Label>
+                  <Input
+                    id="edit-mechanics-media"
+                    type="number"
+                    min="0"
+                    value={editMechanicsMedia}
+                    onChange={(e) => setEditMechanicsMedia(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-harvest-kids">Harvest Kids</Label>
+                  <Input
+                    id="edit-mechanics-harvest-kids"
+                    type="number"
+                    min="0"
+                    value={editMechanicsHarvestKids}
+                    onChange={(e) => setEditMechanicsHarvestKids(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-parking-security">Parking &amp; Security</Label>
+                  <Input
+                    id="edit-mechanics-parking-security"
+                    type="number"
+                    min="0"
+                    value={editMechanicsParkingSecurity}
+                    onChange={(e) => setEditMechanicsParkingSecurity(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-facilities">Facilities</Label>
+                  <Input
+                    id="edit-mechanics-facilities"
+                    type="number"
+                    min="0"
+                    value={editMechanicsFacilities}
+                    onChange={(e) => setEditMechanicsFacilities(Number(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-mechanics-busing">Busing</Label>
+                  <Input
+                    id="edit-mechanics-busing"
+                    type="number"
+                    min="0"
+                    value={editMechanicsBusing}
+                    onChange={(e) => setEditMechanicsBusing(Number(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Total Mechanics</Label>
+                  <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
+                    {editMechanicsTotal}
+                  </div>
+                </div>
+              </div>
+              {!!editingLocation?.mechanicsLegacy && (
+                <p className="text-xs text-muted-foreground mt-3">
+                  Includes {editingLocation.mechanicsLegacy} recorded before the team split, with no team breakdown.
+                </p>
+              )}
+            </div>
+
+            {/* Others */}
+            <div className="border-t pt-4">
+              <p className="text-sm font-medium mb-3">Others</p>
+              <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="edit-baptisms">Baptisms</Label>
                   <Input
@@ -884,100 +983,6 @@ export default function SingleReportPage() {
                     onChange={(e) => setEditMca(Number(e.target.value) || 0)}
                   />
                 </div>
-              </div>
-
-              {/* Mechanics by serving team */}
-              <div className="border-t pt-4 mt-4">
-                <p className="text-sm font-medium mb-3">Mechanics by Team</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-get">GET</Label>
-                    <Input
-                      id="edit-mechanics-get"
-                      type="number"
-                      min="0"
-                      value={editMechanicsGet}
-                      onChange={(e) => setEditMechanicsGet(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-worship">Worship Team</Label>
-                    <Input
-                      id="edit-mechanics-worship"
-                      type="number"
-                      min="0"
-                      value={editMechanicsWorship}
-                      onChange={(e) => setEditMechanicsWorship(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-media">Media Team</Label>
-                    <Input
-                      id="edit-mechanics-media"
-                      type="number"
-                      min="0"
-                      value={editMechanicsMedia}
-                      onChange={(e) => setEditMechanicsMedia(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-harvest-kids">Harvest Kids</Label>
-                    <Input
-                      id="edit-mechanics-harvest-kids"
-                      type="number"
-                      min="0"
-                      value={editMechanicsHarvestKids}
-                      onChange={(e) => setEditMechanicsHarvestKids(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-parking-security">Parking &amp; Security</Label>
-                    <Input
-                      id="edit-mechanics-parking-security"
-                      type="number"
-                      min="0"
-                      value={editMechanicsParkingSecurity}
-                      onChange={(e) => setEditMechanicsParkingSecurity(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-facilities">Facilities</Label>
-                    <Input
-                      id="edit-mechanics-facilities"
-                      type="number"
-                      min="0"
-                      value={editMechanicsFacilities}
-                      onChange={(e) => setEditMechanicsFacilities(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-mechanics-busing">Busing</Label>
-                    <Input
-                      id="edit-mechanics-busing"
-                      type="number"
-                      min="0"
-                      value={editMechanicsBusing}
-                      onChange={(e) => setEditMechanicsBusing(Number(e.target.value) || 0)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Total Mechanics</Label>
-                    <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                      {editMechanicsTotal}
-                    </div>
-                  </div>
-                </div>
-                {!!editingLocation?.mechanicsLegacy && (
-                  <p className="text-xs text-muted-foreground mt-3">
-                    Includes {editingLocation.mechanicsLegacy} recorded before the team split, with no team breakdown.
-                  </p>
-                )}
               </div>
             </div>
             </div>
