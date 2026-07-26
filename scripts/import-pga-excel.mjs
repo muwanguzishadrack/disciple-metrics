@@ -90,7 +90,13 @@ function parseExcelFile(filePath) {
       salvationsOther: 0,
       baptisms: 0,
       mca: 0,
-      mechanics: 0,
+      mechanicsGet: 0,
+      mechanicsWorship: 0,
+      mechanicsMedia: 0,
+      mechanicsHarvestKids: 0,
+      mechanicsParkingSecurity: 0,
+      mechanicsFacilities: 0,
+      mechanicsBussing: 0,
     };
 
     entries.push(entry);
@@ -201,7 +207,14 @@ async function importEntries(matchedEntries, existingEntries, reportId) {
       salvations_other: entry.salvationsOther,
       baptisms: entry.baptisms,
       mca: entry.mca,
-      mechanics: entry.mechanics,
+      // `mechanics` is a generated column (sum of the team columns) - never write it directly
+      mechanics_get: entry.mechanicsGet,
+      mechanics_worship: entry.mechanicsWorship,
+      mechanics_media: entry.mechanicsMedia,
+      mechanics_harvest_kids: entry.mechanicsHarvestKids,
+      mechanics_parking_security: entry.mechanicsParkingSecurity,
+      mechanics_facilities: entry.mechanicsFacilities,
+      mechanics_bussing: entry.mechanicsBussing,
     };
 
     const existingId = existingByLocation.get(entry.locationId);

@@ -116,6 +116,14 @@ export type Database = {
           location_id: string
           mca: number | null
           mechanics: number | null
+          mechanics_bussing: number | null
+          mechanics_facilities: number | null
+          mechanics_get: number | null
+          mechanics_harvest_kids: number | null
+          mechanics_legacy: number | null
+          mechanics_media: number | null
+          mechanics_parking_security: number | null
+          mechanics_worship: number | null
           report_id: string
           salvations: number | null
           salvations_inhouse: number | null
@@ -139,6 +147,14 @@ export type Database = {
           location_id: string
           mca?: number | null
           mechanics?: number | null
+          mechanics_bussing?: number | null
+          mechanics_facilities?: number | null
+          mechanics_get?: number | null
+          mechanics_harvest_kids?: number | null
+          mechanics_legacy?: number | null
+          mechanics_media?: number | null
+          mechanics_parking_security?: number | null
+          mechanics_worship?: number | null
           report_id: string
           salvations?: number | null
           salvations_inhouse?: number | null
@@ -162,6 +178,14 @@ export type Database = {
           location_id?: string
           mca?: number | null
           mechanics?: number | null
+          mechanics_bussing?: number | null
+          mechanics_facilities?: number | null
+          mechanics_get?: number | null
+          mechanics_harvest_kids?: number | null
+          mechanics_legacy?: number | null
+          mechanics_media?: number | null
+          mechanics_parking_security?: number | null
+          mechanics_worship?: number | null
           report_id?: string
           salvations?: number | null
           salvations_inhouse?: number | null
@@ -474,6 +498,14 @@ export type Database = {
           local: number | null
           mca: number | null
           mechanics: number | null
+          mechanics_bussing: number | null
+          mechanics_facilities: number | null
+          mechanics_get: number | null
+          mechanics_harvest_kids: number | null
+          mechanics_legacy: number | null
+          mechanics_media: number | null
+          mechanics_parking_security: number | null
+          mechanics_worship: number | null
           report_id: string | null
           salvations: number | null
           salvations_inhouse: number | null

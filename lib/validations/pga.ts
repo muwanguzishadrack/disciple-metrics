@@ -19,7 +19,14 @@ export const publicPgaFormSchema = z.object({
   salvationsOther: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   baptisms: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   mca: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  mechanics: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  // Mechanics are captured per serving team; the DB stores their sum as `mechanics`.
+  mechanicsGet: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanicsWorship: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanicsMedia: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanicsHarvestKids: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanicsParkingSecurity: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanicsFacilities: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  mechanicsBussing: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
 })
 
 // Schema for API submission (includes accessCode from PIN dialog)

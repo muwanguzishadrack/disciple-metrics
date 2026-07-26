@@ -136,6 +136,14 @@ export default function SingleReportPage() {
         baptisms: null,
         mca: null,
         mechanics: null,
+        mechanicsGet: null,
+        mechanicsWorship: null,
+        mechanicsMedia: null,
+        mechanicsHarvestKids: null,
+        mechanicsParkingSecurity: null,
+        mechanicsFacilities: null,
+        mechanicsBussing: null,
+        mechanicsLegacy: null,
         hasSubmitted: false,
       }
     })
@@ -160,7 +168,14 @@ export default function SingleReportPage() {
   const [editSalvationsOther, setEditSalvationsOther] = useState(0)
   const [editBaptisms, setEditBaptisms] = useState(0)
   const [editMca, setEditMca] = useState(0)
-  const [editMechanics, setEditMechanics] = useState(0)
+  // Mechanics captured per serving team; the DB stores their sum as `mechanics`
+  const [editMechanicsGet, setEditMechanicsGet] = useState(0)
+  const [editMechanicsWorship, setEditMechanicsWorship] = useState(0)
+  const [editMechanicsMedia, setEditMechanicsMedia] = useState(0)
+  const [editMechanicsHarvestKids, setEditMechanicsHarvestKids] = useState(0)
+  const [editMechanicsParkingSecurity, setEditMechanicsParkingSecurity] = useState(0)
+  const [editMechanicsFacilities, setEditMechanicsFacilities] = useState(0)
+  const [editMechanicsBussing, setEditMechanicsBussing] = useState(0)
 
   const editTotal = useMemo(() => {
     return editSv1 + editSv2 + editYxp + editKids + editLocal + editHc1 + editHc2
@@ -168,6 +183,13 @@ export default function SingleReportPage() {
 
   // Salvations total = sum of the four category inputs
   const editSalvationsTotal = editSalvationsLivestream + editSalvationsInhouse + editSalvationsMc + editSalvationsOther
+
+  // Mechanics total = sum of the seven team inputs, plus any pre-split total with no
+  // team breakdown (carried in mechanics_legacy and left untouched by edits)
+  const editMechanicsTotal =
+    editMechanicsGet + editMechanicsWorship + editMechanicsMedia + editMechanicsHarvestKids +
+    editMechanicsParkingSecurity + editMechanicsFacilities + editMechanicsBussing +
+    (editingLocation?.mechanicsLegacy ?? 0)
 
   const handleEditClick = (location: LocationEntry) => {
     setEditingLocation(location)
@@ -184,7 +206,13 @@ export default function SingleReportPage() {
     setEditSalvationsOther(location.salvationsOther)
     setEditBaptisms(location.baptisms)
     setEditMca(location.mca)
-    setEditMechanics(location.mechanics)
+    setEditMechanicsGet(location.mechanicsGet)
+    setEditMechanicsWorship(location.mechanicsWorship)
+    setEditMechanicsMedia(location.mechanicsMedia)
+    setEditMechanicsHarvestKids(location.mechanicsHarvestKids)
+    setEditMechanicsParkingSecurity(location.mechanicsParkingSecurity)
+    setEditMechanicsFacilities(location.mechanicsFacilities)
+    setEditMechanicsBussing(location.mechanicsBussing)
     setEditDialogOpen(true)
   }
 
@@ -212,7 +240,13 @@ export default function SingleReportPage() {
         salvationsOther: editSalvationsOther,
         baptisms: editBaptisms,
         mca: editMca,
-        mechanics: editMechanics,
+        mechanicsGet: editMechanicsGet,
+        mechanicsWorship: editMechanicsWorship,
+        mechanicsMedia: editMechanicsMedia,
+        mechanicsHarvestKids: editMechanicsHarvestKids,
+        mechanicsParkingSecurity: editMechanicsParkingSecurity,
+        mechanicsFacilities: editMechanicsFacilities,
+        mechanicsBussing: editMechanicsBussing,
       })
       toast({
         title: 'Success',
@@ -306,6 +340,14 @@ export default function SingleReportPage() {
       salvationsOther: loc.hasSubmitted ? loc.salvationsOther : '',
       baptisms: loc.hasSubmitted ? loc.baptisms : '',
       mca: loc.hasSubmitted ? loc.mca : '',
+      mechanicsGet: loc.hasSubmitted ? loc.mechanicsGet : '',
+      mechanicsWorship: loc.hasSubmitted ? loc.mechanicsWorship : '',
+      mechanicsMedia: loc.hasSubmitted ? loc.mechanicsMedia : '',
+      mechanicsHarvestKids: loc.hasSubmitted ? loc.mechanicsHarvestKids : '',
+      mechanicsParkingSecurity: loc.hasSubmitted ? loc.mechanicsParkingSecurity : '',
+      mechanicsFacilities: loc.hasSubmitted ? loc.mechanicsFacilities : '',
+      mechanicsBussing: loc.hasSubmitted ? loc.mechanicsBussing : '',
+      mechanicsLegacy: loc.hasSubmitted ? loc.mechanicsLegacy : '',
       mechanics: loc.hasSubmitted ? loc.mechanics : '',
     }))
 
@@ -329,7 +371,15 @@ export default function SingleReportPage() {
         { header: 'Salv-Oth', accessor: 'salvationsOther' },
         { header: 'Salv-Total', accessor: 'salvations' },
         { header: 'Bapt', accessor: 'baptisms' },
-        { header: 'Mech', accessor: 'mechanics' },
+        { header: 'Mech-GET', accessor: 'mechanicsGet' },
+        { header: 'Mech-Wor', accessor: 'mechanicsWorship' },
+        { header: 'Mech-Med', accessor: 'mechanicsMedia' },
+        { header: 'Mech-HK', accessor: 'mechanicsHarvestKids' },
+        { header: 'Mech-P&S', accessor: 'mechanicsParkingSecurity' },
+        { header: 'Mech-Fac', accessor: 'mechanicsFacilities' },
+        { header: 'Mech-Bus', accessor: 'mechanicsBussing' },
+        { header: 'Mech-Unsp', accessor: 'mechanicsLegacy' },
+        { header: 'Mech-Total', accessor: 'mechanics' },
         { header: 'MCA', accessor: 'mca' },
       ],
       sheetName: 'Location Report',
@@ -825,16 +875,6 @@ export default function SingleReportPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-mechanics">Mechanics</Label>
-                  <Input
-                    id="edit-mechanics"
-                    type="number"
-                    min="0"
-                    value={editMechanics}
-                    onChange={(e) => setEditMechanics(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
                   <Label htmlFor="edit-mca">MCA</Label>
                   <Input
                     id="edit-mca"
@@ -844,6 +884,100 @@ export default function SingleReportPage() {
                     onChange={(e) => setEditMca(Number(e.target.value) || 0)}
                   />
                 </div>
+              </div>
+
+              {/* Mechanics by serving team */}
+              <div className="border-t pt-4 mt-4">
+                <p className="text-sm font-medium mb-3">Mechanics by Team</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-mechanics-get">GET</Label>
+                    <Input
+                      id="edit-mechanics-get"
+                      type="number"
+                      min="0"
+                      value={editMechanicsGet}
+                      onChange={(e) => setEditMechanicsGet(Number(e.target.value) || 0)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-mechanics-worship">Worship Team</Label>
+                    <Input
+                      id="edit-mechanics-worship"
+                      type="number"
+                      min="0"
+                      value={editMechanicsWorship}
+                      onChange={(e) => setEditMechanicsWorship(Number(e.target.value) || 0)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-mechanics-media">Media Team</Label>
+                    <Input
+                      id="edit-mechanics-media"
+                      type="number"
+                      min="0"
+                      value={editMechanicsMedia}
+                      onChange={(e) => setEditMechanicsMedia(Number(e.target.value) || 0)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-mechanics-harvest-kids">Harvest Kids</Label>
+                    <Input
+                      id="edit-mechanics-harvest-kids"
+                      type="number"
+                      min="0"
+                      value={editMechanicsHarvestKids}
+                      onChange={(e) => setEditMechanicsHarvestKids(Number(e.target.value) || 0)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-mechanics-parking-security">Parking &amp; Security</Label>
+                    <Input
+                      id="edit-mechanics-parking-security"
+                      type="number"
+                      min="0"
+                      value={editMechanicsParkingSecurity}
+                      onChange={(e) => setEditMechanicsParkingSecurity(Number(e.target.value) || 0)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-mechanics-facilities">Facilities</Label>
+                    <Input
+                      id="edit-mechanics-facilities"
+                      type="number"
+                      min="0"
+                      value={editMechanicsFacilities}
+                      onChange={(e) => setEditMechanicsFacilities(Number(e.target.value) || 0)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-mechanics-bussing">Bussing</Label>
+                    <Input
+                      id="edit-mechanics-bussing"
+                      type="number"
+                      min="0"
+                      value={editMechanicsBussing}
+                      onChange={(e) => setEditMechanicsBussing(Number(e.target.value) || 0)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Total Mechanics</Label>
+                    <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
+                      {editMechanicsTotal}
+                    </div>
+                  </div>
+                </div>
+                {!!editingLocation?.mechanicsLegacy && (
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Includes {editingLocation.mechanicsLegacy} recorded before the team split, with no team breakdown.
+                  </p>
+                )}
               </div>
             </div>
             </div>
