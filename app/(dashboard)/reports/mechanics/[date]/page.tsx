@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Users, Music, Video, Baby, Car, Building, Bus, Wrench, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download } from 'lucide-react'
+import { ArrowLeft, Users, Music, Wrench, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
@@ -52,16 +52,10 @@ export default function MechanicsDetailPage() {
     return data.reduce(
       (acc, row) => ({
         get: acc.get + row.get,
-        worship: acc.worship + row.worship,
-        media: acc.media + row.media,
-        harvestKids: acc.harvestKids + row.harvestKids,
-        parkingSecurity: acc.parkingSecurity + row.parkingSecurity,
-        facilities: acc.facilities + row.facilities,
-        busing: acc.busing + row.busing,
-        unspecified: acc.unspecified + row.unspecified,
-        total: acc.total + row.total,
+        wt: acc.wt + row.wt,
+        overall: acc.overall + row.overall,
       }),
-      { get: 0, worship: 0, media: 0, harvestKids: 0, parkingSecurity: 0, facilities: 0, busing: 0, unspecified: 0, total: 0 }
+      { get: 0, wt: 0, overall: 0 }
     )
   }, [data])
 
@@ -87,18 +81,11 @@ export default function MechanicsDetailPage() {
       columns: [
         { header: 'Location', accessor: 'location', skipTotal: true },
         { header: 'GET', accessor: 'get' },
-        { header: 'Worship', accessor: 'worship' },
-        { header: 'Media', accessor: 'media' },
-        { header: 'Harvest Kids', accessor: 'harvestKids' },
-        { header: 'Parking & Sec', accessor: 'parkingSecurity' },
-        { header: 'Facilities', accessor: 'facilities' },
-        { header: 'Busing', accessor: 'busing' },
-        { header: 'Unspecified', accessor: 'unspecified' },
-        { header: 'Mech-Total', accessor: 'total' },
+        { header: 'WT', accessor: 'wt' },
+        { header: 'Overall Mechanics', accessor: 'overall' },
       ],
       sheetName: 'Mechanics Report',
       fileName: `mechanics_report_${reportDate}`,
-      includeTotals: true,
     })
   }
 
@@ -130,13 +117,8 @@ export default function MechanicsDetailPage() {
 
   const stats = [
     { title: 'GET', value: totals.get, icon: Users },
-    { title: 'Worship Team', value: totals.worship, icon: Music },
-    { title: 'Media Team', value: totals.media, icon: Video },
-    { title: 'Harvest Kids', value: totals.harvestKids, icon: Baby },
-    { title: 'Parking & Security', value: totals.parkingSecurity, icon: Car },
-    { title: 'Facilities', value: totals.facilities, icon: Building },
-    { title: 'Busing', value: totals.busing, icon: Bus },
-    { title: 'Total', value: totals.total, icon: Wrench },
+    { title: 'WT', value: totals.wt, icon: Music },
+    { title: 'Overall Mechanics', value: totals.overall, icon: Wrench },
   ]
 
   return (
@@ -201,14 +183,8 @@ export default function MechanicsDetailPage() {
                 <TableRow>
                   <TableHead>Location</TableHead>
                   <TableHead>GET</TableHead>
-                  <TableHead>Worship</TableHead>
-                  <TableHead>Media</TableHead>
-                  <TableHead>H-Kids</TableHead>
-                  <TableHead>Park &amp; Sec</TableHead>
-                  <TableHead>Facilities</TableHead>
-                  <TableHead>Busing</TableHead>
-                  <TableHead>Unspec.</TableHead>
-                  <TableHead>Mech-Total</TableHead>
+                  <TableHead>WT</TableHead>
+                  <TableHead>Overall Mechanics</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -217,19 +193,13 @@ export default function MechanicsDetailPage() {
                     <TableRow key={row.locationId}>
                       <TableCell className="whitespace-nowrap font-medium">{row.location}</TableCell>
                       <TableCell>{row.get}</TableCell>
-                      <TableCell>{row.worship}</TableCell>
-                      <TableCell>{row.media}</TableCell>
-                      <TableCell>{row.harvestKids}</TableCell>
-                      <TableCell>{row.parkingSecurity}</TableCell>
-                      <TableCell>{row.facilities}</TableCell>
-                      <TableCell>{row.busing}</TableCell>
-                      <TableCell className="text-muted-foreground">{row.unspecified}</TableCell>
-                      <TableCell className="font-semibold">{row.total}</TableCell>
+                      <TableCell>{row.wt}</TableCell>
+                      <TableCell>{row.overall}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                       No location data available.
                     </TableCell>
                   </TableRow>
@@ -237,10 +207,6 @@ export default function MechanicsDetailPage() {
               </TableBody>
             </Table>
             </div>
-
-            <p className="text-xs text-muted-foreground mt-3">
-              Unspec. holds mechanics recorded before the team split, which have no team breakdown.
-            </p>
 
             <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between mt-4">
               <div className="flex items-center gap-2">

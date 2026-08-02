@@ -93,11 +93,7 @@ function parseExcelFile(filePath) {
       mca: 0,
       mechanicsGet: 0,
       mechanicsWorship: 0,
-      mechanicsMedia: 0,
-      mechanicsHarvestKids: 0,
-      mechanicsParkingSecurity: 0,
-      mechanicsFacilities: 0,
-      mechanicsBusing: 0,
+      mechanics: 0,
       mechanicsTraining: 0,
     };
 
@@ -210,14 +206,10 @@ async function importEntries(matchedEntries, existingEntries, reportId) {
       salvations_other: entry.salvationsOther,
       baptisms: entry.baptisms,
       mca: entry.mca,
-      // `mechanics` is a generated column (sum of the team columns) - never write it directly
+      // `mechanics` is the overall figure, entered on its own - GET and WT are not addends
       mechanics_get: entry.mechanicsGet,
       mechanics_worship: entry.mechanicsWorship,
-      mechanics_media: entry.mechanicsMedia,
-      mechanics_harvest_kids: entry.mechanicsHarvestKids,
-      mechanics_parking_security: entry.mechanicsParkingSecurity,
-      mechanics_facilities: entry.mechanicsFacilities,
-      mechanics_busing: entry.mechanicsBusing,
+      mechanics: entry.mechanics,
       mechanics_training: entry.mechanicsTraining,
     };
 

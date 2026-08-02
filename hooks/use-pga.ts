@@ -31,21 +31,15 @@ export interface LocationEntry {
   salvationsOther: number
   baptisms: number
   mca: number
+  // Overall mechanics, entered directly; GET and WT are named call-outs, not addends
   mechanics: number
   mechanicsGet: number
   mechanicsWorship: number
-  mechanicsMedia: number
-  mechanicsHarvestKids: number
-  mechanicsParkingSecurity: number
-  mechanicsFacilities: number
-  mechanicsBusing: number
-  // Pre-split history with no team breakdown; not editable, kept so totals reconcile
-  mechanicsLegacy: number
-  // Standalone Others metric; not part of the mechanics total
+  // Standalone Others metric
   mechanicsTraining: number
 }
 
-export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestreamEnc' | 'salvationsLivestreamYxp' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsMedia' | 'mechanicsHarvestKids' | 'mechanicsParkingSecurity' | 'mechanicsFacilities' | 'mechanicsBusing' | 'mechanicsLegacy' | 'mechanicsTraining'> {
+export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1' | 'sv2' | 'yxp' | 'kids' | 'local' | 'hc1' | 'hc2' | 'total' | 'salvations' | 'salvationsLivestreamEnc' | 'salvationsLivestreamYxp' | 'salvationsInhouse' | 'salvationsMc' | 'salvationsOther' | 'baptisms' | 'mca' | 'mechanics' | 'mechanicsGet' | 'mechanicsWorship' | 'mechanicsTraining'> {
   id: string | null
   sv1: number | null
   sv2: number | null
@@ -66,12 +60,6 @@ export interface LocationEntryWithStatus extends Omit<LocationEntry, 'id' | 'sv1
   mechanics: number | null
   mechanicsGet: number | null
   mechanicsWorship: number | null
-  mechanicsMedia: number | null
-  mechanicsHarvestKids: number | null
-  mechanicsParkingSecurity: number | null
-  mechanicsFacilities: number | null
-  mechanicsBusing: number | null
-  mechanicsLegacy: number | null
   mechanicsTraining: number | null
   hasSubmitted: boolean
 }
@@ -101,12 +89,6 @@ export interface PgaReportWithTotals {
     mechanics: number
     mechanicsGet: number
     mechanicsWorship: number
-    mechanicsMedia: number
-    mechanicsHarvestKids: number
-    mechanicsParkingSecurity: number
-    mechanicsFacilities: number
-    mechanicsBusing: number
-    mechanicsLegacy: number
     mechanicsTraining: number
   }
 }
@@ -135,12 +117,6 @@ export interface PgaReportSummary {
   mechanics: number
   mechanics_get: number
   mechanics_worship: number
-  mechanics_media: number
-  mechanics_harvest_kids: number
-  mechanics_parking_security: number
-  mechanics_facilities: number
-  mechanics_busing: number
-  mechanics_legacy: number
   mechanics_training: number
   epga_total: number
 }
@@ -203,16 +179,8 @@ function transformReportData(report: any): PgaReportWithTotals {
     const mca = entry.mca || 0
     const mechanicsGet = entry.mechanics_get || 0
     const mechanicsWorship = entry.mechanics_worship || 0
-    const mechanicsMedia = entry.mechanics_media || 0
-    const mechanicsHarvestKids = entry.mechanics_harvest_kids || 0
-    const mechanicsParkingSecurity = entry.mechanics_parking_security || 0
-    const mechanicsFacilities = entry.mechanics_facilities || 0
-    const mechanicsBusing = entry.mechanics_busing || 0
-    const mechanicsLegacy = entry.mechanics_legacy || 0
     const mechanicsTraining = entry.mechanics_training || 0
-    const mechanics =
-      mechanicsGet + mechanicsWorship + mechanicsMedia + mechanicsHarvestKids +
-      mechanicsParkingSecurity + mechanicsFacilities + mechanicsBusing + mechanicsLegacy
+    const mechanics = entry.mechanics || 0
 
     return {
       id: entry.id,
@@ -222,10 +190,7 @@ function transformReportData(report: any): PgaReportWithTotals {
       locationId: entry.location_id,
       sv1, sv2, yxp, kids, local, hc1, hc2, total,
       salvations, salvationsLivestreamEnc, salvationsLivestreamYxp, salvationsInhouse, salvationsMc, salvationsOther,
-      baptisms, mca, mechanics,
-      mechanicsGet, mechanicsWorship, mechanicsMedia, mechanicsHarvestKids,
-      mechanicsParkingSecurity, mechanicsFacilities, mechanicsBusing, mechanicsLegacy,
-      mechanicsTraining,
+      baptisms, mca, mechanics, mechanicsGet, mechanicsWorship, mechanicsTraining,
     }
   })
 
@@ -250,20 +215,13 @@ function transformReportData(report: any): PgaReportWithTotals {
       mechanics: acc.mechanics + entry.mechanics,
       mechanicsGet: acc.mechanicsGet + entry.mechanicsGet,
       mechanicsWorship: acc.mechanicsWorship + entry.mechanicsWorship,
-      mechanicsMedia: acc.mechanicsMedia + entry.mechanicsMedia,
-      mechanicsHarvestKids: acc.mechanicsHarvestKids + entry.mechanicsHarvestKids,
-      mechanicsParkingSecurity: acc.mechanicsParkingSecurity + entry.mechanicsParkingSecurity,
-      mechanicsFacilities: acc.mechanicsFacilities + entry.mechanicsFacilities,
-      mechanicsBusing: acc.mechanicsBusing + entry.mechanicsBusing,
-      mechanicsLegacy: acc.mechanicsLegacy + entry.mechanicsLegacy,
       mechanicsTraining: acc.mechanicsTraining + entry.mechanicsTraining,
     }),
     {
       sv1: 0, sv2: 0, yxp: 0, kids: 0, local: 0, hc1: 0, hc2: 0, total: 0,
       salvations: 0, salvationsLivestreamEnc: 0, salvationsLivestreamYxp: 0, salvationsInhouse: 0, salvationsMc: 0, salvationsOther: 0,
       baptisms: 0, mca: 0, mechanics: 0,
-      mechanicsGet: 0, mechanicsWorship: 0, mechanicsMedia: 0, mechanicsHarvestKids: 0,
-      mechanicsParkingSecurity: 0, mechanicsFacilities: 0, mechanicsBusing: 0, mechanicsLegacy: 0, mechanicsTraining: 0,
+      mechanicsGet: 0, mechanicsWorship: 0, mechanicsTraining: 0,
     }
   )
 
@@ -320,9 +278,7 @@ export function usePgaReportByDate(date: string) {
             salvations, salvations_livestream_enc, salvations_livestream_yxp,
             salvations_inhouse, salvations_mc, salvations_other,
             baptisms, mca, mechanics,
-            mechanics_get, mechanics_worship, mechanics_media, mechanics_harvest_kids,
-            mechanics_parking_security, mechanics_facilities, mechanics_busing, mechanics_legacy,
-            mechanics_training,
+            mechanics_get, mechanics_worship, mechanics_training,
             location_id,
             location:locations (
               id, name,
@@ -613,19 +569,14 @@ export function useSalvationReport(date: string | undefined) {
 
 // --- Mechanics report hooks ---
 
-// Summary row for the Mechanics listing (one row per report date)
+// Summary row for the Mechanics listing (one row per report date).
+// `overall` is the entered figure, not the sum of `get` and `wt`.
 export interface MechanicsSummaryRow {
   reportId: string
   date: string
   get: number
-  worship: number
-  media: number
-  harvestKids: number
-  parkingSecurity: number
-  facilities: number
-  busing: number
-  unspecified: number
-  total: number
+  wt: number
+  overall: number
 }
 
 // Per-location row for the Mechanics detail page
@@ -633,14 +584,8 @@ export interface MechanicsRow {
   location: string
   locationId: string
   get: number
-  worship: number
-  media: number
-  harvestKids: number
-  parkingSecurity: number
-  facilities: number
-  busing: number
-  unspecified: number
-  total: number
+  wt: number
+  overall: number
 }
 
 // Mechanics summary from pga_report_summary view (select mechanics columns)
@@ -652,7 +597,7 @@ export function useMechanicsSummary() {
     queryFn: async (): Promise<MechanicsSummaryRow[]> => {
       const { data, error } = await (supabase as any)
         .from('pga_report_summary')
-        .select('report_id, date, mechanics_get, mechanics_worship, mechanics_media, mechanics_harvest_kids, mechanics_parking_security, mechanics_facilities, mechanics_busing, mechanics_legacy, mechanics')
+        .select('report_id, date, mechanics_get, mechanics_worship, mechanics')
         .order('date', { ascending: false })
 
       if (error) throw error
@@ -661,14 +606,8 @@ export function useMechanicsSummary() {
         reportId: row.report_id,
         date: row.date,
         get: row.mechanics_get,
-        worship: row.mechanics_worship,
-        media: row.mechanics_media,
-        harvestKids: row.mechanics_harvest_kids,
-        parkingSecurity: row.mechanics_parking_security,
-        facilities: row.mechanics_facilities,
-        busing: row.mechanics_busing,
-        unspecified: row.mechanics_legacy,
-        total: row.mechanics,
+        wt: row.mechanics_worship,
+        overall: row.mechanics,
       }))
     },
   })
@@ -683,16 +622,10 @@ export function useMechanicsReport(date: string | undefined) {
       location: loc.location,
       locationId: loc.locationId,
       get: loc.mechanicsGet,
-      worship: loc.mechanicsWorship,
-      media: loc.mechanicsMedia,
-      harvestKids: loc.mechanicsHarvestKids,
-      parkingSecurity: loc.mechanicsParkingSecurity,
-      facilities: loc.mechanicsFacilities,
-      busing: loc.mechanicsBusing,
-      unspecified: loc.mechanicsLegacy,
-      total: loc.mechanics,
+      wt: loc.mechanicsWorship,
+      overall: loc.mechanics,
     }))
-    .sort((a, b) => b.total - a.total)
+    .sort((a, b) => b.overall - a.overall)
 
   return { data: rows, isLoading }
 }
@@ -718,11 +651,7 @@ interface CreatePgaEntryData {
   mca: number
   mechanicsGet: number
   mechanicsWorship: number
-  mechanicsMedia: number
-  mechanicsHarvestKids: number
-  mechanicsParkingSecurity: number
-  mechanicsFacilities: number
-  mechanicsBusing: number
+  mechanics: number
   mechanicsTraining: number
 }
 
@@ -789,11 +718,7 @@ export function useCreatePgaEntry() {
         mca: data.mca,
         mechanics_get: data.mechanicsGet,
         mechanics_worship: data.mechanicsWorship,
-        mechanics_media: data.mechanicsMedia,
-        mechanics_harvest_kids: data.mechanicsHarvestKids,
-        mechanics_parking_security: data.mechanicsParkingSecurity,
-        mechanics_facilities: data.mechanicsFacilities,
-        mechanics_busing: data.mechanicsBusing,
+        mechanics: data.mechanics,
         mechanics_training: data.mechanicsTraining,
         created_by: user.id,
       })
@@ -825,11 +750,7 @@ interface UpdatePgaEntryData {
   mca: number
   mechanicsGet: number
   mechanicsWorship: number
-  mechanicsMedia: number
-  mechanicsHarvestKids: number
-  mechanicsParkingSecurity: number
-  mechanicsFacilities: number
-  mechanicsBusing: number
+  mechanics: number
   mechanicsTraining: number
 }
 
@@ -858,11 +779,7 @@ export function useUpdatePgaEntry() {
           mca: data.mca,
           mechanics_get: data.mechanicsGet,
           mechanics_worship: data.mechanicsWorship,
-          mechanics_media: data.mechanicsMedia,
-          mechanics_harvest_kids: data.mechanicsHarvestKids,
-          mechanics_parking_security: data.mechanicsParkingSecurity,
-          mechanics_facilities: data.mechanicsFacilities,
-          mechanics_busing: data.mechanicsBusing,
+          mechanics: data.mechanics,
           mechanics_training: data.mechanicsTraining,
           updated_at: new Date().toISOString(),
         })

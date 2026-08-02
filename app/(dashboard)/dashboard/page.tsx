@@ -166,14 +166,10 @@ export default function DashboardPage() {
   const [pgaBaptisms, setPgaBaptisms] = useState(0)
   const [pgaMca, setPgaMca] = useState(0)
   const [pgaMechanicsTraining, setPgaMechanicsTraining] = useState(0)
-  // Mechanics captured per serving team; the DB stores their sum as `mechanics`
+  // GET and WT are named call-outs; Overall is entered separately, not summed from them
   const [pgaMechanicsGet, setPgaMechanicsGet] = useState(0)
   const [pgaMechanicsWorship, setPgaMechanicsWorship] = useState(0)
-  const [pgaMechanicsMedia, setPgaMechanicsMedia] = useState(0)
-  const [pgaMechanicsHarvestKids, setPgaMechanicsHarvestKids] = useState(0)
-  const [pgaMechanicsParkingSecurity, setPgaMechanicsParkingSecurity] = useState(0)
-  const [pgaMechanicsFacilities, setPgaMechanicsFacilities] = useState(0)
-  const [pgaMechanicsBusing, setPgaMechanicsBusing] = useState(0)
+  const [pgaMechanics, setPgaMechanics] = useState(0)
 
   // Build FOB and Location options from database
   const fobOptions = useMemo(() => {
@@ -206,11 +202,6 @@ export default function DashboardPage() {
 
   // Salvations total = sum of the four category inputs
   const pgaSalvationsTotal = pgaSalvationsLivestreamEnc + pgaSalvationsLivestreamYxp + pgaSalvationsInhouse + pgaSalvationsMc + pgaSalvationsOther
-
-  // Mechanics total = sum of the seven team inputs
-  const pgaMechanicsTotal =
-    pgaMechanicsGet + pgaMechanicsWorship + pgaMechanicsMedia + pgaMechanicsHarvestKids +
-    pgaMechanicsParkingSecurity + pgaMechanicsFacilities + pgaMechanicsBusing
 
   // Filter reports by date range
   const filteredReports = useMemo(() => {
@@ -291,11 +282,7 @@ export default function DashboardPage() {
     setPgaMechanicsTraining(0)
     setPgaMechanicsGet(0)
     setPgaMechanicsWorship(0)
-    setPgaMechanicsMedia(0)
-    setPgaMechanicsHarvestKids(0)
-    setPgaMechanicsParkingSecurity(0)
-    setPgaMechanicsFacilities(0)
-    setPgaMechanicsBusing(0)
+    setPgaMechanics(0)
   }
 
   const handleDialogOpenChange = (open: boolean) => {
@@ -336,11 +323,7 @@ export default function DashboardPage() {
         mechanicsTraining: pgaMechanicsTraining,
         mechanicsGet: pgaMechanicsGet,
         mechanicsWorship: pgaMechanicsWorship,
-        mechanicsMedia: pgaMechanicsMedia,
-        mechanicsHarvestKids: pgaMechanicsHarvestKids,
-        mechanicsParkingSecurity: pgaMechanicsParkingSecurity,
-        mechanicsFacilities: pgaMechanicsFacilities,
-        mechanicsBusing: pgaMechanicsBusing,
+        mechanics: pgaMechanics,
       })
       toast({
         title: 'Success',
@@ -654,7 +637,7 @@ export default function DashboardPage() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-worship">Worship Team</Label>
+                        <Label htmlFor="pga-mechanics-worship">WT</Label>
                         <Input
                           id="pga-mechanics-worship"
                           type="number"
@@ -666,64 +649,14 @@ export default function DashboardPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4 mt-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-media">Media Team</Label>
+                        <Label htmlFor="pga-mechanics-overall">Overall Mechanics</Label>
                         <Input
-                          id="pga-mechanics-media"
+                          id="pga-mechanics-overall"
                           type="number"
                           min="0"
-                          value={pgaMechanicsMedia}
-                          onChange={(e) => setPgaMechanicsMedia(Number(e.target.value) || 0)}
+                          value={pgaMechanics}
+                          onChange={(e) => setPgaMechanics(Number(e.target.value) || 0)}
                         />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-harvest-kids">Harvest Kids</Label>
-                        <Input
-                          id="pga-mechanics-harvest-kids"
-                          type="number"
-                          min="0"
-                          value={pgaMechanicsHarvestKids}
-                          onChange={(e) => setPgaMechanicsHarvestKids(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-parking-security">Parking &amp; Security</Label>
-                        <Input
-                          id="pga-mechanics-parking-security"
-                          type="number"
-                          min="0"
-                          value={pgaMechanicsParkingSecurity}
-                          onChange={(e) => setPgaMechanicsParkingSecurity(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-facilities">Facilities</Label>
-                        <Input
-                          id="pga-mechanics-facilities"
-                          type="number"
-                          min="0"
-                          value={pgaMechanicsFacilities}
-                          onChange={(e) => setPgaMechanicsFacilities(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-busing">Busing</Label>
-                        <Input
-                          id="pga-mechanics-busing"
-                          type="number"
-                          min="0"
-                          value={pgaMechanicsBusing}
-                          onChange={(e) => setPgaMechanicsBusing(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>Total Mechanics</Label>
-                        <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                          {pgaMechanicsTotal}
-                        </div>
                       </div>
                     </div>
                   </div>

@@ -134,18 +134,11 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
       columns: [
         { header: 'Date', accessor: 'date' },
         { header: 'GET', accessor: 'get' },
-        { header: 'Worship', accessor: 'worship' },
-        { header: 'Media', accessor: 'media' },
-        { header: 'Harvest Kids', accessor: 'harvestKids' },
-        { header: 'Parking & Sec', accessor: 'parkingSecurity' },
-        { header: 'Facilities', accessor: 'facilities' },
-        { header: 'Busing', accessor: 'busing' },
-        { header: 'Unspecified', accessor: 'unspecified' },
-        { header: 'Mech-Total', accessor: 'total' },
+        { header: 'WT', accessor: 'wt' },
+        { header: 'Overall Mechanics', accessor: 'overall' },
       ],
       sheetName: 'Mechanics Report',
       fileName: 'mechanics_report',
-      includeTotals: true,
     })
   }
 
@@ -210,14 +203,8 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>GET</TableHead>
-                <TableHead>Worship</TableHead>
-                <TableHead>Media</TableHead>
-                <TableHead>H-Kids</TableHead>
-                <TableHead>Park &amp; Sec</TableHead>
-                <TableHead>Facilities</TableHead>
-                <TableHead>Busing</TableHead>
-                <TableHead>Unspec.</TableHead>
-                <TableHead>Mech-Total</TableHead>
+                <TableHead>WT</TableHead>
+                <TableHead>Overall Mechanics</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -225,7 +212,7 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    {Array.from({ length: 11 }).map((_, j) => (
+                    {Array.from({ length: 5 }).map((_, j) => (
                       <TableCell key={j}>
                         <Skeleton className="h-4 w-12" />
                       </TableCell>
@@ -237,14 +224,8 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
                   <TableRow key={row.reportId}>
                     <TableCell className="whitespace-nowrap">{row.date}</TableCell>
                     <TableCell>{row.get}</TableCell>
-                    <TableCell>{row.worship}</TableCell>
-                    <TableCell>{row.media}</TableCell>
-                    <TableCell>{row.harvestKids}</TableCell>
-                    <TableCell>{row.parkingSecurity}</TableCell>
-                    <TableCell>{row.facilities}</TableCell>
-                    <TableCell>{row.busing}</TableCell>
-                    <TableCell className="text-muted-foreground">{row.unspecified}</TableCell>
-                    <TableCell className="font-semibold">{row.total}</TableCell>
+                    <TableCell>{row.wt}</TableCell>
+                    <TableCell>{row.overall}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -271,7 +252,7 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={11} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                     No mechanics data available.
                   </TableCell>
                 </TableRow>
@@ -279,10 +260,6 @@ export function MechanicsReportTab({ actionsContainer }: MechanicsReportTabProps
             </TableBody>
           </Table>
           </div>
-
-          <p className="text-xs text-muted-foreground mt-3">
-            Unspec. holds mechanics recorded before the team split, which have no team breakdown.
-          </p>
 
           {/* Pagination */}
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between mt-4">

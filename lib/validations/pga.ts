@@ -20,15 +20,12 @@ export const publicPgaFormSchema = z.object({
   salvationsOther: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   baptisms: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   mca: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  // Mechanics are captured per serving team; the DB stores their sum as `mechanics`.
+  // GET and WT are named call-outs; `mechanics` is the overall figure, entered directly
+  // rather than derived from them. Nothing sums these together.
   mechanicsGet: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
   mechanicsWorship: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  mechanicsMedia: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  mechanicsHarvestKids: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  mechanicsParkingSecurity: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  mechanicsFacilities: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  mechanicsBusing: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
-  // Standalone Others metric; not part of the mechanics total
+  mechanics: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
+  // Standalone Others metric
   mechanicsTraining: z.coerce.number().min(0, 'Must be 0 or greater').default(0),
 })
 
