@@ -14,7 +14,7 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "db:generate": "supabase gen types typescript --local > types/supabase.ts",
+    "db:generate": "supabase gen types typescript --project-id jnrgdalmqcspnsgueroc > types/supabase.ts",
     "db:migrate": "supabase db push"
   },
   "dependencies": {

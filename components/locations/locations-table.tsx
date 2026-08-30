@@ -46,10 +46,11 @@ export function LocationsTable({
       <Table className="lg:table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead className="lg:w-[28%]">Name</TableHead>
-            <TableHead className="lg:w-[22%]">FOB</TableHead>
-            <TableHead className="lg:w-[22%]">Pastor</TableHead>
-            <TableHead className="lg:w-[22%]">Contact</TableHead>
+            <TableHead className="lg:w-[22%]">Name</TableHead>
+            <TableHead className="lg:w-[16%]">Region</TableHead>
+            <TableHead className="lg:w-[18%]">FOB</TableHead>
+            <TableHead className="lg:w-[20%]">Pastor</TableHead>
+            <TableHead className="lg:w-[18%]">Contact</TableHead>
             {showActions && <TableHead className="lg:w-[6%] text-right">Action</TableHead>}
           </TableRow>
         </TableHeader>
@@ -58,6 +59,9 @@ export function LocationsTable({
             <TableRow key={i}>
               <TableCell>
                 <Skeleton className="h-4 w-32" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-20" />
               </TableCell>
               <TableCell>
                 <Skeleton className="h-4 w-24" />
@@ -85,10 +89,11 @@ export function LocationsTable({
       <Table className="lg:table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead className="lg:w-[28%]">Name</TableHead>
-            <TableHead className="lg:w-[22%]">FOB</TableHead>
-            <TableHead className="lg:w-[22%]">Pastor</TableHead>
-            <TableHead className="lg:w-[22%]">Contact</TableHead>
+            <TableHead className="lg:w-[22%]">Name</TableHead>
+            <TableHead className="lg:w-[16%]">Region</TableHead>
+            <TableHead className="lg:w-[18%]">FOB</TableHead>
+            <TableHead className="lg:w-[20%]">Pastor</TableHead>
+            <TableHead className="lg:w-[18%]">Contact</TableHead>
             {showActions && <TableHead className="lg:w-[6%] text-right">Action</TableHead>}
           </TableRow>
         </TableHeader>
@@ -96,6 +101,7 @@ export function LocationsTable({
           {locations.map((location) => (
             <TableRow key={location.id}>
               <TableCell className="font-medium">{location.name}</TableCell>
+              <TableCell>{location.fob?.region?.name || '-'}</TableCell>
               <TableCell>{location.fob?.name || '-'}</TableCell>
               <TableCell>{location.pastor || '-'}</TableCell>
               <TableCell>{location.contact || '-'}</TableCell>
@@ -134,7 +140,7 @@ export function LocationsTable({
           {locations.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={showActions ? 5 : 4}
+                colSpan={showActions ? 6 : 5}
                 className="py-8 text-center text-muted-foreground"
               >
                 No locations found.

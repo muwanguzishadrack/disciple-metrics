@@ -85,8 +85,13 @@ export interface LocationWithFob {
   contact: string | null
   created_at: string | null
   updated_at: string | null
+  archived_at: string | null
   fob: {
     id: string
     name: string
+    region: {
+      id: string
+      name: string
+    } | null
   }
 }

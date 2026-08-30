@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -49,7 +49,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { usePgaReportByDate, useFobs, useLocations, useUpdatePgaEntry, useDeletePgaEntry, type LocationEntry, type LocationEntryWithStatus } from '@/hooks/use-pga'
+import { usePgaReportByDate, useFobs, useRegions, useLocations, useUpdatePgaEntry, useDeletePgaEntry, type LocationEntry, type LocationEntryWithStatus } from '@/hooks/use-pga'
 import { useToast } from '@/hooks/use-toast'
 import { useUserRole } from '@/hooks/use-user'
 import { exportToExcel } from '@/lib/export'
@@ -80,9 +80,11 @@ export default function SingleReportPage() {
   const isAdminOrManager = isAdmin || isManager
   const canSearchLocations = isAdminOrManager || isFobLeader
   const canFilterByFob = isAdminOrManager
+  const canFilterByRegion = isAdminOrManager
   const reportDate = params.date as string
   const { data: report, isLoading } = usePgaReportByDate(reportDate)
   const { data: fobs = [] } = useFobs()
+  const { data: regions = [] } = useRegions()
   const { data: allLocations = [], isLoading: isLoadingLocations } = useLocations()
   const updatePgaEntry = useUpdatePgaEntry()
   const deletePgaEntry = useDeletePgaEntry()
@@ -91,11 +93,16 @@ export default function SingleReportPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [searchQuery, setSearchQuery] = useState('')
   const [fobFilter, setFobFilter] = useState('all')
+  const [regionFilter, setRegionFilter] = useState('all')
 
-  // Build FOB options from database
+  // Build FOB options from database, narrowed to the selected region
   const fobOptions = useMemo(() => {
-    return fobs.map((fob) => ({ value: fob.name, label: fob.name }))
-  }, [fobs])
+    const inRegion =
+      regionFilter === 'all'
+        ? fobs
+        : fobs.filter((fob) => fob.region?.name === regionFilter)
+    return inRegion.map((fob) => ({ value: fob.name, label: fob.name }))
+  }, [fobs, regionFilter])
 
   // Merge submitted entries with all locations to show complete list
   const allLocationsWithEntries = useMemo((): LocationEntryWithStatus[] => {
@@ -106,7 +113,7 @@ export default function SingleReportPage() {
       report?.locations.map((entry) => [entry.locationId, entry]) ?? []
     )
 
-    return allLocations.map((loc) => {
+    const activeRows = allLocations.map((loc) => {
       const entry = submittedMap.get(loc.id)
       if (entry) {
         return {
@@ -118,6 +125,8 @@ export default function SingleReportPage() {
         id: null,
         fob: loc.fob.name,
         fobId: loc.fob.id,
+        region: loc.fob.region?.name ?? '',
+        regionId: loc.fob.region?.id ?? '',
         location: loc.name,
         locationId: loc.id,
         sv1: null,
@@ -143,6 +152,15 @@ export default function SingleReportPage() {
         hasSubmitted: false,
       }
     })
+
+    // An archived location keeps its place in the reports it was filed in --
+    // it is only dropped from the picker going forward.
+    const activeIds = new Set(allLocations.map((loc) => loc.id))
+    const archivedRows = (report?.locations ?? [])
+      .filter((entry) => !activeIds.has(entry.locationId))
+      .map((entry) => ({ ...entry, hasSubmitted: true }))
+
+    return [...activeRows, ...archivedRows]
   }, [report, allLocations])
 
   // Edit dialog state
@@ -269,8 +287,9 @@ export default function SingleReportPage() {
     return allLocationsWithEntries
       .filter((location) => {
         const matchesSearch = location.location.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesRegion = regionFilter === 'all' || location.region === regionFilter
         const matchesFob = fobFilter === 'all' || location.fob === fobFilter
-        return matchesSearch && matchesFob
+        return matchesSearch && matchesRegion && matchesFob
       })
       .sort((a, b) => {
         // Submitted entries come first
@@ -283,7 +302,14 @@ export default function SingleReportPage() {
         // Among not-submitted entries, sort alphabetically by location name
         return a.location.localeCompare(b.location)
       })
-  }, [allLocationsWithEntries, searchQuery, fobFilter])
+  }, [allLocationsWithEntries, searchQuery, regionFilter, fobFilter])
+
+  // A FOB filter from another region would leave the table empty
+  useEffect(() => {
+    if (fobFilter !== 'all' && !fobOptions.some((fob) => fob.value === fobFilter)) {
+      setFobFilter('all')
+    }
+  }, [fobOptions, fobFilter])
 
   // Pagination calculations
   const totalRows = filteredLocations.length
@@ -307,6 +333,7 @@ export default function SingleReportPage() {
     const exportData = filteredLocations.map((loc, index) => ({
       number: index + 1,
       location: loc.location,
+      region: loc.region,
       fob: loc.fob,
       sv1: loc.hasSubmitted ? loc.sv1 : '',
       sv2: loc.hasSubmitted ? loc.sv2 : '',
@@ -335,6 +362,7 @@ export default function SingleReportPage() {
       columns: [
         { header: '#', accessor: 'number', skipTotal: true },
         { header: 'Location', accessor: 'location', skipTotal: true },
+        { header: 'Region', accessor: 'region', skipTotal: true },
         { header: 'FOB', accessor: 'fob', skipTotal: true },
         { header: '1SV', accessor: 'sv1' },
         { header: '2SV', accessor: 'sv2' },
@@ -500,6 +528,24 @@ export default function SingleReportPage() {
                 </div>
               )}
               <div className="flex w-full sm:w-auto items-center gap-2">
+                {canFilterByRegion && (
+                  <Select value={regionFilter} onValueChange={(value) => {
+                    setRegionFilter(value)
+                    setCurrentPage(1)
+                  }}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Regions</SelectItem>
+                      {regions.map((region) => (
+                        <SelectItem key={region.id} value={region.name}>
+                          {region.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
                 {canFilterByFob && (
                   <Select value={fobFilter} onValueChange={(value) => {
                     setFobFilter(value)

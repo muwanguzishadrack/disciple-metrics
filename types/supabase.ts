@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -46,27 +46,42 @@ export type Database = {
       }
       fobs: {
         Row: {
+          archived_at: string | null
           created_at: string | null
           id: string
           name: string
+          region_id: string | null
           updated_at: string | null
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string | null
           id?: string
           name: string
+          region_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          archived_at?: string | null
           created_at?: string | null
           id?: string
           name?: string
+          region_id?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fobs_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       locations: {
         Row: {
+          archived_at: string | null
           contact: string | null
           created_at: string | null
           fob_id: string
@@ -76,6 +91,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          archived_at?: string | null
           contact?: string | null
           created_at?: string | null
           fob_id: string
@@ -85,6 +101,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          archived_at?: string | null
           contact?: string | null
           created_at?: string | null
           fob_id?: string
@@ -108,6 +125,7 @@ export type Database = {
           baptisms: number | null
           created_at: string | null
           created_by: string | null
+          fob_id: string
           hc1: number | null
           hc2: number | null
           id: string
@@ -119,6 +137,7 @@ export type Database = {
           mechanics_get: number | null
           mechanics_training: number | null
           mechanics_worship: number | null
+          region_id: string | null
           report_id: string
           salvations: number | null
           salvations_inhouse: number | null
@@ -135,6 +154,7 @@ export type Database = {
           baptisms?: number | null
           created_at?: string | null
           created_by?: string | null
+          fob_id: string
           hc1?: number | null
           hc2?: number | null
           id?: string
@@ -146,6 +166,7 @@ export type Database = {
           mechanics_get?: number | null
           mechanics_training?: number | null
           mechanics_worship?: number | null
+          region_id?: string | null
           report_id: string
           salvations?: number | null
           salvations_inhouse?: number | null
@@ -162,6 +183,7 @@ export type Database = {
           baptisms?: number | null
           created_at?: string | null
           created_by?: string | null
+          fob_id?: string
           hc1?: number | null
           hc2?: number | null
           id?: string
@@ -173,6 +195,7 @@ export type Database = {
           mechanics_get?: number | null
           mechanics_training?: number | null
           mechanics_worship?: number | null
+          region_id?: string | null
           report_id?: string
           salvations?: number | null
           salvations_inhouse?: number | null
@@ -194,10 +217,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pga_entries_fob_id_fkey"
+            columns: ["fob_id"]
+            isOneToOne: false
+            referencedRelation: "fobs"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pga_entries_location_id_fkey"
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pga_entries_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
             referencedColumns: ["id"]
           },
           {
@@ -285,6 +322,27 @@ export type Database = {
           id?: string
           theme?: string | null
           two_factor_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      regions: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
           updated_at?: string | null
         }
         Relationships: []

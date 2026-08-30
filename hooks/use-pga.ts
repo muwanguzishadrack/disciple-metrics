@@ -7,12 +7,23 @@ import type { Tables } from '@/types/supabase'
 
 type Fob = Tables<'fobs'>
 type Location = Tables<'locations'>
+type Region = Tables<'regions'>
+
+export interface RegionRef {
+  id: string
+  name: string
+}
+
+export type FobWithRegion = Fob & { region: RegionRef | null }
 
 // Types for transformed data (used by usePgaReportByDate / detail page)
 export interface LocationEntry {
   id: string
+  // FOB/region as frozen on the entry, not the location's parent today
   fob: string
   fobId: string
+  region: string
+  regionId: string
   location: string
   locationId: string
   sv1: number
@@ -121,7 +132,26 @@ export interface PgaReportSummary {
   epga_total: number
 }
 
-// Fetch all FOBs
+// Fetch the regions that FOBs roll up into
+export function useRegions() {
+  const supabase = createClient()
+
+  return useQuery({
+    queryKey: ['regions'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('regions')
+        .select('*')
+        .order('name')
+      if (error) throw error
+      return data as Region[]
+    },
+  })
+}
+
+// Fetch all active FOBs. Archived FOBs are retired from the arrangement and
+// must not appear in pickers or filters; historical entries still resolve them
+// through their own frozen fob_id.
 export function useFobs() {
   const supabase = createClient()
 
@@ -130,15 +160,21 @@ export function useFobs() {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('fobs')
-        .select('*')
+        .select(`
+          *,
+          region:regions (id, name)
+        `)
+        .is('archived_at', null)
         .order('name')
       if (error) throw error
-      return data as Fob[]
+      return data as FobWithRegion[]
     },
   })
 }
 
-// Fetch all locations with FOB info
+// Fetch all active locations with FOB info. Archived locations are parked: they
+// stay out of pickers and new reports, but historical reports still render them
+// wherever an entry exists.
 export function useLocations() {
   const supabase = createClient()
 
@@ -149,11 +185,14 @@ export function useLocations() {
         .from('locations')
         .select(`
           *,
-          fob:fobs (id, name)
+          fob:fobs (id, name, region:regions (id, name))
         `)
+        .is('archived_at', null)
         .order('name')
       if (error) throw error
-      return data as (Location & { fob: { id: string; name: string } })[]
+      return data as (Location & {
+        fob: { id: string; name: string; region: RegionRef | null }
+      })[]
     },
   })
 }
@@ -184,8 +223,12 @@ function transformReportData(report: any): PgaReportWithTotals {
 
     return {
       id: entry.id,
-      fob: entry.location?.fob?.name || 'Unknown FOB',
-      fobId: entry.location?.fob?.id || '',
+      // Frozen on the entry: re-deriving this from the location would restate
+      // every past report whenever a location is moved to another FOB.
+      fob: entry.fob?.name || 'Unknown FOB',
+      fobId: entry.fob?.id || '',
+      region: entry.region?.name || '',
+      regionId: entry.region?.id || '',
       location: entry.location?.name || 'Unknown Location',
       locationId: entry.location_id,
       sv1, sv2, yxp, kids, local, hc1, hc2, total,
@@ -280,10 +323,9 @@ export function usePgaReportByDate(date: string) {
             baptisms, mca, mechanics,
             mechanics_get, mechanics_worship, mechanics_training,
             location_id,
-            location:locations (
-              id, name,
-              fob:fobs (id, name)
-            )
+            fob:fobs!pga_entries_fob_id_fkey (id, name),
+            region:regions (id, name),
+            location:locations (id, name)
           )
         `)
         .eq('date', date)

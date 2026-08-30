@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select'
 import { LocationsTable } from '@/components/locations/locations-table'
 import { CreateLocationDialog } from '@/components/locations/create-location-dialog'
-import { useLocations, useFobs } from '@/hooks/use-pga'
+import { useLocations, useFobs, useRegions } from '@/hooks/use-pga'
 import { useUserRole } from '@/hooks/use-user'
 import type { LocationWithFob } from '@/types'
 
@@ -29,10 +29,12 @@ export default function LocationsPage() {
   const { data: userRole, isLoading: roleLoading } = useUserRole()
   const { data: locations = [], isLoading: locationsLoading } = useLocations()
   const { data: fobs = [] } = useFobs()
+  const { data: regions = [] } = useRegions()
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [fobFilter, setFobFilter] = useState<string>('all')
+  const [regionFilter, setRegionFilter] = useState<string>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
@@ -42,24 +44,40 @@ export default function LocationsPage() {
   const isAdminOrManager = isAdmin || isManager
   const canView = isAdminOrManager || isFobLeader
   const canFilterByFob = isAdminOrManager
+  const canFilterByRegion = isAdminOrManager
   const canEdit = isAdminOrManager || isFobLeader
   const canDelete = isAdmin
 
-  // Filter locations by search and FOB
+  // Only offer FOBs that belong to the selected region
+  const fobsInRegion = useMemo(() => {
+    if (regionFilter === 'all') return fobs
+    return fobs.filter((fob) => fob.region?.id === regionFilter)
+  }, [fobs, regionFilter])
+
+  // Filter locations by search, region and FOB
   const filteredLocations = useMemo(() => {
     return (locations as LocationWithFob[]).filter((location) => {
       const matchesSearch = location.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
+      const matchesRegion =
+        regionFilter === 'all' || location.fob?.region?.id === regionFilter
       const matchesFob = fobFilter === 'all' || location.fob?.id === fobFilter
-      return matchesSearch && matchesFob
+      return matchesSearch && matchesRegion && matchesFob
     })
-  }, [locations, searchQuery, fobFilter])
+  }, [locations, searchQuery, regionFilter, fobFilter])
+
+  // A FOB filter from another region would leave the table empty
+  useEffect(() => {
+    if (fobFilter !== 'all' && !fobsInRegion.some((fob) => fob.id === fobFilter)) {
+      setFobFilter('all')
+    }
+  }, [fobsInRegion, fobFilter])
 
   // Reset to first page when filter changes
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchQuery, fobFilter])
+  }, [searchQuery, regionFilter, fobFilter])
 
   // Pagination calculations
   const totalRows = filteredLocations.length
@@ -121,21 +139,38 @@ export default function LocationsPage() {
                   className="pl-9"
                 />
               </div>
-              {canFilterByFob && (
-                <Select value={fobFilter} onValueChange={setFobFilter}>
-                  <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Filter by FOB" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All FOBs</SelectItem>
-                    {fobs.map((fob) => (
-                      <SelectItem key={fob.id} value={fob.id}>
-                        {fob.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
+              <div className="flex w-full gap-3 sm:w-auto">
+                {canFilterByRegion && (
+                  <Select value={regionFilter} onValueChange={setRegionFilter}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue placeholder="Filter by region" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Regions</SelectItem>
+                      {regions.map((region) => (
+                        <SelectItem key={region.id} value={region.id}>
+                          {region.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                {canFilterByFob && (
+                  <Select value={fobFilter} onValueChange={setFobFilter}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue placeholder="Filter by FOB" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All FOBs</SelectItem>
+                      {fobsInRegion.map((fob) => (
+                        <SelectItem key={fob.id} value={fob.id}>
+                          {fob.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
 
             {/* Locations Table */}
