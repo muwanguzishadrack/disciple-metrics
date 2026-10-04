@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { format } from 'date-fns'
 import { DatePicker } from '@/components/ui/date-picker'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Combobox } from '@/components/ui/combobox'
 import {
@@ -55,6 +54,13 @@ import { PageHeader } from '@/components/layout/page-header'
 import { useProfile, useUserRole, useUserAssignment } from '@/hooks/use-user'
 import { usePgaReports, useFobs, useLocations, useCreatePgaEntry, useDeletePgaReport, type PgaReportSummary } from '@/hooks/use-pga'
 import { useRouter } from 'next/navigation'
+import { PgaMetricFields } from '@/components/pga/pga-metric-fields'
+import { PgaOutlierConfirmDialog } from '@/components/pga/pga-outlier-confirm-dialog'
+import { MissingEntriesCard } from '@/components/pga/missing-entries-card'
+import { isPgaReportDateLocked, pgaLockMessage } from '@/components/pga/pga-lock'
+import { usePgaEntryForm } from '@/hooks/use-pga-entry-form'
+import { usePgaLockDays } from '@/hooks/use-pga-lock'
+import { describePgaSaveError } from '@/lib/validations/pga'
 import { useToast } from '@/hooks/use-toast'
 
 const dateFilterOptions = [
@@ -131,6 +137,7 @@ export default function DashboardPage() {
   const { data: userRole } = useUserRole()
   const { data: userAssignment } = useUserAssignment()
   const isAdmin = userRole === 'admin'
+  const isManager = userRole === 'manager'
   const isPastor = userRole === 'pastor'
   const isFobLeader = userRole === 'fob_leader'
   const { data: pgaReports = [], isLoading: isReportsLoading } = usePgaReports()
@@ -150,26 +157,11 @@ export default function DashboardPage() {
   const [pgaDate, setPgaDate] = useState('')
   const [pgaFob, setPgaFob] = useState('')
   const [pgaLocation, setPgaLocation] = useState('')
-  const [pgaSv1, setPgaSv1] = useState(0)
-  const [pgaSv2, setPgaSv2] = useState(0)
-  const [pgaYxp, setPgaYxp] = useState(0)
-  const [pgaKids, setPgaKids] = useState(0)
-  const [pgaLocal, setPgaLocal] = useState(0)
-  const [pgaHc1, setPgaHc1] = useState(0)
-  const [pgaHc2, setPgaHc2] = useState(0)
-  // Ministry Impact metrics (not included in PGA total)
-  const [pgaSalvationsLivestreamEnc, setPgaSalvationsLivestreamEnc] = useState(0)
-  const [pgaSalvationsLivestreamYxp, setPgaSalvationsLivestreamYxp] = useState(0)
-  const [pgaSalvationsInhouse, setPgaSalvationsInhouse] = useState(0)
-  const [pgaSalvationsMc, setPgaSalvationsMc] = useState(0)
-  const [pgaSalvationsOther, setPgaSalvationsOther] = useState(0)
-  const [pgaBaptisms, setPgaBaptisms] = useState(0)
-  const [pgaMca, setPgaMca] = useState(0)
-  const [pgaMechanicsTraining, setPgaMechanicsTraining] = useState(0)
-  // GET and WT are named call-outs; Overall is entered separately, not summed from them
-  const [pgaMechanicsGet, setPgaMechanicsGet] = useState(0)
-  const [pgaMechanicsWorship, setPgaMechanicsWorship] = useState(0)
-  const [pgaMechanics, setPgaMechanics] = useState(0)
+  // Metric inputs, validation and the outlier confirm step (shared with the edit dialog)
+  const pgaForm = usePgaEntryForm()
+  const { data: lockDays = null } = usePgaLockDays()
+  const canSeeMissingEntries = isAdmin || isManager || isFobLeader
+  const latestReportDate = pgaReports[0]?.date ?? null
 
   // Build FOB and Location options from database
   const fobOptions = useMemo(() => {
@@ -195,13 +187,6 @@ export default function DashboardPage() {
       }
     }
   }, [dialogOpen, userAssignment, isPastor, isFobLeader])
-
-  const pgaTotal = useMemo(() => {
-    return pgaSv1 + pgaSv2 + pgaYxp + pgaKids + pgaLocal + pgaHc1 + pgaHc2
-  }, [pgaSv1, pgaSv2, pgaYxp, pgaKids, pgaLocal, pgaHc1, pgaHc2])
-
-  // Salvations total = sum of the four category inputs
-  const pgaSalvationsTotal = pgaSalvationsLivestreamEnc + pgaSalvationsLivestreamYxp + pgaSalvationsInhouse + pgaSalvationsMc + pgaSalvationsOther
 
   // Filter reports by date range
   const filteredReports = useMemo(() => {
@@ -265,24 +250,7 @@ export default function DashboardPage() {
     setPgaDate('')
     setPgaFob('')
     setPgaLocation('')
-    setPgaSv1(0)
-    setPgaSv2(0)
-    setPgaYxp(0)
-    setPgaKids(0)
-    setPgaLocal(0)
-    setPgaHc1(0)
-    setPgaHc2(0)
-    setPgaSalvationsLivestreamEnc(0)
-    setPgaSalvationsLivestreamYxp(0)
-    setPgaSalvationsInhouse(0)
-    setPgaSalvationsMc(0)
-    setPgaSalvationsOther(0)
-    setPgaBaptisms(0)
-    setPgaMca(0)
-    setPgaMechanicsTraining(0)
-    setPgaMechanicsGet(0)
-    setPgaMechanicsWorship(0)
-    setPgaMechanics(0)
+    pgaForm.reset()
   }
 
   const handleDialogOpenChange = (open: boolean) => {
@@ -302,45 +270,36 @@ export default function DashboardPage() {
       return
     }
 
-    try {
-      await createPgaEntry.mutateAsync({
-        date: pgaDate,
-        locationId: pgaLocation,
-        sv1: pgaSv1,
-        sv2: pgaSv2,
-        yxp: pgaYxp,
-        kids: pgaKids,
-        local: pgaLocal,
-        hc1: pgaHc1,
-        hc2: pgaHc2,
-        salvationsLivestreamEnc: pgaSalvationsLivestreamEnc,
-        salvationsLivestreamYxp: pgaSalvationsLivestreamYxp,
-        salvationsInhouse: pgaSalvationsInhouse,
-        salvationsMc: pgaSalvationsMc,
-        salvationsOther: pgaSalvationsOther,
-        baptisms: pgaBaptisms,
-        mca: pgaMca,
-        mechanicsTraining: pgaMechanicsTraining,
-        mechanicsGet: pgaMechanicsGet,
-        mechanicsWorship: pgaMechanicsWorship,
-        mechanics: pgaMechanics,
-      })
+    const values = pgaForm.validate()
+    if (!values) return
+
+    // Past the edit window only admins may write; the DB trigger enforces this
+    // too, but stopping here avoids creating an empty report for that date.
+    if (!isAdmin && lockDays !== null && isPgaReportDateLocked(pgaDate, lockDays)) {
       toast({
-        title: 'Success',
-        description: 'PGA entry recorded successfully',
-      })
-      setDialogOpen(false)
-      resetPgaForm()
-    } catch (error: unknown) {
-      const isDuplicate = (error as { code?: string })?.code === '23505'
-      toast({
-        title: isDuplicate ? 'Duplicate Entry' : 'Error',
-        description: isDuplicate
-          ? 'A PGA entry for this location already exists on this date'
-          : 'Failed to record PGA entry',
+        title: 'Report locked',
+        description: pgaLockMessage(lockDays),
         variant: 'destructive',
       })
+      return
     }
+
+    const date = pgaDate
+    const locationId = pgaLocation
+    await pgaForm.saveWithOutlierCheck(locationId, date, values, async () => {
+      try {
+        await createPgaEntry.mutateAsync({ date, locationId, ...values })
+        toast({
+          title: 'Success',
+          description: 'PGA entry recorded successfully',
+        })
+        setDialogOpen(false)
+        resetPgaForm()
+      } catch (error: unknown) {
+        const { title, description } = describePgaSaveError(error, 'Failed to record PGA entry')
+        toast({ title, description, variant: 'destructive' })
+      }
+    })
   }
 
   // Use a simple greeting since we no longer have first name
@@ -466,239 +425,15 @@ export default function DashboardPage() {
                     )}
                   </div>
 
-                  {/* Garage */}
-                  <div className="border-t pt-4">
-                    <p className="text-sm font-medium mb-3">Garage</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-sv1">1st Service</Label>
-                        <Input
-                          id="pga-sv1"
-                          type="number"
-                          min="0"
-                          value={pgaSv1}
-                          onChange={(e) => setPgaSv1(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-sv2">2nd Service</Label>
-                        <Input
-                          id="pga-sv2"
-                          type="number"
-                          min="0"
-                          value={pgaSv2}
-                          onChange={(e) => setPgaSv2(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-yxp">YXP</Label>
-                        <Input
-                          id="pga-yxp"
-                          type="number"
-                          min="0"
-                          value={pgaYxp}
-                          onChange={(e) => setPgaYxp(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-kids">Kids</Label>
-                        <Input
-                          id="pga-kids"
-                          type="number"
-                          min="0"
-                          value={pgaKids}
-                          onChange={(e) => setPgaKids(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-local">Local</Label>
-                        <Input
-                          id="pga-local"
-                          type="number"
-                          min="0"
-                          value={pgaLocal}
-                          onChange={(e) => setPgaLocal(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-hc1">Hosting Center 1</Label>
-                        <Input
-                          id="pga-hc1"
-                          type="number"
-                          min="0"
-                          value={pgaHc1}
-                          onChange={(e) => setPgaHc1(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-hc2">Hosting Center 2</Label>
-                        <Input
-                          id="pga-hc2"
-                          type="number"
-                          min="0"
-                          value={pgaHc2}
-                          onChange={(e) => setPgaHc2(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>Total</Label>
-                        <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                          {pgaTotal}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Salvations */}
-                  <div className="border-t pt-4">
-                    <p className="text-sm font-medium mb-3">Salvations</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-livestream-enc">Livestream Preacher (Enc)</Label>
-                        <Input
-                          id="pga-salvations-livestream-enc"
-                          type="number"
-                          min="0"
-                          value={pgaSalvationsLivestreamEnc}
-                          onChange={(e) => setPgaSalvationsLivestreamEnc(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-livestream-yxp">Livestream Preacher (YXP)</Label>
-                        <Input
-                          id="pga-salvations-livestream-yxp"
-                          type="number"
-                          min="0"
-                          value={pgaSalvationsLivestreamYxp}
-                          onChange={(e) => setPgaSalvationsLivestreamYxp(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-inhouse">In-house Preacher (ALL)</Label>
-                        <Input
-                          id="pga-salvations-inhouse"
-                          type="number"
-                          min="0"
-                          value={pgaSalvationsInhouse}
-                          onChange={(e) => setPgaSalvationsInhouse(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-mc">Salvs in MCs</Label>
-                        <Input
-                          id="pga-salvations-mc"
-                          type="number"
-                          min="0"
-                          value={pgaSalvationsMc}
-                          onChange={(e) => setPgaSalvationsMc(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-salvations-other">Salvs in Other Events</Label>
-                        <Input
-                          id="pga-salvations-other"
-                          type="number"
-                          min="0"
-                          value={pgaSalvationsOther}
-                          onChange={(e) => setPgaSalvationsOther(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>Total Salvations</Label>
-                        <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                          {pgaSalvationsTotal}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Mechanics */}
-                  <div className="border-t pt-4">
-                    <p className="text-sm font-medium mb-3">Mechanics</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-get">GET</Label>
-                        <Input
-                          id="pga-mechanics-get"
-                          type="number"
-                          min="0"
-                          value={pgaMechanicsGet}
-                          onChange={(e) => setPgaMechanicsGet(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-worship">WT</Label>
-                        <Input
-                          id="pga-mechanics-worship"
-                          type="number"
-                          min="0"
-                          value={pgaMechanicsWorship}
-                          onChange={(e) => setPgaMechanicsWorship(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-overall">Overall Mechanics</Label>
-                        <Input
-                          id="pga-mechanics-overall"
-                          type="number"
-                          min="0"
-                          value={pgaMechanics}
-                          onChange={(e) => setPgaMechanics(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Others */}
-                  <div className="border-t pt-4">
-                    <p className="text-sm font-medium mb-3">Others</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-baptisms">Baptisms</Label>
-                        <Input
-                          id="pga-baptisms"
-                          type="number"
-                          min="0"
-                          value={pgaBaptisms}
-                          onChange={(e) => setPgaBaptisms(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mca">MCA</Label>
-                        <Input
-                          id="pga-mca"
-                          type="number"
-                          min="0"
-                          value={pgaMca}
-                          onChange={(e) => setPgaMca(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="pga-mechanics-training">Mechanics Training</Label>
-                        <Input
-                          id="pga-mechanics-training"
-                          type="number"
-                          min="0"
-                          value={pgaMechanicsTraining}
-                          onChange={(e) => setPgaMechanicsTraining(Number(e.target.value) || 0)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <PgaMetricFields
+                    idPrefix="pga"
+                    inputs={pgaForm.inputs}
+                    onInputChange={pgaForm.setInput}
+                    fieldErrors={pgaForm.fieldErrors}
+                    noActivity={pgaForm.noActivity}
+                    onNoActivityChange={pgaForm.setNoActivity}
+                    formError={pgaForm.formError}
+                  />
                   </div>
                 </ScrollArea>
 
@@ -706,12 +441,25 @@ export default function DashboardPage() {
                   <Button variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
                     Cancel
                   </Button>
-                  <Button onClick={handleSubmitPga} disabled={createPgaEntry.isPending} className="flex-1">
-                    {createPgaEntry.isPending ? 'Saving...' : 'Save'}
+                  <Button
+                    onClick={handleSubmitPga}
+                    disabled={createPgaEntry.isPending || pgaForm.isChecking}
+                    className="flex-1"
+                  >
+                    {createPgaEntry.isPending || pgaForm.isChecking ? 'Saving...' : 'Save'}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
+            <PgaOutlierConfirmDialog
+              pending={pgaForm.pendingConfirmation}
+              onCancel={pgaForm.cancelConfirmation}
+              locationName={
+                isPastor
+                  ? userAssignment?.locationName
+                  : locations.find((loc) => loc.id === pgaLocation)?.name
+              }
+            />
           </>
         }
       />
@@ -763,6 +511,11 @@ export default function DashboardPage() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Who hasn't reported for the latest report date */}
+        {canSeeMissingEntries && latestReportDate && (
+          <MissingEntriesCard reportDate={latestReportDate} compact />
+        )}
 
         {/* Recent PGA Reports Table */}
         <Card className="rounded-lg">
@@ -921,7 +674,7 @@ export default function DashboardPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Report</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the report for {deleteTarget?.date}? This will also delete all entries associated with this report. This action cannot be undone.
+              Are you sure you want to delete the report for {deleteTarget?.date}? This will also delete all entries associated with this report. It can be restored by an admin from Activity &rarr; Deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

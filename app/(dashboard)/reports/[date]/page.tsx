@@ -53,6 +53,14 @@ import { usePgaReportByDate, useFobs, useRegions, useLocations, useUpdatePgaEntr
 import { useToast } from '@/hooks/use-toast'
 import { useUserRole } from '@/hooks/use-user'
 import { exportToExcel } from '@/lib/export'
+import { PgaMetricFields } from '@/components/pga/pga-metric-fields'
+import { PgaOutlierConfirmDialog } from '@/components/pga/pga-outlier-confirm-dialog'
+import { MissingEntriesCard } from '@/components/pga/missing-entries-card'
+import { ReportLockBadge } from '@/components/pga/report-lock-badge'
+import { pgaLockMessage } from '@/components/pga/pga-lock'
+import { usePgaEntryForm } from '@/hooks/use-pga-entry-form'
+import { usePgaReportLock } from '@/hooks/use-pga-lock'
+import { allPgaInputsZero, describePgaSaveError, pgaMetricInputsFrom } from '@/lib/validations/pga'
 
 const container = {
   hidden: { opacity: 0 },
@@ -87,6 +95,10 @@ export default function SingleReportPage() {
   const { data: regions = [] } = useRegions()
   const { data: allLocations = [], isLoading: isLoadingLocations } = useLocations()
   const updatePgaEntry = useUpdatePgaEntry()
+  // Past the edit window, only admins keep edit/delete (the DB trigger enforces it too)
+  const { lockDays, isLocked } = usePgaReportLock(reportDate)
+  const canModifyEntries = !isLocked || isAdmin
+  const canSeeMissingEntries = isAdminOrManager || isFobLeader
   const deletePgaEntry = useDeletePgaEntry()
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -168,54 +180,14 @@ export default function SingleReportPage() {
   const [editingLocation, setEditingLocation] = useState<LocationEntry | null>(null)
   // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState<LocationEntry | null>(null)
-  const [editSv1, setEditSv1] = useState(0)
-  const [editSv2, setEditSv2] = useState(0)
-  const [editYxp, setEditYxp] = useState(0)
-  const [editKids, setEditKids] = useState(0)
-  const [editLocal, setEditLocal] = useState(0)
-  const [editHc1, setEditHc1] = useState(0)
-  const [editHc2, setEditHc2] = useState(0)
-  // Ministry Impact edit state
-  const [editSalvationsLivestreamEnc, setEditSalvationsLivestreamEnc] = useState(0)
-  const [editSalvationsLivestreamYxp, setEditSalvationsLivestreamYxp] = useState(0)
-  const [editSalvationsInhouse, setEditSalvationsInhouse] = useState(0)
-  const [editSalvationsMc, setEditSalvationsMc] = useState(0)
-  const [editSalvationsOther, setEditSalvationsOther] = useState(0)
-  const [editBaptisms, setEditBaptisms] = useState(0)
-  const [editMca, setEditMca] = useState(0)
-  const [editMechanicsTraining, setEditMechanicsTraining] = useState(0)
-  // GET and WT are named call-outs; Overall is entered separately, not summed from them
-  const [editMechanicsGet, setEditMechanicsGet] = useState(0)
-  const [editMechanicsWorship, setEditMechanicsWorship] = useState(0)
-  const [editMechanics, setEditMechanics] = useState(0)
-
-  const editTotal = useMemo(() => {
-    return editSv1 + editSv2 + editYxp + editKids + editLocal + editHc1 + editHc2
-  }, [editSv1, editSv2, editYxp, editKids, editLocal, editHc1, editHc2])
-
-  // Salvations total = sum of the four category inputs
-  const editSalvationsTotal = editSalvationsLivestreamEnc + editSalvationsLivestreamYxp + editSalvationsInhouse + editSalvationsMc + editSalvationsOther
+  // Metric inputs, validation and the outlier confirm step (shared with the create dialog)
+  const editForm = usePgaEntryForm()
 
   const handleEditClick = (location: LocationEntry) => {
     setEditingLocation(location)
-    setEditSv1(location.sv1)
-    setEditSv2(location.sv2)
-    setEditYxp(location.yxp)
-    setEditKids(location.kids)
-    setEditLocal(location.local)
-    setEditHc1(location.hc1)
-    setEditHc2(location.hc2)
-    setEditSalvationsLivestreamEnc(location.salvationsLivestreamEnc)
-    setEditSalvationsLivestreamYxp(location.salvationsLivestreamYxp)
-    setEditSalvationsInhouse(location.salvationsInhouse)
-    setEditSalvationsMc(location.salvationsMc)
-    setEditSalvationsOther(location.salvationsOther)
-    setEditBaptisms(location.baptisms)
-    setEditMca(location.mca)
-    setEditMechanicsTraining(location.mechanicsTraining)
-    setEditMechanicsGet(location.mechanicsGet)
-    setEditMechanicsWorship(location.mechanicsWorship)
-    setEditMechanics(location.mechanics)
+    const inputs = pgaMetricInputsFrom(location)
+    // An entry already saved as all zeros was a deliberate "no activity" week
+    editForm.reset(inputs, allPgaInputsZero(inputs))
     setEditDialogOpen(true)
   }
 
@@ -227,40 +199,23 @@ export default function SingleReportPage() {
   const handleUpdate = async () => {
     if (!editingLocation) return
 
-    try {
-      await updatePgaEntry.mutateAsync({
-        id: editingLocation.id,
-        sv1: editSv1,
-        sv2: editSv2,
-        yxp: editYxp,
-        kids: editKids,
-        local: editLocal,
-        hc1: editHc1,
-        hc2: editHc2,
-        salvationsLivestreamEnc: editSalvationsLivestreamEnc,
-        salvationsLivestreamYxp: editSalvationsLivestreamYxp,
-        salvationsInhouse: editSalvationsInhouse,
-        salvationsMc: editSalvationsMc,
-        salvationsOther: editSalvationsOther,
-        baptisms: editBaptisms,
-        mca: editMca,
-        mechanicsTraining: editMechanicsTraining,
-        mechanicsGet: editMechanicsGet,
-        mechanicsWorship: editMechanicsWorship,
-        mechanics: editMechanics,
-      })
-      toast({
-        title: 'Success',
-        description: 'Entry updated successfully',
-      })
-      handleEditDialogClose()
-    } catch {
-      toast({
-        title: 'Error',
-        description: 'Failed to update entry',
-        variant: 'destructive',
-      })
-    }
+    const values = editForm.validate()
+    if (!values) return
+
+    const entry = editingLocation
+    await editForm.saveWithOutlierCheck(entry.locationId, reportDate, values, async () => {
+      try {
+        await updatePgaEntry.mutateAsync({ id: entry.id, ...values })
+        toast({
+          title: 'Success',
+          description: 'Entry updated successfully',
+        })
+        handleEditDialogClose()
+      } catch (error: unknown) {
+        const { title, description } = describePgaSaveError(error, 'Failed to update entry')
+        toast({ title, description, variant: 'destructive' })
+      }
+    })
   }
 
   const handleConfirmDelete = async () => {
@@ -271,12 +226,9 @@ export default function SingleReportPage() {
         title: 'Success',
         description: 'Entry deleted successfully',
       })
-    } catch {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete entry',
-        variant: 'destructive',
-      })
+    } catch (error: unknown) {
+      const { title, description } = describePgaSaveError(error, 'Failed to delete entry')
+      toast({ title, description, variant: 'destructive' })
     } finally {
       setDeleteTarget(null)
     }
@@ -446,7 +398,16 @@ export default function SingleReportPage() {
   return (
     <div>
       <PageHeader
-        title={formattedDate}
+        title={
+          isLocked && lockDays !== null ? (
+            <span className="inline-flex flex-wrap items-center gap-3">
+              {formattedDate}
+              <ReportLockBadge lockDays={lockDays} isAdmin={isAdmin} />
+            </span>
+          ) : (
+            formattedDate
+          )
+        }
         description="PGA Report Details"
         actions={
           <Button
@@ -507,6 +468,9 @@ export default function SingleReportPage() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Who hasn't reported for this date */}
+        {canSeeMissingEntries && <MissingEntriesCard reportDate={reportDate} />}
 
         {/* Locations Table */}
         <Card className="rounded-lg">
@@ -616,7 +580,14 @@ export default function SingleReportPage() {
                       <TableCell>{location.hasSubmitted ? location.mechanicsTraining : '—'}</TableCell>
                       {(isAdminOrManager || isFobLeader) && (
                         <TableCell className="text-right">
-                          {location.hasSubmitted ? (
+                          {location.hasSubmitted && !canModifyEntries ? (
+                            <span
+                              className="text-xs text-muted-foreground"
+                              title={lockDays !== null ? pgaLockMessage(lockDays) : undefined}
+                            >
+                              Locked
+                            </span>
+                          ) : location.hasSubmitted ? (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -742,239 +713,15 @@ export default function SingleReportPage() {
               </div>
             </div>
 
-            {/* Garage */}
-            <div className="border-t pt-4">
-              <p className="text-sm font-medium mb-3">Garage</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-sv1">1st Service</Label>
-                  <Input
-                    id="edit-sv1"
-                    type="number"
-                    min="0"
-                    value={editSv1}
-                    onChange={(e) => setEditSv1(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-sv2">2nd Service</Label>
-                  <Input
-                    id="edit-sv2"
-                    type="number"
-                    min="0"
-                    value={editSv2}
-                    onChange={(e) => setEditSv2(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-yxp">YXP</Label>
-                  <Input
-                    id="edit-yxp"
-                    type="number"
-                    min="0"
-                    value={editYxp}
-                    onChange={(e) => setEditYxp(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-kids">Kids</Label>
-                  <Input
-                    id="edit-kids"
-                    type="number"
-                    min="0"
-                    value={editKids}
-                    onChange={(e) => setEditKids(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-local">Local</Label>
-                  <Input
-                    id="edit-local"
-                    type="number"
-                    min="0"
-                    value={editLocal}
-                    onChange={(e) => setEditLocal(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-hc1">Hosting Center 1</Label>
-                  <Input
-                    id="edit-hc1"
-                    type="number"
-                    min="0"
-                    value={editHc1}
-                    onChange={(e) => setEditHc1(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-hc2">Hosting Center 2</Label>
-                  <Input
-                    id="edit-hc2"
-                    type="number"
-                    min="0"
-                    value={editHc2}
-                    onChange={(e) => setEditHc2(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Total</Label>
-                  <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                    {editTotal}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Salvations */}
-            <div className="border-t pt-4">
-              <p className="text-sm font-medium mb-3">Salvations</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-livestream-enc">Livestream Preacher (Enc)</Label>
-                  <Input
-                    id="edit-salvations-livestream-enc"
-                    type="number"
-                    min="0"
-                    value={editSalvationsLivestreamEnc}
-                    onChange={(e) => setEditSalvationsLivestreamEnc(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-livestream-yxp">Livestream Preacher (YXP)</Label>
-                  <Input
-                    id="edit-salvations-livestream-yxp"
-                    type="number"
-                    min="0"
-                    value={editSalvationsLivestreamYxp}
-                    onChange={(e) => setEditSalvationsLivestreamYxp(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-inhouse">In-house Preacher (ALL)</Label>
-                  <Input
-                    id="edit-salvations-inhouse"
-                    type="number"
-                    min="0"
-                    value={editSalvationsInhouse}
-                    onChange={(e) => setEditSalvationsInhouse(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-mc">Salvs in MCs</Label>
-                  <Input
-                    id="edit-salvations-mc"
-                    type="number"
-                    min="0"
-                    value={editSalvationsMc}
-                    onChange={(e) => setEditSalvationsMc(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-salvations-other">Salvs in Other Events</Label>
-                  <Input
-                    id="edit-salvations-other"
-                    type="number"
-                    min="0"
-                    value={editSalvationsOther}
-                    onChange={(e) => setEditSalvationsOther(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Total Salvations</Label>
-                  <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-base md:text-sm font-medium">
-                    {editSalvationsTotal}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Mechanics */}
-            <div className="border-t pt-4">
-              <p className="text-sm font-medium mb-3">Mechanics</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-mechanics-get">GET</Label>
-                  <Input
-                    id="edit-mechanics-get"
-                    type="number"
-                    min="0"
-                    value={editMechanicsGet}
-                    onChange={(e) => setEditMechanicsGet(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-mechanics-worship">WT</Label>
-                  <Input
-                    id="edit-mechanics-worship"
-                    type="number"
-                    min="0"
-                    value={editMechanicsWorship}
-                    onChange={(e) => setEditMechanicsWorship(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-mechanics-overall">Overall Mechanics</Label>
-                  <Input
-                    id="edit-mechanics-overall"
-                    type="number"
-                    min="0"
-                    value={editMechanics}
-                    onChange={(e) => setEditMechanics(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Others */}
-            <div className="border-t pt-4">
-              <p className="text-sm font-medium mb-3">Others</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-baptisms">Baptisms</Label>
-                  <Input
-                    id="edit-baptisms"
-                    type="number"
-                    min="0"
-                    value={editBaptisms}
-                    onChange={(e) => setEditBaptisms(Number(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-mca">MCA</Label>
-                  <Input
-                    id="edit-mca"
-                    type="number"
-                    min="0"
-                    value={editMca}
-                    onChange={(e) => setEditMca(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-mechanics-training">Mechanics Training</Label>
-                  <Input
-                    id="edit-mechanics-training"
-                    type="number"
-                    min="0"
-                    value={editMechanicsTraining}
-                    onChange={(e) => setEditMechanicsTraining(Number(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-            </div>
+            <PgaMetricFields
+              idPrefix="edit"
+              inputs={editForm.inputs}
+              onInputChange={editForm.setInput}
+              fieldErrors={editForm.fieldErrors}
+              noActivity={editForm.noActivity}
+              onNoActivityChange={editForm.setNoActivity}
+              formError={editForm.formError}
+            />
             </div>
           </ScrollArea>
 
@@ -982,12 +729,22 @@ export default function SingleReportPage() {
             <Button variant="outline" onClick={handleEditDialogClose} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={handleUpdate} disabled={updatePgaEntry.isPending} className="flex-1">
-              {updatePgaEntry.isPending ? 'Updating...' : 'Update'}
+            <Button
+              onClick={handleUpdate}
+              disabled={updatePgaEntry.isPending || editForm.isChecking}
+              className="flex-1"
+            >
+              {updatePgaEntry.isPending || editForm.isChecking ? 'Updating...' : 'Update'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PgaOutlierConfirmDialog
+        pending={editForm.pendingConfirmation}
+        onCancel={editForm.cancelConfirmation}
+        locationName={editingLocation?.location}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
@@ -995,7 +752,7 @@ export default function SingleReportPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Entry</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the entry for {deleteTarget?.location}? This action cannot be undone.
+              Are you sure you want to delete the entry for {deleteTarget?.location}? It can be restored by an admin from Activity &rarr; Deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
