@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { PageHeader } from '@/components/layout/page-header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useUserRole } from '@/hooks/use-user'
+import { ReportsNav } from '@/components/reports/reports-nav'
 import { PgaReportsTab } from '@/components/reports/pga-reports-tab'
 import { FourWeekPgaTab } from '@/components/reports/four-week-pga-tab'
 import { EpgaReportTab } from '@/components/reports/epga-report-tab'
@@ -11,20 +11,20 @@ import { FourWeekEpgaTab } from '@/components/reports/four-week-epga-tab'
 import { SalvationReportTab } from '@/components/reports/salvation-report-tab'
 import { MechanicsReportTab } from '@/components/reports/mechanics-report-tab'
 
+// Every role gets every listing tab. All of them read security_invoker views /
+// SECURITY INVOKER RPCs over pga_entries, whose RLS (can_access_location) already
+// limits pastors to their location and FOB leaders to their FOB -- the same rows
+// the PGA tab has always shown them. Destructive actions inside the tabs stay
+// admin-only (each tab checks the role itself).
 export default function ReportsPage() {
-  const { data: userRole } = useUserRole()
-  const isAdmin = userRole === 'admin'
   const [actionsContainer, setActionsContainer] = useState<HTMLDivElement | null>(null)
-
-  if (!isAdmin) {
-    return <PgaReportsTab />
-  }
 
   return (
     <div>
       <PageHeader
         title="Reports"
         description="View and manage PGA attendance reports"
+        actions={<ReportsNav />}
       />
       <div className="mx-auto max-w-7xl p-4 md:p-6">
         <Tabs defaultValue="pga-reports">
