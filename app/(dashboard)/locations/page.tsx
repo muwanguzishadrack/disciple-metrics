@@ -22,6 +22,9 @@ import {
 import { LocationsTable } from '@/components/locations/locations-table'
 import { CreateLocationDialog } from '@/components/locations/create-location-dialog'
 import { useLocations, useFobs, useRegions } from '@/hooks/use-pga'
+import { useArchivedLocations } from '@/hooks/use-locations'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { useUserRole } from '@/hooks/use-user'
 import type { LocationWithFob } from '@/types'
 
@@ -46,7 +49,11 @@ export default function LocationsPage() {
   const canFilterByFob = isAdminOrManager
   const canFilterByRegion = isAdminOrManager
   const canEdit = isAdminOrManager || isFobLeader
-  const canDelete = isAdmin
+  // Archiving replaces delete: history is kept, the location leaves pickers
+  const canArchive = isAdmin
+  const [showArchived, setShowArchived] = useState(false)
+  const { data: archivedLocations = [], isLoading: archivedLoading } =
+    useArchivedLocations(isAdmin)
 
   // Only offer FOBs that belong to the selected region
   const fobsInRegion = useMemo(() => {
@@ -66,6 +73,19 @@ export default function LocationsPage() {
       return matchesSearch && matchesRegion && matchesFob
     })
   }, [locations, searchQuery, regionFilter, fobFilter])
+
+  // Archived locations, narrowed by the same search / region / FOB filters
+  const filteredArchivedLocations = useMemo(() => {
+    return archivedLocations.filter((location) => {
+      const matchesSearch = location.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+      const matchesRegion =
+        regionFilter === 'all' || location.fob?.region?.id === regionFilter
+      const matchesFob = fobFilter === 'all' || location.fob?.id === fobFilter
+      return matchesSearch && matchesRegion && matchesFob
+    })
+  }, [archivedLocations, searchQuery, regionFilter, fobFilter])
 
   // A FOB filter from another region would leave the table empty
   useEffect(() => {
@@ -178,7 +198,7 @@ export default function LocationsPage() {
               locations={paginatedLocations}
               isLoading={locationsLoading || roleLoading}
               canEdit={canEdit}
-              canDelete={canDelete}
+              canArchive={canArchive}
             />
 
             {/* Pagination */}
@@ -249,6 +269,42 @@ export default function LocationsPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Archived locations (admin only) */}
+        {isAdmin && (
+          <Card className="mt-6 rounded-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <Label htmlFor="show-archived" className="text-base font-medium">
+                    Archived locations ({archivedLocations.length})
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Hidden from pickers and new reports. Their past entries still
+                    appear in historical reports.
+                  </p>
+                </div>
+                <Switch
+                  id="show-archived"
+                  checked={showArchived}
+                  onCheckedChange={setShowArchived}
+                />
+              </div>
+              {showArchived && (
+                <div className="mt-4">
+                  <LocationsTable
+                    locations={filteredArchivedLocations}
+                    isLoading={archivedLoading}
+                    canEdit={canEdit}
+                    canArchive={canArchive}
+                    variant="archived"
+                    emptyMessage="No archived locations."
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Create Location Dialog (admin only) */}
