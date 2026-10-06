@@ -1,4 +1,8 @@
-import * as XLSX from 'xlsx'
+// SheetJS is loaded on demand (see exportToExcel) so it is not part of any
+// page's first-load JS. Only its types are imported statically.
+import type * as XLSXModule from 'xlsx'
+
+type XLSXLib = Pick<typeof XLSXModule, 'utils'>
 
 export interface ExportColumn<T> {
   header: string
@@ -15,15 +19,17 @@ export interface ExportOptions<T> {
 }
 
 /**
- * Exports data to an Excel file and triggers download
+ * Builds the workbook for an export. Pure, so it can be unit tested.
  */
-export function exportToExcel<T extends object>({
-  data,
-  columns,
-  sheetName = 'Sheet1',
-  fileName,
-  includeTotals = false,
-}: ExportOptions<T>): void {
+export function buildExportWorkbook<T extends object>(
+  XLSX: XLSXLib,
+  {
+    data,
+    columns,
+    sheetName = 'Sheet1',
+    includeTotals = false,
+  }: Omit<ExportOptions<T>, 'fileName'>
+): XLSXModule.WorkBook {
   // Transform data to array of arrays with headers
   const headers = columns.map((col) => col.header)
 
@@ -78,6 +84,20 @@ export function exportToExcel<T extends object>({
   // Create workbook and append worksheet
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
+
+  return workbook
+}
+
+/**
+ * Exports data to an Excel file and triggers download. SheetJS is downloaded
+ * the first time a user exports, not with the page.
+ */
+export async function exportToExcel<T extends object>({
+  fileName,
+  ...options
+}: ExportOptions<T>): Promise<void> {
+  const XLSX = await import('xlsx')
+  const workbook = buildExportWorkbook(XLSX, options)
 
   // Generate filename with date
   const date = new Date().toISOString().split('T')[0]

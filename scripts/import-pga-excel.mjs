@@ -5,9 +5,13 @@
  * Usage: node scripts/import-pga-excel.mjs
  */
 
+import * as fs from 'fs';
 import { readFileSync } from 'fs';
 import { createClient } from '@supabase/supabase-js';
 import XLSX from 'xlsx';
+
+// The SheetJS ESM build has no filesystem access until it is given one.
+XLSX.set_fs(fs);
 
 // Load environment variables from .env.local manually
 function loadEnvFile(filePath) {
