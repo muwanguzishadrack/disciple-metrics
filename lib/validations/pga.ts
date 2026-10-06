@@ -116,16 +116,16 @@ export const pgaMetricFieldSchema = z
   .superRefine((value, ctx) => {
     if (value === '') return
     if (/^-/.test(value)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Must be 0 or greater' })
+      ctx.addIssue({ code: 'custom', message: 'Must be 0 or greater' })
       return
     }
     if (!/^\d+$/.test(value)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Enter a whole number' })
+      ctx.addIssue({ code: 'custom', message: 'Enter a whole number' })
       return
     }
     if (Number(value) > PGA_METRIC_MAX) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: `Must be ${PGA_METRIC_MAX.toLocaleString('en')} or less`,
       })
     }
@@ -150,7 +150,7 @@ export const pgaMetricsFormSchema = z
     const anyNonZero = PGA_METRIC_KEYS.some((key) => (data[key] as number) > 0)
     if (!anyNonZero && !data.noActivity) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['noActivity'],
         message: NO_ACTIVITY_REQUIRED_MESSAGE,
       })
@@ -283,7 +283,7 @@ const legacyMetricShape = Object.fromEntries(
 
 export const publicPgaFormSchema = z.object({
   date: z.string().min(1, 'Date is required'),
-  locationId: z.string().uuid('Please select a valid location'),
+  locationId: z.guid('Please select a valid location'),
   ...legacyMetricShape,
 })
 

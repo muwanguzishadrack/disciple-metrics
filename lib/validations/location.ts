@@ -2,14 +2,14 @@ import { z } from 'zod'
 
 export const createLocationSchema = z.object({
   name: z.string().min(1, 'Location name is required'),
-  fobId: z.string().uuid('Please select a FOB'),
+  fobId: z.guid('Please select a FOB'),
   pastor: z.string().optional().nullable(),
   contact: z.string().optional().nullable(),
 })
 
 export const updateLocationSchema = z.object({
   name: z.string().min(1, 'Location name is required'),
-  fobId: z.string().uuid('Please select a FOB'),
+  fobId: z.guid('Please select a FOB'),
   pastor: z.string().optional().nullable(),
   contact: z.string().optional().nullable(),
 })
