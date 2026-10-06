@@ -47,6 +47,14 @@ the exact diff; it must stay additive).
 
 ## One-time: align production's migration history (no schema change)
 
+> **Done on 2026-10-06** (via SQL, equivalent to the `migration repair` calls
+> below). The 2026-10-06 rollout had been applied through the MCP under
+> timestamped versions (`20261006054949` snapshot, `20261006055553`..`060040`);
+> those rows were re-recorded under the file versions `20261004000100`..`000600`
+> (the applied SQL was identical to the files apart from header comments).
+> Production's history now holds exactly the 7 files in `supabase/migrations/`.
+> The original 52 rows are in `supabase_migrations.schema_migrations_backup_20261004`.
+
 This only edits the bookkeeping table `supabase_migrations.schema_migrations`.
 It does not run any SQL against `public`. Do it right before the first
 `supabase db push`, e.g. as step 0 of [ROLLOUT.md](ROLLOUT.md).

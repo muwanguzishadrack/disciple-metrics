@@ -42,3 +42,8 @@ supabase/.temp/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local-only docs
+docs/pastor-access-plan.md
+docs/review-response-2026-10.md
+docs/DiscipleMetrics Review Response.pdf
