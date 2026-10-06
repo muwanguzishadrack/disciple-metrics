@@ -47,3 +47,7 @@ next-env.d.ts
 docs/pastor-access-plan.md
 docs/review-response-2026-10.md
 docs/DiscipleMetrics Review Response.pdf
+
+# playwright
+/test-results/
+/playwright-report/
