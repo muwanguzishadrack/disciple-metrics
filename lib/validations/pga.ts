@@ -283,7 +283,7 @@ const legacyMetricShape = Object.fromEntries(
 
 export const publicPgaFormSchema = z.object({
   date: z.string().min(1, 'Date is required'),
-  locationId: z.guid('Please select a valid location'),
+  locationId: z.string().uuid('Please select a valid location'),
   ...legacyMetricShape,
 })
 
