@@ -39,7 +39,7 @@ export default function ReportsPage() {
                 <TabsTrigger value="mechanics-report" className="flex-1 sm:flex-initial">Mechanics</TabsTrigger>
               </TabsList>
             </div>
-            <div ref={setActionsContainer} className="flex w-full flex-wrap items-center gap-2 sm:w-auto [&>*]:w-full [&>*]:sm:w-auto" />
+            <div ref={setActionsContainer} className="flex w-full flex-wrap items-center gap-2 sm:w-auto *:w-full sm:*:w-auto" />
           </div>
           <TabsContent value="pga-reports">
             <PgaReportsTab embedded actionsContainer={actionsContainer} />

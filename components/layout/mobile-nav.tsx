@@ -45,7 +45,7 @@ export function MobileNav({ userRole }: MobileNavProps) {
     <>
       <Button
         variant="ghost"
-        className="!h-12 !w-12 !p-0 text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--header-fg)/0.1)] hover:text-[hsl(var(--header-fg))] md:hidden"
+        className="h-12! w-12! p-0! text-[hsl(var(--header-fg))] hover:bg-[hsl(var(--header-fg)/0.1)] hover:text-[hsl(var(--header-fg))] md:hidden"
         onClick={toggle}
       >
         <Menu style={{ width: 32, height: 32 }} />
@@ -59,7 +59,7 @@ export function MobileNav({ userRole }: MobileNavProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-background/80 backdrop-blur-xs md:hidden"
               onClick={close}
             />
             <motion.nav

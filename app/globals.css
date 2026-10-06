@@ -1,14 +1,227 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Class-based dark mode (`.dark` on <html>, set by the theme store). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Tailwind 3 parity: v4 only applies `hover:` on devices with a real pointer
+  (`@media (hover: hover)`). Keep v3 behaviour so hover-revealed controls
+  (e.g. the toast close button, `group-hover:opacity-100`) still show on touch.
+*/
+@custom-variant hover (&:hover);
+
+/* Classes built at runtime in lib/validations/auth.ts (was `safelist`). */
+@source inline('bg-red-500 bg-yellow-500 bg-blue-500 bg-green-500');
+
+@theme {
+  /*
+    Tailwind 3 palette (hex) for the colour families the app uses. v4's
+    defaults are OKLCH and render slightly differently.
+  */
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-red-900: #7f1d1d;
+  --color-red-950: #450a0a;
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
+  --color-yellow-50: #fefce8;
+  --color-yellow-100: #fef9c3;
+  --color-yellow-200: #fef08a;
+  --color-yellow-300: #fde047;
+  --color-yellow-400: #facc15;
+  --color-yellow-500: #eab308;
+  --color-yellow-600: #ca8a04;
+  --color-yellow-700: #a16207;
+  --color-yellow-800: #854d0e;
+  --color-yellow-900: #713f12;
+  --color-yellow-950: #422006;
+  --color-green-50: #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-200: #bbf7d0;
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
+  --color-green-900: #14532d;
+  --color-green-950: #052e16;
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
+  --color-emerald-950: #022c22;
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+  --color-blue-950: #172554;
+
+  --animate-shake: shake 0.5s ease-in-out;
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-4px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(4px);
+    }
   }
 }
 
+/* shadcn/ui tokens: HSL channels in :root/.dark, wrapped in hsl() here. */
+@theme inline {
+  /* inline: --font-dm-* are set by next/font on <body>, not :root. */
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), monospace;
 
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/*
+  Tailwind 3 parity for space-x-* / space-y-*. v4 puts the gap as a bottom/end
+  margin on every child but the last (`:where(.space-y-2 > :not(:last-child))`),
+  which does nothing on inline children (e.g. <label> in FormItem) and leaves
+  a gap when the last child is hidden. v3 put it as a top/start margin on every
+  visible child after the first. Re-add the v3 rule (same selector, same
+  specificity) and cancel v4's zero-specificity end margin; the cancel rule
+  also has zero specificity, so a child's own mb-* / me-* still wins.
+*/
+@utility space-y-* {
+  & > :not([hidden]) ~ :not([hidden]) {
+    margin-top: calc(var(--spacing) * --value(number));
+    margin-bottom: 0;
+  }
+}
+@utility space-x-* {
+  & > :not([hidden]) ~ :not([hidden]) {
+    margin-right: 0;
+    margin-left: calc(var(--spacing) * --value(number));
+  }
+}
+@layer utilities {
+  :where([class*='space-y-'] > :not(:last-child)) {
+    margin-block-end: 0;
+  }
+  :where([class*='space-x-'] > :not(:last-child)) {
+    margin-inline-end: 0;
+  }
+}
+
+/*
+  Tailwind 3 preflight parity. v4 changed these defaults; restore the v3 look.
+*/
+@layer base {
+  /* v3 default border colour (gray-200); app elements get --border below. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: #e5e7eb;
+  }
+
+  /* v3 placeholder colour (gray-400). */
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 1;
+    color: #9ca3af;
+  }
+
+  /*
+    v4 preflight resets padding on every element; v3 left table cells with
+    the browser's 1px (visible on cells without a py-* utility, e.g. TableHead).
+  */
+  th,
+  td {
+    padding: 1px;
+  }
+
+  /* v3 kept these; v4 preflight dropped them. */
+  button,
+  select {
+    text-transform: none;
+  }
+  [type='search'] {
+    -webkit-appearance: textfield;
+    outline-offset: -2px;
+  }
+
+  /* v3 made buttons pointer; v4 uses the browser default. */
+  button,
+  [role='button'] {
+    cursor: pointer;
+  }
+  :disabled {
+    cursor: default;
+  }
+}
 
 @layer base {
   :root {
@@ -69,8 +282,6 @@
     --chart-5: 187 92% 69%;
   }
 }
-
-
 
 @layer base {
   * {
