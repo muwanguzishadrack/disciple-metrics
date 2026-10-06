@@ -60,6 +60,11 @@ const PRESETS: { value: TrendPreset; label: string }[] = [
 
 const ROLLING_WINDOW = 4
 
+// Recharts 3 sorts tooltip and legend items alphabetically by default; keep
+// them in series order (metric first, then the rolling average) as before.
+const SERIES_ORDER: Record<string, number> = { value: 0, rolling: 1 }
+const seriesRank = (item: { dataKey?: unknown }) => SERIES_ORDER[String(item.dataKey)] ?? 99
+
 const fmtNumber = (n: number | null | undefined, digits = 0) =>
   n === null || n === undefined
     ? '—'
@@ -281,8 +286,12 @@ export function TrendsView() {
                         labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
                         labelFormatter={(v) => fmtDate(String(v), 'EEE d MMM yyyy')}
                         formatter={(v, name) => [fmtNumber(typeof v === 'number' ? v : null, 1), name]}
+                        itemSorter={seriesRank}
                       />
-                      <Legend wrapperStyle={{ fontSize: 12, color: 'hsl(var(--muted-foreground))' }} />
+                      <Legend
+                        wrapperStyle={{ fontSize: 12, color: 'hsl(var(--muted-foreground))' }}
+                        itemSorter={seriesRank}
+                      />
                       <Area
                         type="monotone"
                         dataKey="value"
