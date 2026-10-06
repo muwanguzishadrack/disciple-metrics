@@ -18,26 +18,37 @@ import {
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EditLocationDialog } from './edit-location-dialog'
-import { DeleteLocationDialog } from './delete-location-dialog'
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { ArchiveLocationDialog } from './archive-location-dialog'
+import { Archive, ArchiveRestore, MoreHorizontal, Pencil } from 'lucide-react'
 import type { LocationWithFob } from '@/types'
 
+type TableLocation = LocationWithFob & {
+  fob: LocationWithFob['fob'] & { archived_at?: string | null }
+}
+
 interface LocationsTableProps {
-  locations: LocationWithFob[]
+  locations: TableLocation[]
   isLoading: boolean
   canEdit: boolean
-  canDelete: boolean
+  /** Admin-only: archive (active list) or restore (archived list) */
+  canArchive: boolean
+  /** Which list this table shows */
+  variant?: 'active' | 'archived'
+  emptyMessage?: string
 }
 
 export function LocationsTable({
   locations,
   isLoading,
   canEdit,
-  canDelete,
+  canArchive,
+  variant = 'active',
+  emptyMessage = 'No locations found.',
 }: LocationsTableProps) {
-  const showActions = canEdit || canDelete
+  const showActions = canEdit || canArchive
+  const isArchivedList = variant === 'archived'
   const [editLocation, setEditLocation] = useState<LocationWithFob | null>(null)
-  const [deleteLocation, setDeleteLocation] = useState<LocationWithFob | null>(
+  const [archiveTarget, setArchiveTarget] = useState<LocationWithFob | null>(
     null
   )
 
@@ -100,7 +111,18 @@ export function LocationsTable({
         <TableBody>
           {locations.map((location) => (
             <TableRow key={location.id}>
-              <TableCell className="font-medium">{location.name}</TableCell>
+              <TableCell className="font-medium">
+                {location.name}
+                {isArchivedList && location.archived_at && (
+                  <span className="block text-xs font-normal text-muted-foreground">
+                    Archived {new Date(location.archived_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
+                )}
+              </TableCell>
               <TableCell>{location.fob?.region?.name || '-'}</TableCell>
               <TableCell>{location.fob?.name || '-'}</TableCell>
               <TableCell>{location.pastor || '-'}</TableCell>
@@ -122,14 +144,30 @@ export function LocationsTable({
                           Edit
                         </DropdownMenuItem>
                       )}
-                      {canDelete && (
+                      {canArchive && !isArchivedList && (
                         <DropdownMenuItem
-                          onClick={() => setDeleteLocation(location)}
-                          className="text-destructive"
+                          onClick={() => setArchiveTarget(location)}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          <Archive className="mr-2 h-4 w-4" />
+                          Archive
                         </DropdownMenuItem>
+                      )}
+                      {canArchive && isArchivedList && (
+                        location.fob?.archived_at ? (
+                          // Restoring under a retired FOB would hide it again;
+                          // move it to an active FOB via Edit first.
+                          <DropdownMenuItem disabled className="max-w-64 whitespace-normal">
+                            <ArchiveRestore className="mr-2 h-4 w-4 shrink-0" />
+                            Its FOB is archived. Edit it into an active FOB to restore.
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => setArchiveTarget(location)}
+                          >
+                            <ArchiveRestore className="mr-2 h-4 w-4" />
+                            Restore
+                          </DropdownMenuItem>
+                        )
                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -143,7 +181,7 @@ export function LocationsTable({
                 colSpan={showActions ? 6 : 5}
                 className="py-8 text-center text-muted-foreground"
               >
-                No locations found.
+                {emptyMessage}
               </TableCell>
             </TableRow>
           )}
@@ -156,10 +194,11 @@ export function LocationsTable({
         onOpenChange={(open) => !open && setEditLocation(null)}
       />
 
-      <DeleteLocationDialog
-        location={deleteLocation}
-        open={!!deleteLocation}
-        onOpenChange={(open) => !open && setDeleteLocation(null)}
+      <ArchiveLocationDialog
+        mode={isArchivedList ? 'restore' : 'archive'}
+        location={archiveTarget}
+        open={!!archiveTarget}
+        onOpenChange={(open) => !open && setArchiveTarget(null)}
       />
     </>
   )

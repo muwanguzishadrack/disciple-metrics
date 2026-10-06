@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -120,6 +138,48 @@ export type Database = {
           },
         ]
       }
+      pga_change_log: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          id: number
+          location_id: string | null
+          new_data: Json | null
+          old_data: Json | null
+          operation: string
+          report_date: string | null
+          report_id: string | null
+          row_id: string
+          table_name: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: never
+          location_id?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation: string
+          report_date?: string | null
+          report_id?: string | null
+          row_id: string
+          table_name: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: never
+          location_id?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation?: string
+          report_date?: string | null
+          report_id?: string | null
+          row_id?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       pga_entries: {
         Row: {
           baptisms: number | null
@@ -148,6 +208,7 @@ export type Database = {
           sv1: number | null
           sv2: number | null
           updated_at: string | null
+          updated_by: string | null
           yxp: number | null
         }
         Insert: {
@@ -177,6 +238,7 @@ export type Database = {
           sv1?: number | null
           sv2?: number | null
           updated_at?: string | null
+          updated_by?: string | null
           yxp?: number | null
         }
         Update: {
@@ -206,6 +268,7 @@ export type Database = {
           sv1?: number | null
           sv2?: number | null
           updated_at?: string | null
+          updated_by?: string | null
           yxp?: number | null
         }
         Relationships: [
@@ -274,6 +337,7 @@ export type Database = {
           date: string
           id: string
           updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           created_at?: string | null
@@ -281,6 +345,7 @@ export type Database = {
           date: string
           id?: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           created_at?: string | null
@@ -288,6 +353,7 @@ export type Database = {
           date?: string
           id?: string
           updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -568,6 +634,32 @@ export type Database = {
         Args: { p_location_id: string; p_user_id: string }
         Returns: boolean
       }
+      get_deleted_pga_entries: {
+        Args: { p_limit?: number }
+        Returns: {
+          deleted_at: string
+          deleted_by: string
+          deleted_by_name: string
+          entry_id: string
+          location_id: string
+          location_name: string
+          log_id: number
+          report_date: string
+          report_exists: boolean
+          report_id: string
+        }[]
+      }
+      get_deleted_pga_reports: {
+        Args: never
+        Returns: {
+          deleted_at: string
+          deleted_by: string
+          deleted_by_name: string
+          entry_count: number
+          report_date: string
+          report_id: string
+        }[]
+      }
       get_epga_detail: {
         Args: { p_date: string }
         Returns: {
@@ -581,12 +673,121 @@ export type Database = {
       }
       get_four_week_epga_detail: { Args: { p_date: string }; Returns: Json }
       get_four_week_pga_detail: { Args: { p_date: string }; Returns: Json }
+      get_missing_pga_entries: {
+        Args: { p_report_date: string }
+        Returns: {
+          fob_id: string
+          fob_name: string
+          location_id: string
+          location_name: string
+          region_id: string
+          region_name: string
+        }[]
+      }
+      get_pga_change_log: {
+        Args: {
+          p_from?: string
+          p_limit?: number
+          p_location_id?: string
+          p_offset?: number
+          p_to?: string
+        }
+        Returns: {
+          changed_at: string
+          changed_by: string
+          changed_by_name: string
+          id: number
+          location_id: string
+          location_name: string
+          new_data: Json
+          old_data: Json
+          operation: string
+          report_date: string
+          row_id: string
+          table_name: string
+          total_count: number
+        }[]
+      }
+      get_pga_lock_days: { Args: never; Returns: number }
+      get_pga_period_totals: {
+        Args: { p_end: string; p_group_by: string; p_start: string }
+        Returns: {
+          baptisms: number
+          entry_count: number
+          fob_name: string
+          group_id: string
+          group_name: string
+          hc1: number
+          hc2: number
+          kids: number
+          local: number
+          mca: number
+          mechanics: number
+          mechanics_get: number
+          mechanics_training: number
+          mechanics_worship: number
+          region_name: string
+          report_count: number
+          salvations: number
+          salvations_inhouse: number
+          salvations_livestream_enc: number
+          salvations_livestream_yxp: number
+          salvations_mc: number
+          salvations_other: number
+          sv1: number
+          sv2: number
+          yxp: number
+        }[]
+      }
+      get_pga_trend: {
+        Args: {
+          p_end: string
+          p_fob_id?: string
+          p_location_id?: string
+          p_region_id?: string
+          p_start: string
+        }
+        Returns: {
+          baptisms: number
+          entry_count: number
+          hc1: number
+          hc2: number
+          kids: number
+          local: number
+          mca: number
+          mechanics: number
+          mechanics_get: number
+          mechanics_training: number
+          mechanics_worship: number
+          report_date: string
+          salvations: number
+          salvations_inhouse: number
+          salvations_livestream_enc: number
+          salvations_livestream_yxp: number
+          salvations_mc: number
+          salvations_other: number
+          sv1: number
+          sv2: number
+          yxp: number
+        }[]
+      }
       get_user_fob_id: { Args: { p_user_id: string }; Returns: string }
       get_user_location_id: { Args: { p_user_id: string }; Returns: string }
       get_user_role: { Args: { p_user_id: string }; Returns: string }
       is_admin: { Args: { p_user_id: string }; Returns: boolean }
       is_admin_or_manager: { Args: { p_user_id: string }; Returns: boolean }
       is_fob_leader: { Args: { p_user_id: string }; Returns: boolean }
+      is_pga_report_locked: {
+        Args: { p_report_date: string }
+        Returns: boolean
+      }
+      pga_assert_admin: { Args: never; Returns: undefined }
+      pga_reinsert_row: {
+        Args: { p_data: Json; p_table: string }
+        Returns: undefined
+      }
+      restore_pga_entry: { Args: { p_log_id: number }; Returns: string }
+      restore_pga_report: { Args: { p_report_id: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never
@@ -719,3 +920,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

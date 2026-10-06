@@ -1,3 +1,7 @@
+// The local Supabase stack (`supabase start`) is only reachable in development.
+const localSupabase =
+  process.env.NODE_ENV === 'development' ? ' http://127.0.0.1:54321 ws://127.0.0.1:54321' : ''
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
@@ -42,7 +46,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https:",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+              `connect-src 'self' https://*.supabase.co wss://*.supabase.co${localSupabase}`,
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

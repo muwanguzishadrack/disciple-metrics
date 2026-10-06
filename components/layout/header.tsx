@@ -21,6 +21,7 @@ const navLinks: NavLink[] = [
   { title: 'Reports', href: ROUTES.REPORTS },
   { title: 'Locations', href: ROUTES.LOCATIONS, roles: ['admin', 'manager', 'fob_leader'] },
   { title: 'Team', href: ROUTES.TEAM, roles: ['admin', 'manager'] },
+  { title: 'Activity', href: ROUTES.ACTIVITY, roles: ['admin'] },
   { title: 'Settings', href: ROUTES.SETTINGS },
 ]
 
