@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 // ---------------------------------------------------------------------------
 // Shared PGA metric definitions
@@ -116,16 +116,16 @@ export const pgaMetricFieldSchema = z
   .superRefine((value, ctx) => {
     if (value === '') return
     if (/^-/.test(value)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Must be 0 or greater' })
+      ctx.addIssue({ code: 'custom', message: 'Must be 0 or greater' })
       return
     }
     if (!/^\d+$/.test(value)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Enter a whole number' })
+      ctx.addIssue({ code: 'custom', message: 'Enter a whole number' })
       return
     }
     if (Number(value) > PGA_METRIC_MAX) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: `Must be ${PGA_METRIC_MAX.toLocaleString('en')} or less`,
       })
     }
@@ -150,7 +150,7 @@ export const pgaMetricsFormSchema = z
     const anyNonZero = PGA_METRIC_KEYS.some((key) => (data[key] as number) > 0)
     if (!anyNonZero && !data.noActivity) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['noActivity'],
         message: NO_ACTIVITY_REQUIRED_MESSAGE,
       })

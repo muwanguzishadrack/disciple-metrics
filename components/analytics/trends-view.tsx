@@ -2,17 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { format } from 'date-fns'
-import {
-  Area,
-  CartesianGrid,
-  ComposedChart,
-  Legend,
-  Line,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+import dynamic from 'next/dynamic'
 import { PageHeader } from '@/components/layout/page-header'
 import { ReportsNav } from '@/components/reports/reports-nav'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -49,6 +39,7 @@ import {
 } from './periods'
 import { EMPTY_SCOPE, ScopeFilter, type ScopeValue } from './scope-filter'
 import { RpcErrorCard, StatusCard } from './status-card'
+import { ROLLING_WINDOW, fmtDate, fmtNumber, type ChartPoint } from './trend-format'
 
 const PRESETS: { value: TrendPreset; label: string }[] = [
   { value: 'last-12-weeks', label: 'Last 12 weeks' },
@@ -58,21 +49,12 @@ const PRESETS: { value: TrendPreset; label: string }[] = [
   { value: 'custom', label: 'Custom' },
 ]
 
-const ROLLING_WINDOW = 4
-
-const fmtNumber = (n: number | null | undefined, digits = 0) =>
-  n === null || n === undefined
-    ? '—'
-    : n.toLocaleString('en-US', { maximumFractionDigits: digits, minimumFractionDigits: 0 })
-
-const fmtDate = (iso: string, pattern = 'd MMM yyyy') => format(parseISODate(iso), pattern)
-
-interface ChartPoint {
-  date: string
-  value: number | null
-  rolling: number | null
-  entries: number
-}
+// Recharts is only needed once there is data to plot, so it is loaded in its
+// own chunk. The placeholder fills the same fixed-height figure: no layout shift.
+const TrendChart = dynamic(() => import('./trend-chart').then((m) => m.TrendChart), {
+  ssr: false,
+  loading: () => <Skeleton className="h-full w-full" />,
+})
 
 export function TrendsView() {
   const [preset, setPreset] = useState<TrendPreset>('last-12-weeks')
@@ -247,69 +229,7 @@ export function TrendsView() {
                   } Turn on "Show data table" for the figures.`}
                   className="h-[320px] w-full"
                 >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={points} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-                      <defs>
-                        <linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={0.3} />
-                          <stop offset="100%" stopColor="hsl(var(--chart-1))" stopOpacity={0.02} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={(v: string) => fmtDate(v, 'd MMM')}
-                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                        stroke="hsl(var(--border))"
-                        minTickGap={24}
-                      />
-                      <YAxis
-                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                        stroke="hsl(var(--border))"
-                        tickFormatter={(v: number) => fmtNumber(v)}
-                        width={56}
-                        allowDecimals={false}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--popover))',
-                          borderColor: 'hsl(var(--border))',
-                          color: 'hsl(var(--popover-foreground))',
-                          borderRadius: 'var(--radius)',
-                          fontSize: 12,
-                        }}
-                        labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
-                        labelFormatter={(v) => fmtDate(String(v), 'EEE d MMM yyyy')}
-                        formatter={(v, name) => [fmtNumber(typeof v === 'number' ? v : null, 1), name]}
-                      />
-                      <Legend wrapperStyle={{ fontSize: 12, color: 'hsl(var(--muted-foreground))' }} />
-                      <Area
-                        type="monotone"
-                        dataKey="value"
-                        name={metricDef.name}
-                        stroke="hsl(var(--chart-1))"
-                        strokeWidth={2}
-                        fill="url(#trend-fill)"
-                        dot={points.length <= 26 ? { r: 2.5, fill: 'hsl(var(--chart-1))' } : false}
-                        activeDot={{ r: 4 }}
-                        connectNulls
-                        isAnimationActive={false}
-                      />
-                      {showRolling && (
-                        <Line
-                          type="monotone"
-                          dataKey="rolling"
-                          name={`${ROLLING_WINDOW}-week average`}
-                          stroke="hsl(var(--chart-4))"
-                          strokeWidth={2}
-                          strokeDasharray="6 4"
-                          dot={false}
-                          connectNulls
-                          isAnimationActive={false}
-                        />
-                      )}
-                    </ComposedChart>
-                  </ResponsiveContainer>
+                  <TrendChart points={points} metricName={metricDef.name} showRolling={showRolling} />
                 </figure>
               </CardContent>
             </Card>

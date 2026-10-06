@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Clock, Sparkles, Baby, Globe, Building, TrendingUp, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Download, MoreVertical, Search, Heart, Droplets, UsersRound, Wrench } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { PageHeader } from '@/components/layout/page-header'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

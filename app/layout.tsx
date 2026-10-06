@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Sans, DM_Mono } from 'next/font/google'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
@@ -45,6 +46,11 @@ export default function RootLayout({
             <ToasterProvider />
           </ThemeProvider>
         </QueryProvider>
+        {/* Real-user Core Web Vitals. Production only: in development the
+            package loads a debug script from va.vercel-scripts.com, which the
+            CSP does not allow. In production the script and beacon are
+            same-origin (/_vercel/speed-insights/*), covered by 'self'. */}
+        {process.env.NODE_ENV === 'production' && <SpeedInsights />}
       </body>
     </html>
   )
