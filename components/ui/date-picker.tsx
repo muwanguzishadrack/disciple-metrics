@@ -5,12 +5,22 @@ import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import dynamic from 'next/dynamic'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+
+// The calendar (react-day-picker) only renders while the popover is open, so it
+// is loaded on demand. Hovering or focusing the trigger starts the download, so
+// it is normally ready by the time the popover opens.
+const loadCalendar = () => import('@/components/ui/calendar')
+const Calendar = dynamic(() => loadCalendar().then((m) => m.Calendar), {
+  ssr: false,
+  // Same footprint as a month grid (p-3, 7 x 2rem columns, caption + 6 weeks).
+  loading: () => <div className="h-[19rem] w-[15.5rem]" aria-busy="true" />,
+})
 
 interface DatePickerProps {
   value?: Date
@@ -40,6 +50,8 @@ export function DatePicker({
             className
           )}
           disabled={disabled}
+          onPointerEnter={loadCalendar}
+          onFocus={loadCalendar}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {value ? format(value, 'PPP') : <span>{placeholder}</span>}
