@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 import { PASSWORD_REQUIREMENTS } from '@/lib/constants'
 
 const passwordSchema = z
