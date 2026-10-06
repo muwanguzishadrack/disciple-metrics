@@ -54,7 +54,6 @@ export function DatePicker({
             setOpen(false)
           }}
           disabled={(date) => date.getDay() !== 0}
-          initialFocus
         />
       </PopoverContent>
     </Popover>
