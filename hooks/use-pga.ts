@@ -279,6 +279,7 @@ const queryKeys = {
   epgaSummary: ['epga-summary'] as const,
   salvationSummary: ['salvation-summary'] as const,
   mechanicsSummary: ['mechanics-summary'] as const,
+  baptismsSummary: ['baptisms-summary'] as const,
   epgaDetail: (date: string | undefined) => ['epga-detail', date] as const,
   fourWeekPgaDetail: (date: string) => ['four-week-pga-detail', date] as const,
   fourWeekEpgaDetail: (date: string) => ['four-week-epga-detail', date] as const,
@@ -672,6 +673,60 @@ export function useMechanicsReport(date: string | undefined) {
   return { data: rows, isLoading }
 }
 
+// --- Baptisms report hooks ---
+
+// Summary row for the Baptisms listing (one row per report date)
+export interface BaptismsSummaryRow {
+  reportId: string
+  date: string
+  baptisms: number
+}
+
+// Per-location row for the Baptisms detail page
+export interface BaptismsRow {
+  location: string
+  locationId: string
+  baptisms: number
+}
+
+// Baptisms summary from pga_report_summary view (select the baptisms column)
+export function useBaptismsSummary() {
+  const supabase = createClient()
+
+  return useQuery({
+    queryKey: queryKeys.baptismsSummary,
+    queryFn: async (): Promise<BaptismsSummaryRow[]> => {
+      const { data, error } = await (supabase as any)
+        .from('pga_report_summary')
+        .select('report_id, date, baptisms')
+        .order('date', { ascending: false })
+
+      if (error) throw error
+
+      return (data || []).map((row: any): BaptismsSummaryRow => ({
+        reportId: row.report_id,
+        date: row.date,
+        baptisms: row.baptisms ?? 0,
+      }))
+    },
+  })
+}
+
+// Baptisms report for a specific date (reuses the per-location report fetch)
+export function useBaptismsReport(date: string | undefined) {
+  const { data, isLoading } = usePgaReportByDate(date ?? '')
+
+  const rows: BaptismsRow[] = (data?.locations ?? [])
+    .map((loc): BaptismsRow => ({
+      location: loc.location,
+      locationId: loc.locationId,
+      baptisms: loc.baptisms,
+    }))
+    .sort((a, b) => b.baptisms - a.baptisms || a.location.localeCompare(b.location))
+
+  return { data: rows, isLoading }
+}
+
 // --- Mutation hooks ---
 
 interface CreatePgaEntryData {
@@ -702,6 +757,7 @@ function invalidateAllPgaQueries(queryClient: ReturnType<typeof useQueryClient>)
   queryClient.invalidateQueries({ queryKey: queryKeys.epgaSummary })
   queryClient.invalidateQueries({ queryKey: queryKeys.salvationSummary })
   queryClient.invalidateQueries({ queryKey: queryKeys.mechanicsSummary })
+  queryClient.invalidateQueries({ queryKey: queryKeys.baptismsSummary })
   queryClient.invalidateQueries({ queryKey: queryKeys.fourWeekPgaSummary })
   queryClient.invalidateQueries({ queryKey: queryKeys.fourWeekEpgaSummary })
   queryClient.invalidateQueries({ queryKey: ['epga-detail'] })

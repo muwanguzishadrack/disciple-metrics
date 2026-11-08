@@ -9,6 +9,7 @@ import { FourWeekPgaTab } from '@/components/reports/four-week-pga-tab'
 import { EpgaReportTab } from '@/components/reports/epga-report-tab'
 import { FourWeekEpgaTab } from '@/components/reports/four-week-epga-tab'
 import { SalvationReportTab } from '@/components/reports/salvation-report-tab'
+import { BaptismsReportTab } from '@/components/reports/baptisms-report-tab'
 import { MechanicsReportTab } from '@/components/reports/mechanics-report-tab'
 
 // Every role gets every listing tab. All of them read security_invoker views /
@@ -36,6 +37,7 @@ export default function ReportsPage() {
                 <TabsTrigger value="epga-report" className="flex-1 sm:flex-initial">EPGA</TabsTrigger>
                 <TabsTrigger value="four-week-epga" className="flex-1 sm:flex-initial">4 Wk EPGA</TabsTrigger>
                 <TabsTrigger value="salvation-report" className="flex-1 sm:flex-initial">Salvation</TabsTrigger>
+                <TabsTrigger value="baptisms-report" className="flex-1 sm:flex-initial">Baptisms</TabsTrigger>
                 <TabsTrigger value="mechanics-report" className="flex-1 sm:flex-initial">Mechanics</TabsTrigger>
               </TabsList>
             </div>
@@ -55,6 +57,9 @@ export default function ReportsPage() {
           </TabsContent>
           <TabsContent value="salvation-report">
             <SalvationReportTab actionsContainer={actionsContainer} />
+          </TabsContent>
+          <TabsContent value="baptisms-report">
+            <BaptismsReportTab actionsContainer={actionsContainer} />
           </TabsContent>
           <TabsContent value="mechanics-report">
             <MechanicsReportTab actionsContainer={actionsContainer} />
