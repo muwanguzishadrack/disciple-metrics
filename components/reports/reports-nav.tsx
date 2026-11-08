@@ -11,7 +11,7 @@ const links = [
   { title: 'Compare', href: ROUTES.REPORTS_COMPARE },
 ]
 
-/** Switches between the report listings, Trends and Compare */
+/** Switches between the report listings, Trends and Compare. Full width with equal buttons on phones. */
 export function ReportsNav({ className }: { className?: string }) {
   const pathname = usePathname()
 
@@ -19,7 +19,7 @@ export function ReportsNav({ className }: { className?: string }) {
     <nav
       aria-label="Report views"
       className={cn(
-        'inline-flex items-center rounded-lg bg-[hsl(var(--header-fg)/0.1)] p-1',
+        'flex w-full items-center rounded-lg bg-[hsl(var(--header-fg)/0.1)] p-1 sm:inline-flex sm:w-auto',
         className
       )}
     >
@@ -31,7 +31,7 @@ export function ReportsNav({ className }: { className?: string }) {
             href={link.href}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-              'rounded-md px-3 py-1.5 text-sm transition-colors',
+              'flex-1 rounded-md px-3 py-1.5 text-center text-sm transition-colors sm:flex-none',
               isActive
                 ? 'bg-[hsl(var(--header-fg))] font-medium text-[hsl(var(--header-bg))]'
                 : 'text-[hsl(var(--header-fg)/0.8)] hover:text-[hsl(var(--header-fg))]'
