@@ -139,7 +139,7 @@ export default function BaptismsDetailPage() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+          className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
         >
           {stats.map((stat) => (
             <motion.div key={stat.title} variants={item}>
