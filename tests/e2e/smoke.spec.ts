@@ -27,6 +27,7 @@ const REPORT_ROUTES = [
   `/reports/epga/${REPORT_DATE}`,
   `/reports/mechanics/${REPORT_DATE}`,
   `/reports/salvation/${REPORT_DATE}`,
+  `/reports/baptisms/${REPORT_DATE}`,
   `/reports/4-week-pga/${REPORT_DATE}`,
   `/reports/4-week-epga/${REPORT_DATE}`,
   '/reports/trends',
@@ -144,6 +145,15 @@ for (const role of Object.keys(USERS) as Role[]) {
         expect(problems, `${path}\n${problems.join('\n')}`).toEqual([])
       })
     }
+
+    await test.step('Baptisms tab lists reports', async () => {
+      await visit(page, '/reports')
+      await page.getByRole('tab', { name: 'Baptisms' }).click()
+      const panel = page.getByRole('tabpanel', { name: 'Baptisms' })
+      await expect(panel.getByRole('columnheader', { name: 'Baptisms' })).toBeVisible()
+      await expect(panel.locator('tbody tr').first()).toBeVisible()
+      expect(problems, problems.join('\n')).toEqual([])
+    })
 
     await test.step('open and dismiss Record PGA', async () => {
       await visit(page, '/dashboard')

@@ -61,6 +61,7 @@ const REPORT_TABS = [
   ['EPGA', 'epga'],
   ['4 Wk EPGA', '4-wk-epga'],
   ['Salvation', 'salvation'],
+  ['Baptisms', 'baptisms'],
   ['Mechanics', 'mechanics'],
 ]
 
@@ -77,6 +78,7 @@ function routesFor(role) {
     `/reports/4-week-epga/${REPORT_DATE}`,
     `/reports/epga/${REPORT_DATE}`,
     `/reports/salvation/${REPORT_DATE}`,
+    `/reports/baptisms/${REPORT_DATE}`,
     `/reports/mechanics/${REPORT_DATE}`,
     '/reports/trends',
     '/reports/compare',
