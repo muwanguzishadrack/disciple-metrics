@@ -44,11 +44,12 @@ export default function LocationsPage() {
   const isAdmin = userRole === 'admin'
   const isManager = userRole === 'manager'
   const isFobLeader = userRole === 'fob_leader'
+  const isRegionalOverseer = userRole === 'regional_overseer'
   const isAdminOrManager = isAdmin || isManager
-  const canView = isAdminOrManager || isFobLeader
-  const canFilterByFob = isAdminOrManager
+  const canView = isAdminOrManager || isRegionalOverseer || isFobLeader
+  const canFilterByFob = isAdminOrManager || isRegionalOverseer
   const canFilterByRegion = isAdminOrManager
-  const canEdit = isAdminOrManager || isFobLeader
+  const canEdit = isAdminOrManager || isRegionalOverseer || isFobLeader
   // Archiving replaces delete: history is kept, the location leaves pickers
   const canArchive = isAdmin
   const [showArchived, setShowArchived] = useState(false)

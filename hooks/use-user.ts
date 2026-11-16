@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
 
-export type RoleName = 'admin' | 'manager' | 'fob_leader' | 'pastor' | null
+export type RoleName = 'admin' | 'manager' | 'regional_overseer' | 'fob_leader' | 'pastor' | null
 
 export function useUser() {
   const supabase = createClient()
@@ -93,6 +93,8 @@ export function useUserRole() {
 export type UserAssignment = {
   role: string
   roleName: string
+  regionId?: string
+  regionName?: string
   fobId?: string
   fobName?: string
   locationId?: string
@@ -112,9 +114,11 @@ export function useUserAssignment() {
         .from('user_assignments')
         .select(`
           role_id,
+          region_id,
           fob_id,
           location_id,
           roles!inner(name),
+          regions(name),
           fobs(name),
           locations(name, fob_id, fobs(id, name))
         `)
@@ -129,7 +133,9 @@ export function useUserAssignment() {
           ? 'Admin'
           : roleName === 'manager'
             ? 'Manager'
-            : roleName === 'fob_leader'
+            : roleName === 'regional_overseer'
+              ? 'Regional Overseer'
+              : roleName === 'fob_leader'
               ? 'FOB Leader'
               : roleName === 'pastor'
                 ? 'Pastor'
@@ -142,6 +148,8 @@ export function useUserAssignment() {
       return {
         role: roleName,
         roleName: displayRoleName,
+        regionId: data.region_id ?? undefined,
+        regionName: data.regions?.name,
         fobId: data.fob_id ?? locationFob?.id,
         fobName: data.fobs?.name ?? locationFob?.name,
         locationId: data.location_id,

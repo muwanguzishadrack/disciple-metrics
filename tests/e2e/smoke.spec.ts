@@ -12,11 +12,12 @@ import { test, expect, type Page } from '@playwright/test'
 const PASSWORD = process.env.SMOKE_PASSWORD ?? 'password123'
 const REPORT_DATE = process.env.SMOKE_REPORT_DATE ?? '2026-10-04'
 
-type Role = 'admin' | 'manager' | 'fob_leader' | 'pastor'
+type Role = 'admin' | 'manager' | 'regional_overseer' | 'fob_leader' | 'pastor'
 
 const USERS: Record<Role, string> = {
   admin: 'admin@test.local',
   manager: 'manager@test.local',
+  regional_overseer: 'overseer@test.local',
   fob_leader: 'leader@test.local',
   pastor: 'pastor@test.local',
 }
@@ -45,6 +46,7 @@ const SETTINGS_ROUTES = [
 const ROUTES: Record<Role, string[]> = {
   admin: ['/dashboard', ...REPORT_ROUTES, '/locations', '/team', '/activity', ...SETTINGS_ROUTES],
   manager: ['/dashboard', ...REPORT_ROUTES, '/locations', '/team', ...SETTINGS_ROUTES],
+  regional_overseer: ['/dashboard', ...REPORT_ROUTES, '/locations', ...SETTINGS_ROUTES],
   fob_leader: ['/dashboard', ...REPORT_ROUTES, '/locations', ...SETTINGS_ROUTES],
   pastor: ['/dashboard', ...REPORT_ROUTES, ...SETTINGS_ROUTES],
 }
@@ -172,7 +174,7 @@ for (const role of Object.keys(USERS) as Role[]) {
       expect(download.suggestedFilename()).toMatch(/\.xlsx$/)
     })
 
-    if (role === 'admin' || role === 'manager' || role === 'fob_leader') {
+    if (role !== 'pastor') {
       await test.step('open and dismiss an entry edit dialog', async () => {
         // Still on /reports/<date>. Admins can always edit; for others the
         // report may be past the edit lock, in which case rows show "Locked".

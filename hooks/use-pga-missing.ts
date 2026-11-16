@@ -14,7 +14,7 @@ export interface MissingPgaEntry {
 
 /**
  * Active locations with no entry for the report on `reportDate`
- * (get_missing_pga_entries; security invoker, so RLS scopes fob_leaders to
+ * (get_missing_pga_entries; security invoker, so RLS scopes regional_overseers to their region, fob_leaders to
  * their FOB). Errors -- including the RPC not being deployed yet -- surface
  * as `isError`, and callers hide the card.
  */

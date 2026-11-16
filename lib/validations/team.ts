@@ -3,12 +3,14 @@ import * as z from 'zod'
 export const inviteMemberSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   roleId: z.string().uuid('Please select a role'),
+  regionId: z.string().uuid().optional().nullable(),
   fobId: z.string().uuid().optional().nullable(),
   locationId: z.string().uuid().optional().nullable(),
 })
 
 export const updateMemberSchema = z.object({
   roleId: z.string().uuid('Please select a role'),
+  regionId: z.string().uuid().optional().nullable(),
   fobId: z.string().uuid().optional().nullable(),
   locationId: z.string().uuid().optional().nullable(),
 })

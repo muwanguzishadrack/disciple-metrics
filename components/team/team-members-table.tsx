@@ -53,6 +53,9 @@ export function TeamMembersTable({ members, isLoading, userRole }: TeamMembersTa
     if (roleName === 'admin' || roleName === 'manager') {
       return 'Organisation wide'
     }
+    if (roleName === 'regional_overseer') {
+      return member.region?.name || '-'
+    }
     if (roleName === 'fob_leader') {
       return member.fob?.name || '-'
     }
@@ -82,7 +85,7 @@ export function TeamMembersTable({ members, isLoading, userRole }: TeamMembersTa
               const canEdit =
                 userRole === 'admin' ||
                 (userRole === 'manager' &&
-                  ['fob_leader', 'pastor'].includes(memberRoleName || ''))
+                  ['regional_overseer', 'fob_leader', 'pastor'].includes(memberRoleName || ''))
               const canRemove = userRole === 'admin'
 
               return (

@@ -12,7 +12,7 @@ export type User = {
 }
 
 // Team management types
-export type RoleName = 'admin' | 'manager' | 'fob_leader' | 'pastor'
+export type RoleName = 'admin' | 'manager' | 'regional_overseer' | 'fob_leader' | 'pastor'
 
 export interface TeamMember {
   id: string
@@ -21,6 +21,10 @@ export interface TeamMember {
     id: string
     name: string
     description: string | null
+  } | null
+  region: {
+    id: string
+    name: string
   } | null
   fob: {
     id: string
@@ -40,6 +44,10 @@ export interface TeamInvitation {
     id: string
     name: string
   }
+  region: {
+    id: string
+    name: string
+  } | null
   fob: {
     id: string
     name: string
@@ -59,12 +67,14 @@ export interface TeamInvitation {
 export interface InviteMemberData {
   email: string
   roleId: string
+  regionId?: string | null
   fobId?: string | null
   locationId?: string | null
 }
 
 export interface UpdateMemberData {
   roleId: string
+  regionId?: string | null
   fobId?: string | null
   locationId?: string | null
 }
@@ -72,6 +82,7 @@ export interface UpdateMemberData {
 export const ROLE_DISPLAY_NAMES: Record<RoleName, string> = {
   admin: 'Admin',
   manager: 'Manager',
+  regional_overseer: 'Regional Overseer',
   fob_leader: 'FOB Leader',
   pastor: 'Pastor',
 } as const

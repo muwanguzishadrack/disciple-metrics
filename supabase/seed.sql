@@ -11,6 +11,7 @@
 --   leader@test.local   fob_leader  (Alpha FOB)
 --   pastor@test.local   pastor      (Alpha Central)
 --   pastor2@test.local  pastor      (Bravo East)
+--   overseer@test.local regional_overseer (Eastern region: Alpha + Bravo FOBs)
 -- =============================================================================
 
 -- ---------------------------------------------------------------------------
@@ -32,7 +33,8 @@ from (values
   ('a0000000-0000-0000-0000-000000000002'::uuid, 'manager@test.local'),
   ('a0000000-0000-0000-0000-000000000003'::uuid, 'leader@test.local'),
   ('a0000000-0000-0000-0000-000000000004'::uuid, 'pastor@test.local'),
-  ('a0000000-0000-0000-0000-000000000005'::uuid, 'pastor2@test.local')
+  ('a0000000-0000-0000-0000-000000000005'::uuid, 'pastor2@test.local'),
+  ('a0000000-0000-0000-0000-000000000006'::uuid, 'overseer@test.local')
 ) as u(id, email);
 
 insert into auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
@@ -64,15 +66,16 @@ insert into public.locations (id, fob_id, name, pastor, archived_at) values
   -- Moved Site: belongs to Bravo FOB now, but its older entries are frozen to Alpha FOB
   ('d0000000-0000-0000-0000-000000000006', 'c0000000-0000-0000-0000-000000000002', 'Moved Site',    'Pastor F', null);
 
-insert into public.user_assignments (user_id, role_id, fob_id, location_id)
-select u.id, r.id, u.fob_id, u.location_id
+insert into public.user_assignments (user_id, role_id, fob_id, location_id, region_id)
+select u.id, r.id, u.fob_id, u.location_id, u.region_id
 from (values
-  ('a0000000-0000-0000-0000-000000000001'::uuid, 'admin',      null::uuid, null::uuid),
-  ('a0000000-0000-0000-0000-000000000002'::uuid, 'manager',    null, null),
-  ('a0000000-0000-0000-0000-000000000003'::uuid, 'fob_leader', 'c0000000-0000-0000-0000-000000000001'::uuid, null),
-  ('a0000000-0000-0000-0000-000000000004'::uuid, 'pastor',     null, 'd0000000-0000-0000-0000-000000000001'::uuid),
-  ('a0000000-0000-0000-0000-000000000005'::uuid, 'pastor',     null, 'd0000000-0000-0000-0000-000000000003'::uuid)
-) as u(id, role_name, fob_id, location_id)
+  ('a0000000-0000-0000-0000-000000000001'::uuid, 'admin',      null::uuid, null::uuid, null::uuid),
+  ('a0000000-0000-0000-0000-000000000002'::uuid, 'manager',    null, null, null),
+  ('a0000000-0000-0000-0000-000000000003'::uuid, 'fob_leader', 'c0000000-0000-0000-0000-000000000001'::uuid, null, null),
+  ('a0000000-0000-0000-0000-000000000004'::uuid, 'pastor',     null, 'd0000000-0000-0000-0000-000000000001'::uuid, null),
+  ('a0000000-0000-0000-0000-000000000005'::uuid, 'pastor',     null, 'd0000000-0000-0000-0000-000000000003'::uuid, null),
+  ('a0000000-0000-0000-0000-000000000006'::uuid, 'regional_overseer', null, null, 'b0000000-0000-0000-0000-000000000001'::uuid)
+) as u(id, role_name, fob_id, location_id, region_id)
 join public.roles r on r.name = u.role_name;
 
 -- ---------------------------------------------------------------------------

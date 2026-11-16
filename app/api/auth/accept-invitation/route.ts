@@ -59,9 +59,11 @@ export async function POST(request: NextRequest) {
       // - both fob_id and location_id NULL (org-level)
       // - only fob_id set (fob-level)
       // - only location_id set (location-level)
-      // When both are provided, prefer location_id (more specific)
+      // - only region_id set (region-level)
+      // When several are provided, prefer the most specific
       const fobId = invitation.location_id ? null : invitation.fob_id
       const locationId = invitation.location_id
+      const regionId = invitation.location_id || invitation.fob_id ? null : invitation.region_id
 
       const { error: assignmentError } = await adminSupabase
         .from('user_assignments')
@@ -70,6 +72,7 @@ export async function POST(request: NextRequest) {
           role_id: invitation.role_id,
           fob_id: fobId,
           location_id: locationId,
+          region_id: regionId,
         })
 
       if (assignmentError) {
@@ -83,6 +86,7 @@ export async function POST(request: NextRequest) {
             role_id: invitation.role_id,
             fob_id: fobId,
             location_id: locationId,
+            region_id: regionId,
           },
         })
         return NextResponse.json(

@@ -35,6 +35,7 @@ export async function GET() {
         expires_at,
         created_at,
         role:roles (id, name),
+        region:regions (id, name),
         fob:fobs (id, name),
         location:locations (id, name),
         inviter:profiles!invited_by (id, email)
@@ -53,6 +54,7 @@ export async function GET() {
         id: invite.id,
         email: invite.email,
         role: invite.role!,
+        region: invite.region || null,
         fob: invite.fob || null,
         location: invite.location || null,
         invitedBy: {

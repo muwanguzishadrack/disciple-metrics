@@ -105,7 +105,7 @@ node scripts/route-js-size.mjs
 
 **Next 16 request APIs**: `cookies()`, `headers()`, `params` and `searchParams` are async and must be awaited.
 
-**Role-Based Access**: Four user roles exist: `admin`, `manager`, `fob_leader`, `pastor`. Use `useUserRole()` hook to check permissions. Use `useUserAssignment()` to get full assignment details including FOB/location. Some UI elements are conditionally rendered based on role; the data itself is scoped by RLS (pastor: own location, fob_leader: own FOB, admin/manager: everything).
+**Role-Based Access**: Five user roles exist: `admin`, `manager`, `regional_overseer`, `fob_leader`, `pastor`. Use `useUserRole()` hook to check permissions. Use `useUserAssignment()` to get full assignment details including FOB/location. Some UI elements are conditionally rendered based on role; the data itself is scoped by RLS (pastor: own location, fob_leader: own FOB, regional_overseer: every FOB in their region via `user_assignments.region_id`, admin/manager: everything). A `regional_overseer` has the fob_leader's permissions across the region; RLS policies reach the region's FOBs through the security-definer `overseer_fob_ids()` (joining `fobs` inside a `locations` policy recurses).
 
 **Components**: Server Components by default; mark Client Components with `'use client'`. UI components use composition patterns from shadcn/ui. Heavy client-only pieces (recharts, the date-picker calendar, xlsx) are loaded on demand.
 

@@ -35,8 +35,10 @@ export async function GET(request: Request) {
               .insert({
                 user_id: data.user.id,
                 role_id: invitation.role_id,
-                fob_id: invitation.fob_id,
+                fob_id: invitation.location_id ? null : invitation.fob_id,
                 location_id: invitation.location_id,
+                region_id:
+                  invitation.location_id || invitation.fob_id ? null : invitation.region_id,
               })
 
             if (!assignmentError) {

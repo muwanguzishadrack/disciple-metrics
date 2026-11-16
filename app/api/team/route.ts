@@ -38,6 +38,7 @@ export async function GET() {
         created_at,
         user_assignments (
           role:roles (id, name, description),
+          region:regions (id, name),
           fob:fobs (id, name),
           location:locations (id, name, fob_id)
         )
@@ -56,6 +57,7 @@ export async function GET() {
         id: profile.id,
         email: profile.email,
         role: assignment?.role || null,
+        region: assignment?.region || null,
         fob: assignment?.fob || null,
         location: assignment?.location || null,
         createdAt: profile.created_at,
