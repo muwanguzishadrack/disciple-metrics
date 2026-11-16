@@ -440,6 +440,7 @@ export type Database = {
           fob_id: string | null
           id: string
           location_id: string | null
+          region_id: string | null
           role_id: string
           updated_at: string | null
           user_id: string
@@ -449,6 +450,7 @@ export type Database = {
           fob_id?: string | null
           id?: string
           location_id?: string | null
+          region_id?: string | null
           role_id: string
           updated_at?: string | null
           user_id: string
@@ -458,11 +460,19 @@ export type Database = {
           fob_id?: string | null
           id?: string
           location_id?: string | null
+          region_id?: string | null
           role_id?: string
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_assignments_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_assignments_fob_id_fkey"
             columns: ["fob_id"]
@@ -503,6 +513,7 @@ export type Database = {
           id: string
           invited_by: string
           location_id: string | null
+          region_id: string | null
           role_id: string
           token: string
           updated_at: string | null
@@ -516,6 +527,7 @@ export type Database = {
           id?: string
           invited_by: string
           location_id?: string | null
+          region_id?: string | null
           role_id: string
           token: string
           updated_at?: string | null
@@ -529,11 +541,19 @@ export type Database = {
           id?: string
           invited_by?: string
           location_id?: string | null
+          region_id?: string | null
           role_id?: string
           token?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "user_invitations_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_invitations_fob_id_fkey"
             columns: ["fob_id"]
@@ -771,16 +791,19 @@ export type Database = {
           yxp: number
         }[]
       }
+      get_user_region_id: { Args: { p_user_id: string }; Returns: string }
       get_user_fob_id: { Args: { p_user_id: string }; Returns: string }
       get_user_location_id: { Args: { p_user_id: string }; Returns: string }
       get_user_role: { Args: { p_user_id: string }; Returns: string }
       is_admin: { Args: { p_user_id: string }; Returns: boolean }
       is_admin_or_manager: { Args: { p_user_id: string }; Returns: boolean }
+      is_regional_overseer: { Args: { p_user_id: string }; Returns: boolean }
       is_fob_leader: { Args: { p_user_id: string }; Returns: boolean }
       is_pga_report_locked: {
         Args: { p_report_date: string }
         Returns: boolean
       }
+      overseer_fob_ids: { Args: never; Returns: string[] }
       pga_assert_admin: { Args: never; Returns: undefined }
       pga_reinsert_row: {
         Args: { p_data: Json; p_table: string }

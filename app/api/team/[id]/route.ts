@@ -52,10 +52,13 @@ export async function PATCH(
 
       const targetRoleName = (targetAssignment?.roles as { name: string } | null)?.name
 
-      // Manager can only edit fob_leader and pastor members
-      if (targetRoleName && !['fob_leader', 'pastor'].includes(targetRoleName)) {
+      // Manager can only edit regional overseers, FOB leaders and pastors
+      if (
+        targetRoleName &&
+        !['regional_overseer', 'fob_leader', 'pastor'].includes(targetRoleName)
+      ) {
         return NextResponse.json(
-          { error: 'Managers can only edit FOB leaders and pastors' },
+          { error: 'Managers can only edit regional overseers, FOB leaders and pastors' },
           { status: 403 }
         )
       }
@@ -79,7 +82,7 @@ export async function PATCH(
       )
     }
 
-    const { roleId, fobId, locationId } = result.data
+    const { roleId, regionId, fobId, locationId } = result.data
 
     // Validate role assignment rules
     const { data: role, error: roleError } = await supabase
@@ -93,6 +96,13 @@ export async function PATCH(
     }
 
     const roleName = (role as { name: string }).name
+    if (roleName === 'regional_overseer' && !regionId) {
+      return NextResponse.json(
+        { error: 'Regional Overseer must be assigned to a region' },
+        { status: 400 }
+      )
+    }
+
     if (roleName === 'fob_leader' && !fobId) {
       return NextResponse.json(
         { error: 'FOB Leader must be assigned to a FOB' },
@@ -127,11 +137,12 @@ export async function PATCH(
 
     if (existingAssignment) {
       // Update existing assignment
-      // Note: valid_assignment constraint requires only ONE of fob_id or location_id to be set
+      // Note: valid_assignment constraint allows at most ONE of region_id, fob_id, location_id
       const { error: updateError } = await adminSupabase
         .from('user_assignments')
         .update({
           role_id: roleId,
+          region_id: roleName === 'regional_overseer' ? regionId : null,
           fob_id: roleName === 'fob_leader' ? fobId : null,
           location_id: roleName === 'pastor' ? locationId : null,
           updated_at: new Date().toISOString(),
@@ -141,12 +152,13 @@ export async function PATCH(
       if (updateError) throw updateError
     } else {
       // Create new assignment
-      // Note: valid_assignment constraint requires only ONE of fob_id or location_id to be set
+      // Note: valid_assignment constraint allows at most ONE of region_id, fob_id, location_id
       const { error: insertError } = await adminSupabase
         .from('user_assignments')
         .insert({
           user_id: memberId,
           role_id: roleId,
+          region_id: roleName === 'regional_overseer' ? regionId : null,
           fob_id: roleName === 'fob_leader' ? fobId : null,
           location_id: roleName === 'pastor' ? locationId : null,
         })
@@ -159,7 +171,7 @@ export async function PATCH(
       userId: user.id,
       ip,
       userAgent: getUserAgent(request),
-      details: { memberId, roleId, fobId, locationId },
+      details: { memberId, roleId, regionId, fobId, locationId },
     })
 
     return NextResponse.json({ success: true })

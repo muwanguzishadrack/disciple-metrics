@@ -140,6 +140,7 @@ export default function DashboardPage() {
   const isManager = userRole === 'manager'
   const isPastor = userRole === 'pastor'
   const isFobLeader = userRole === 'fob_leader'
+  const isRegionalOverseer = userRole === 'regional_overseer'
   const { data: pgaReports = [], isLoading: isReportsLoading } = usePgaReports()
   const { data: fobs = [] } = useFobs()
   const { data: locations = [] } = useLocations()
@@ -160,7 +161,7 @@ export default function DashboardPage() {
   // Metric inputs, validation and the outlier confirm step (shared with the edit dialog)
   const pgaForm = usePgaEntryForm()
   const { data: lockDays = null } = usePgaLockDays()
-  const canSeeMissingEntries = isAdmin || isManager || isFobLeader
+  const canSeeMissingEntries = isAdmin || isManager || isRegionalOverseer || isFobLeader
   const latestReportDate = pgaReports[0]?.date ?? null
 
   // Build FOB and Location options from database

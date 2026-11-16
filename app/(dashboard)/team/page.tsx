@@ -134,6 +134,7 @@ export default function TeamPage() {
                       <SelectItem value="manager">Manager</SelectItem>
                     </>
                   )}
+                  <SelectItem value="regional_overseer">Regional Overseer</SelectItem>
                   <SelectItem value="fob_leader">FOB Leader</SelectItem>
                   <SelectItem value="pastor">Pastor</SelectItem>
                 </SelectContent>

@@ -85,9 +85,12 @@ export default function SingleReportPage() {
   const isAdmin = userRole === 'admin'
   const isManager = userRole === 'manager'
   const isFobLeader = userRole === 'fob_leader'
+  const isRegionalOverseer = userRole === 'regional_overseer'
   const isAdminOrManager = isAdmin || isManager
-  const canSearchLocations = isAdminOrManager || isFobLeader
-  const canFilterByFob = isAdminOrManager
+  // Roles that can work on every entry in their scope (not just their own location)
+  const canManageEntries = isAdminOrManager || isRegionalOverseer || isFobLeader
+  const canSearchLocations = canManageEntries
+  const canFilterByFob = isAdminOrManager || isRegionalOverseer
   const canFilterByRegion = isAdminOrManager
   const reportDate = params.date as string
   const { data: report, isLoading } = usePgaReportByDate(reportDate)
@@ -98,7 +101,7 @@ export default function SingleReportPage() {
   // Past the edit window, only admins keep edit/delete (the DB trigger enforces it too)
   const { lockDays, isLocked } = usePgaReportLock(reportDate)
   const canModifyEntries = !isLocked || isAdmin
-  const canSeeMissingEntries = isAdminOrManager || isFobLeader
+  const canSeeMissingEntries = canManageEntries
   const deletePgaEntry = useDeletePgaEntry()
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -557,7 +560,7 @@ export default function SingleReportPage() {
                   <TableHead>Mech</TableHead>
                   <TableHead>MCA</TableHead>
                   <TableHead>Mech-Trn</TableHead>
-                  {(isAdminOrManager || isFobLeader) && <TableHead className="text-right">Action</TableHead>}
+                  {canManageEntries && <TableHead className="text-right">Action</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -578,7 +581,7 @@ export default function SingleReportPage() {
                       <TableCell>{location.hasSubmitted ? location.mechanics : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.mca : '—'}</TableCell>
                       <TableCell>{location.hasSubmitted ? location.mechanicsTraining : '—'}</TableCell>
-                      {(isAdminOrManager || isFobLeader) && (
+                      {canManageEntries && (
                         <TableCell className="text-right">
                           {location.hasSubmitted && !canModifyEntries ? (
                             <span
@@ -617,7 +620,7 @@ export default function SingleReportPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={(isAdminOrManager || isFobLeader) ? 14 : 13} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={canManageEntries ? 14 : 13} className="text-center text-muted-foreground py-8">
                       No locations found
                     </TableCell>
                   </TableRow>

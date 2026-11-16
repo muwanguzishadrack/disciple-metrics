@@ -13,7 +13,8 @@ select is(
                          'get_four_week_epga_detail','get_four_week_pga_detail','is_admin',
                          'is_admin_or_manager','is_fob_leader')),
   'auto_generate_weekly_pga_report:79e02ab2267e1ecc1b7ef37a04f57d16,'
-  'can_access_location:5f64abdda9d5b6b5971d5a92533a522a,'
+  -- can_access_location: changed by 20261116000000 (regional_overseer branch); prod hash before it was 5f64abdda9d5b6b5971d5a92533a522a
+  'can_access_location:66fb795560f799dbff59bfc078426eb4,'
   'get_epga_detail:89a35492c4de3e2baed4b42954769318,'
   'get_four_week_epga_detail:a55434888ee6778543fe5d153c930868,'
   'get_four_week_pga_detail:ed6924f74029abd5208ae55fdcf27272,'

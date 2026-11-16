@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { email, roleId, fobId, locationId } = result.data
+    const { email, roleId, regionId, fobId, locationId } = result.data
 
     // Check if user already exists
     const { data: existingUser } = await adminSupabase
@@ -94,6 +94,13 @@ export async function POST(request: NextRequest) {
     }
 
     const roleName = (role as { name: string }).name
+    if (roleName === 'regional_overseer' && !regionId) {
+      return NextResponse.json(
+        { error: 'Regional Overseer must be assigned to a region' },
+        { status: 400 }
+      )
+    }
+
     if (roleName === 'fob_leader' && !fobId) {
       return NextResponse.json(
         { error: 'FOB Leader must be assigned to a FOB' },
@@ -118,7 +125,8 @@ export async function POST(request: NextRequest) {
       .insert({
         email,
         role_id: roleId,
-        fob_id: roleName === 'admin' ? null : fobId || null,
+        region_id: roleName === 'regional_overseer' ? regionId : null,
+        fob_id: ['fob_leader', 'pastor'].includes(roleName) ? fobId || null : null,
         location_id: roleName === 'pastor' ? locationId : null,
         invited_by: user.id,
         token,

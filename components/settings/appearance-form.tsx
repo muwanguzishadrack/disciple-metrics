@@ -42,6 +42,9 @@ export function AppearanceForm() {
     if (assignment.role === 'admin') {
       return 'Organization-wide access'
     }
+    if (assignment.role === 'regional_overseer' && assignment.regionName) {
+      return `Region: ${assignment.regionName}`
+    }
     if (assignment.role === 'fob_leader' && assignment.fobName) {
       return `FOB: ${assignment.fobName}`
     }

@@ -30,7 +30,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useInviteMember, useRoles } from '@/hooks/use-team'
-import { useFobs, useLocations } from '@/hooks/use-pga'
+import { useFobs, useLocations, useRegions } from '@/hooks/use-pga'
 import {
   inviteMemberSchema,
   type InviteMemberFormData,
@@ -49,6 +49,7 @@ export function InviteMemberDialog({
 }: InviteMemberDialogProps) {
   const { toast } = useToast()
   const { data: roles } = useRoles()
+  const { data: regions } = useRegions()
   const { data: fobs } = useFobs()
   const { data: locations } = useLocations()
   const inviteMember = useInviteMember()
@@ -58,6 +59,7 @@ export function InviteMemberDialog({
     defaultValues: {
       email: '',
       roleId: '',
+      regionId: undefined,
       fobId: undefined,
       locationId: undefined,
     },
@@ -67,6 +69,7 @@ export function InviteMemberDialog({
   const selectedFobId = form.watch('fobId')
 
   const selectedRole = roles?.find((r) => r.id === selectedRoleId)
+  const showRegionSelect = selectedRole?.name === 'regional_overseer'
   const showFobSelect =
     selectedRole?.name === 'fob_leader' || selectedRole?.name === 'pastor'
   const showLocationSelect = selectedRole?.name === 'pastor'
@@ -77,7 +80,10 @@ export function InviteMemberDialog({
 
   // Reset dependent fields when role changes
   useEffect(() => {
-    if (selectedRole?.name === 'admin') {
+    if (selectedRole?.name !== 'regional_overseer') {
+      form.setValue('regionId', undefined)
+    }
+    if (selectedRole && !['fob_leader', 'pastor'].includes(selectedRole.name)) {
       form.setValue('fobId', undefined)
       form.setValue('locationId', undefined)
     }
@@ -93,6 +99,7 @@ export function InviteMemberDialog({
       await inviteMember.mutateAsync({
         email: data.email,
         roleId: data.roleId,
+        regionId: data.regionId || undefined,
         fobId: data.fobId || undefined,
         locationId: data.locationId || undefined,
       })
@@ -111,6 +118,13 @@ export function InviteMemberDialog({
       })
     }
   }
+
+  // Build region options for combobox
+  const regionOptions =
+    regions?.map((region) => ({
+      value: region.id,
+      label: region.name,
+    })) || []
 
   // Build FOB options for combobox
   const fobOptions =
@@ -177,6 +191,28 @@ export function InviteMemberDialog({
                 </FormItem>
               )}
             />
+
+            {showRegionSelect && (
+              <FormField
+                control={form.control}
+                name="regionId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Region</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        options={regionOptions}
+                        value={field.value || ''}
+                        onValueChange={field.onChange}
+                        placeholder="Select a region"
+                        searchPlaceholder="Search regions..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {showFobSelect && (
               <FormField
